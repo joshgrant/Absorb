@@ -15,6 +15,8 @@
 		03AB37C12715D18F00E1BD2C /* AbsorbTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */; };
 		03AB37CB2715D18F00E1BD2C /* AbsorbUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37CA2715D18F00E1BD2C /* AbsorbUITests.swift */; };
 		03AB37CD2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37CC2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift */; };
+		03AB37E92715E81300E1BD2C /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37E82715E81300E1BD2C /* Ball.swift */; };
+		03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		03AB37C62715D18F00E1BD2C /* AbsorbUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbsorbUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AB37CA2715D18F00E1BD2C /* AbsorbUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbUITests.swift; sourceTree = "<group>"; };
 		03AB37CC2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		03AB37E82715E81300E1BD2C /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
+		03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +105,8 @@
 				03AB37AE2715D18D00E1BD2C /* GameViewController.swift */,
 				03AB37B32715D18F00E1BD2C /* Assets.xcassets */,
 				03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */,
+				03AB37E82715E81300E1BD2C /* Ball.swift */,
+				03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */,
 			);
 			path = Absorb;
 			sourceTree = "<group>";
@@ -252,6 +258,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03AB37E92715E81300E1BD2C /* Ball.swift in Sources */,
+				03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */,
 				03AB37AD2715D18D00E1BD2C /* GameScene.swift in Sources */,
 				03AB37AF2715D18D00E1BD2C /* GameViewController.swift in Sources */,
 				03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */,

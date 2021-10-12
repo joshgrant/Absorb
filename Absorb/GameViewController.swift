@@ -21,14 +21,16 @@ class GameViewController: UIViewController
         
         guard let view = view as? SKView else { return }
         
-        let scene = SKScene()
+        let scene = GameScene()
         scene.scaleMode = .resizeFill
-        view.presentScene(scene)
+        
         view.ignoresSiblingOrder = true
         view.showsFPS = true
         view.showsPhysics = true
         view.showsFields = true
         view.showsNodeCount = true
+        
+        view.presentScene(scene)
     }
 
     override var shouldAutorotate: Bool { true }
