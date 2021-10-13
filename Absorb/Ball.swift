@@ -35,6 +35,12 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
+        guard newArea > 0.9 else
+        {
+            removeFromParent()
+            return
+        }
+        
         radius = newArea.areaToRadius
         radiusUpdated()
     }
@@ -59,6 +65,7 @@ public class Ball: SKShapeNode
         }
         
         physicsBody?.isDynamic = true
+        physicsBody?.collisionBitMask = .zero
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative

@@ -143,4 +143,16 @@ class AbsorbTests: XCTestCase
         ball.updateArea(to: 20)
         XCTAssertEqual(ball.physicsBody?.velocity, .init(dx: 10.000001907348633, dy: 0))
     }
+    
+    func test_settingAreaToZero_removesNodeFromParent()
+    {
+        let parent = SKNode()
+        let ball = Ball(radius: 10, position: .zero)
+        
+        parent.addChild(ball)
+        
+        ball.updateArea(to: 0)
+        
+        XCTAssertNil(ball.parent)
+    }
 }
