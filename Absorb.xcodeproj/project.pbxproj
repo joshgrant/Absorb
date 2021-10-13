@@ -13,21 +13,12 @@
 		03AB37B42715D18F00E1BD2C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 03AB37B32715D18F00E1BD2C /* Assets.xcassets */; };
 		03AB37B72715D18F00E1BD2C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */; };
 		03AB37C12715D18F00E1BD2C /* AbsorbTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */; };
-		03AB37CB2715D18F00E1BD2C /* AbsorbUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37CA2715D18F00E1BD2C /* AbsorbUITests.swift */; };
-		03AB37CD2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37CC2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift */; };
 		03AB37E92715E81300E1BD2C /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37E82715E81300E1BD2C /* Ball.swift */; };
 		03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		03AB37BD2715D18F00E1BD2C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 03AB379B2715D18D00E1BD2C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 03AB37A22715D18D00E1BD2C;
-			remoteInfo = Absorb;
-		};
-		03AB37C72715D18F00E1BD2C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 03AB379B2715D18D00E1BD2C /* Project object */;
 			proxyType = 1;
@@ -45,9 +36,6 @@
 		03AB37B62715D18F00E1BD2C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		03AB37BC2715D18F00E1BD2C /* AbsorbTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbsorbTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbTests.swift; sourceTree = "<group>"; };
-		03AB37C62715D18F00E1BD2C /* AbsorbUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbsorbUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		03AB37CA2715D18F00E1BD2C /* AbsorbUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbUITests.swift; sourceTree = "<group>"; };
-		03AB37CC2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		03AB37E82715E81300E1BD2C /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,13 +55,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		03AB37C32715D18F00E1BD2C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -82,7 +63,6 @@
 			children = (
 				03AB37A52715D18D00E1BD2C /* Absorb */,
 				03AB37BF2715D18F00E1BD2C /* AbsorbTests */,
-				03AB37C92715D18F00E1BD2C /* AbsorbUITests */,
 				03AB37A42715D18D00E1BD2C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,7 +72,6 @@
 			children = (
 				03AB37A32715D18D00E1BD2C /* Absorb.app */,
 				03AB37BC2715D18F00E1BD2C /* AbsorbTests.xctest */,
-				03AB37C62715D18F00E1BD2C /* AbsorbUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,15 +96,6 @@
 				03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */,
 			);
 			path = AbsorbTests;
-			sourceTree = "<group>";
-		};
-		03AB37C92715D18F00E1BD2C /* AbsorbUITests */ = {
-			isa = PBXGroup;
-			children = (
-				03AB37CA2715D18F00E1BD2C /* AbsorbUITests.swift */,
-				03AB37CC2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift */,
-			);
-			path = AbsorbUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -166,24 +136,6 @@
 			productReference = 03AB37BC2715D18F00E1BD2C /* AbsorbTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		03AB37C52715D18F00E1BD2C /* AbsorbUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 03AB37D62715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "AbsorbUITests" */;
-			buildPhases = (
-				03AB37C22715D18F00E1BD2C /* Sources */,
-				03AB37C32715D18F00E1BD2C /* Frameworks */,
-				03AB37C42715D18F00E1BD2C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				03AB37C82715D18F00E1BD2C /* PBXTargetDependency */,
-			);
-			name = AbsorbUITests;
-			productName = AbsorbUITests;
-			productReference = 03AB37C62715D18F00E1BD2C /* AbsorbUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -198,10 +150,6 @@
 						CreatedOnToolsVersion = 13.0;
 					};
 					03AB37BB2715D18F00E1BD2C = {
-						CreatedOnToolsVersion = 13.0;
-						TestTargetID = 03AB37A22715D18D00E1BD2C;
-					};
-					03AB37C52715D18F00E1BD2C = {
 						CreatedOnToolsVersion = 13.0;
 						TestTargetID = 03AB37A22715D18D00E1BD2C;
 					};
@@ -222,7 +170,6 @@
 			targets = (
 				03AB37A22715D18D00E1BD2C /* Absorb */,
 				03AB37BB2715D18F00E1BD2C /* AbsorbTests */,
-				03AB37C52715D18F00E1BD2C /* AbsorbUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -238,13 +185,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		03AB37BA2715D18F00E1BD2C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		03AB37C42715D18F00E1BD2C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -274,15 +214,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		03AB37C22715D18F00E1BD2C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				03AB37CB2715D18F00E1BD2C /* AbsorbUITests.swift in Sources */,
-				03AB37CD2715D18F00E1BD2C /* AbsorbUITestsLaunchTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -290,11 +221,6 @@
 			isa = PBXTargetDependency;
 			target = 03AB37A22715D18D00E1BD2C /* Absorb */;
 			targetProxy = 03AB37BD2715D18F00E1BD2C /* PBXContainerItemProxy */;
-		};
-		03AB37C82715D18F00E1BD2C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 03AB37A22715D18D00E1BD2C /* Absorb */;
-			targetProxy = 03AB37C72715D18F00E1BD2C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -526,50 +452,6 @@
 			};
 			name = Release;
 		};
-		03AB37D72715D18F00E1BD2C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.AbsorbUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Absorb;
-			};
-			name = Debug;
-		};
-		03AB37D82715D18F00E1BD2C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.AbsorbUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Absorb;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -596,15 +478,6 @@
 			buildConfigurations = (
 				03AB37D42715D18F00E1BD2C /* Debug */,
 				03AB37D52715D18F00E1BD2C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		03AB37D62715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "AbsorbUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				03AB37D72715D18F00E1BD2C /* Debug */,
-				03AB37D82715D18F00E1BD2C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -23,6 +23,7 @@ class GameScene: SKScene
         
         addChild(ball)
         addChild(player)
+        
         addCamera()
     }
     
@@ -30,6 +31,11 @@ class GameScene: SKScene
     /// physics are simulated
     override func update(_ currentTime: TimeInterval) {
         player.physicsBody?.velocity.dx = 10
+        
+        if Ball.overlapping(player, ball) {
+            let overlappingArea = Ball.overlappingArea(player, ball)
+            
+        }
         
         lastTime = currentTime
         
@@ -63,7 +69,6 @@ class GameScene: SKScene
         if !camera.position.equalTo(player.position, allowedDelta: 1.0)
         {
             camera.run(.move(to: player.position, duration: 0.3))
-            print("Moving the camera")
         }
     }
 }

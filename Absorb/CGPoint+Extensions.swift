@@ -31,4 +31,12 @@ public extension CGPoint
         
         return dx <= allowedDelta && dy <= allowedDelta
     }
+    
+    static func distance(_ a: CGPoint, _ b: CGPoint) -> CGFloat
+    {
+        let dx = b.x - a.x
+        let dy = b.y - a.y
+        
+        return sqrt(dx * dx + dy * dy)
+    }
 }
