@@ -29,7 +29,6 @@ public class Ball: SKShapeNode
         self.position = position
         fillColor = .orange
         lineWidth = 0
-        strokeColor = .orange
         radiusUpdated()
     }
     
@@ -126,14 +125,7 @@ public extension Ball
     
     static func orderByRadius(_ a: Ball, _ b: Ball) -> (smaller: Ball, larger: Ball)
     {
-        if a.radius > b.radius
-        {
-            return (b, a)
-        }
-        else
-        {
-            return (a, b)
-        }
+        return a.radius > b.radius ? (b, a) : (a, b)
     }
     
     func direction(to point: CGPoint) -> CGVector
