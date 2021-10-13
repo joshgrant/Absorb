@@ -9,6 +9,14 @@ import SpriteKit
 
 public class Ball: SKShapeNode
 {
+    enum Kind
+    {
+        case player
+        case npc
+        case projectile
+    }
+    
+    var kind: Kind
     var radius: CGFloat
     
     var area: CGFloat { CGFloat.pi * radius * radius }
@@ -16,9 +24,12 @@ public class Ball: SKShapeNode
     init(radius: CGFloat, position: CGPoint)
     {
         self.radius = radius
+        self.kind = .npc
         super.init()
         self.position = position
         fillColor = .orange
+        lineWidth = 0
+        strokeColor = .orange
         radiusUpdated()
     }
     
@@ -111,6 +122,18 @@ public extension Ball
         // If the area is NaN, the smaller circle is completely encircled
         // by the larger circle. In this case, we just return the smaller area
         return area.isNaN ? min(a.area, b.area) : area
+    }
+    
+    static func orderByRadius(_ a: Ball, _ b: Ball) -> (smaller: Ball, larger: Ball)
+    {
+        if a.radius > b.radius
+        {
+            return (b, a)
+        }
+        else
+        {
+            return (a, b)
+        }
     }
     
     func direction(to point: CGPoint) -> CGVector

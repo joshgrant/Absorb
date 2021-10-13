@@ -175,4 +175,81 @@ class AbsorbTests: XCTestCase
         let point = CGPoint(x: 10, y: 5)
         XCTAssertEqual(point / 5, CGPoint(x: 2, y: 1))
     }
+    
+    func test_iterateNPCs()
+    {
+        let sut = GameScene()
+        
+        let first = Ball(radius: 1, position: .zero)
+        let second = Ball(radius: 1, position: .zero)
+        let third = Ball(radius: 2, position: .zero)
+        
+        sut.addChild(first)
+        sut.addChild(second)
+        sut.addChild(third)
+        
+        sut.iterateNPCs { ball in
+            ball.radius = 10
+        }
+        
+        XCTAssertEqual(first.radius, 10)
+        XCTAssertEqual(second.radius, 10)
+        XCTAssertEqual(third.radius, 10)
+    }
+    
+    func test_permuteAllBallsAndSiblings()
+    {
+        let sut = GameScene()
+        
+        sut.player.name = "Player"
+        
+        let first = Ball(radius: 1, position: .zero)
+        first.name = "First"
+        
+        let second = Ball(radius: 2, position: .zero)
+        second.name = "Second"
+        
+        sut.addChild(first)
+        sut.addChild(second)
+        
+        var iteratedBalls: [Ball] = []
+        
+        sut.permuteAllBallsAndSiblings { ball, sibling in
+           iteratedBalls += [ball, sibling]
+        }
+        
+        XCTAssertEqual(iteratedBalls, [
+            sut.player, first,
+            sut.player, second,
+            first, second,
+        ])
+    }
+    
+    func test_hashTogether()
+    {
+        let first = Ball(radius: 1, position: .zero)
+        let second = Ball(radius: 1, position: .zero)
+        
+        let firstHash = Ball.hashTogether([first, second])
+        let secondHash = Ball.hashTogether([second, first])
+        
+        XCTAssertNotEqual(firstHash, 0)
+        XCTAssertEqual(firstHash, secondHash)
+    }
+    
+    func test_orderByRadius()
+    {
+        let first = Ball(radius: 10, position: .zero)
+        let second = Ball(radius: 15, position: .zero)
+        
+        let (smaller, larger) = Ball.orderByRadius(second, first)
+        XCTAssertEqual(smaller, first)
+        XCTAssertEqual(larger, second)
+        
+        first.radius = 20
+        
+        let (s, l) = Ball.orderByRadius(second, first)
+        XCTAssertEqual(s, second)
+        XCTAssertEqual(l, first)
+    }
 }
