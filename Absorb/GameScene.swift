@@ -12,11 +12,24 @@ class GameScene: SKScene
 {
     enum Constants
     {
-        static let referenceRadius: CGFloat = 100
-        static let playerMovement: CGFloat = 10000
+        static let referenceRadius: CGFloat = 22
+        static let playerMovement: CGFloat = referenceRadius * 10
         static let frameDuration: CGFloat = 1.0 / 60.0
+        static let addEnemyWaitDuration: TimeInterval = 0.2
+        static let minimumExpulsionAmount: CGFloat = 2
+        static let expulsionAmountRatio: CGFloat = 0.15
+        static let expulsionForceModifier: CGFloat = -0.1
+        
+        // TODO: Is this true when the user rotates the device?
+        /// The area in which npcs are not allowed to spawn
+        static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height / 2
+        /// The area in which npcs reverse their trajectory
+        static let bounceBackRadius: CGFloat = safeAreaRadius * 2
+        /// The area past which npcs despawn
+        static let killZoneRadius: CGFloat = bounceBackRadius * 2
     }
     
+    private var temporaryRadius: CGFloat = Constants.referenceRadius
     private var playerRadius: CGFloat = Constants.referenceRadius
     
     public let player: Ball = {
@@ -32,17 +45,9 @@ class GameScene: SKScene
         super.sceneDidLoad()
         
         physicsWorld.gravity = .zero
-        
         addChild(player)
-        
-        run(.repeatForever(.sequence([.wait(forDuration: 0.1),
-                                      .run { [unowned self] in
-            addChild(Ball(radius: 20,
-                          position: .init(x: .random(in: -1000 ... 1000),
-                                          y: .random(in: -1000 ... 1000))))
-        }])))
-        
         addCamera()
+        run(loopAddEnemies())
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -51,22 +56,37 @@ class GameScene: SKScene
         
         guard let touch = touches.first else { return }
         let direction = player.direction(to: touch.location(in: self))
+        
         let force: CGVector = direction * Constants.playerMovement
         player.run(.applyForce(force, duration: Constants.frameDuration))
+        
+        makeProjectile(force: force * Constants.expulsionForceModifier)
     }
     
     /// Called once per frame before any actions are evaluated or any
     /// physics are simulated
     override func update(_ currentTime: TimeInterval)
     {
-        var currentRadius: CGFloat = Constants.referenceRadius
-        
         // 1. If a node is a projectile and not overlapping the player, convert it to an npc
         // 2. Calculate total impluse between enemies and prey
         // 3. Remove nodes outside of the kill zone
         // 4. Bounce nodes that are far away
         
         permuteAllBallsAndSiblings { ball, sibling in
+            
+            // Check that the object is not a projectile. If so, check if it's overlapping the player.
+            // If it's not overlapping, convert it to a normal character. Otherwise, skip it
+            if ball.kind == .projectile
+            {
+                if Ball.overlapping(ball, player)
+                {
+                    return
+                }
+                else
+                {
+                    ball.kind = .npc
+                }
+            }
             
             if Ball.overlapping(ball, sibling)
             {
@@ -76,12 +96,12 @@ class GameScene: SKScene
                 if smaller == player
                 {
                     larger.updateArea(delta: overlappingArea)
-                    modifyRadiusScale(with: -overlappingArea, radius: &currentRadius)
+                    modifyRadiusScale(deltaArea: -overlappingArea, radius: &temporaryRadius)
                 }
                 else if larger == player
                 {
                     smaller.updateArea(delta: -overlappingArea)
-                    modifyRadiusScale(with: overlappingArea, radius: &currentRadius)
+                    modifyRadiusScale(deltaArea: overlappingArea, radius: &temporaryRadius)
                 }
                 else
                 {
@@ -91,21 +111,24 @@ class GameScene: SKScene
             }
         }
         
-        let npcScale = Constants.referenceRadius / currentRadius
-        
-        playerRadius += currentRadius - Constants.referenceRadius
-        
-        // 2 for loops is expensive... at least this isn't a nested loop
-        iterateNPCs { ball in
-            ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
-        }
-        
         moveCameraToPlayer()
     }
     
     override func didFinishUpdate()
     {
         super.didFinishUpdate()
+        
+        let npcScale = Constants.referenceRadius / temporaryRadius
+        
+        print(npcScale)
+        
+        iterateNPCs { ball in
+            ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+        }
+        
+        playerRadius += temporaryRadius - Constants.referenceRadius
+        temporaryRadius = Constants.referenceRadius
+        
         checkGameOver()
     }
     
@@ -121,7 +144,7 @@ class GameScene: SKScene
         }
     }
     
-    /// This is a less-naive approach than I was currently taking, I previously iterated through
+    /// This is a less-naive approach than I was previously taking, I previously iterated through
     /// the entire children array twice, but here we avoid that by making sure the sibling hasn't
     /// been iterated through already
     public func permuteAllBallsAndSiblings(handler: (_ ball: Ball, _ sibling: Ball) -> Void)
@@ -143,17 +166,16 @@ class GameScene: SKScene
     
     /// Each overlap between the player and an npc causes the world to shrink
     /// This function calculates how that ratio is modified for a single overlap
-    private func modifyRadiusScale(with overlappingArea: CGFloat, radius: inout CGFloat)
+    private func modifyRadiusScale(deltaArea: CGFloat, radius: inout CGFloat)
     {
         let currentArea = radius.radiusToArea
-        let newArea = currentArea + overlappingArea
+        let newArea = currentArea + deltaArea
         radius = newArea.areaToRadius
     }
     
     private func addCamera()
     {
         let camera = SKCameraNode()
-        camera.setScale(6)
         addChild(camera)
         scene?.camera = camera
     }
@@ -170,9 +192,71 @@ class GameScene: SKScene
     
     private func checkGameOver()
     {
-        if playerRadius < 1 {
+        if playerRadius < 0.5 {
             // Game Over
-            assertionFailure()
+            pause()
         }
+    }
+}
+
+// MARK: - Expulsions
+
+private extension GameScene
+{
+    func makeProjectile(force: CGVector)
+    {
+        let radius = Constants.referenceRadius * Constants.expulsionAmountRatio
+        
+        let npc = Ball(radius: radius, position: player.position)
+        npc.kind = .projectile
+        npc.addsPointsToScore = false
+        npc.fillColor = .purple
+        
+        insertChild(npc, at: 0)
+        
+        modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
+        
+        npc.run(.applyForce(force, duration: Constants.frameDuration))
+    }
+}
+
+// MARK: - NPC
+
+private extension GameScene
+{
+    func loopAddEnemies() -> SKAction
+    {
+        .repeatForever(.sequence([
+            .run(addNPC),
+            .wait(forDuration: Constants.addEnemyWaitDuration)
+        ]))
+    }
+    
+    func addNPC()
+    {
+        let radius = makeNPCRadius()
+        let position = makeNPCSpawnPosition(playerPosition: player.position)
+        let npc = Ball(radius: radius, position: position)
+        
+        addChild(npc)
+    }
+    
+    func makeNPCRadius() -> CGFloat
+    {
+        .random(in: Constants.referenceRadius / 6 ..< Constants.referenceRadius * 3)
+    }
+    
+    func makeNPCSpawnPosition(playerPosition: CGPoint) -> CGPoint
+    {
+        let distance = CGFloat.random(
+            in: Constants.safeAreaRadius ..< Constants.bounceBackRadius)
+        
+        let angle = CGFloat.random(in: 0 ..< 360).radians
+        
+        let x = distance * cos(angle)
+        let y = distance * sin(angle)
+        
+        return CGPoint(x: player.position.x + x,
+                       y: player.position.y + y)
     }
 }

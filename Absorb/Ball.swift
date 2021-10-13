@@ -18,6 +18,7 @@ public class Ball: SKShapeNode
     
     var kind: Kind
     var radius: CGFloat
+    var addsPointsToScore: Bool = true
     
     var area: CGFloat { CGFloat.pi * radius * radius }
     
@@ -45,12 +46,6 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
-        guard newArea > 0.9 else
-        {
-            removeFromParent()
-            return
-        }
-        
         radius = newArea.areaToRadius
         radiusUpdated()
     }
@@ -89,6 +84,12 @@ public class Ball: SKShapeNode
     
     private func radiusUpdated()
     {
+        guard radius >= 0.5 else
+        {
+            removeFromParent()
+            return
+        }
+        
         path = UIBezierPath(circleOfRadius: radius).cgPath
         configurePhysicsBody()
     }

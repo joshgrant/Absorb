@@ -9,4 +9,5 @@ public extension CGFloat
 {
     var areaToRadius: CGFloat { sqrt(self / .pi) }
     var radiusToArea: CGFloat { self * self * .pi }
+    var radians: CGFloat { self * (.pi / 180) }
 }

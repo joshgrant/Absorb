@@ -265,6 +265,13 @@ class AbsorbTests: XCTestCase
         }
     }
     
+    func test_degreesToRadians()
+    {
+        XCTAssertEqual(CGFloat(180).radians, CGFloat.pi)
+        XCTAssertEqual(CGFloat(360).radians, CGFloat.pi * 2)
+        XCTAssertEqual(CGFloat(0).radians, 0)
+    }
+    
     // MARK: - Test helpers
     
     func makeGameSceneWithLotsOfChildren() -> GameScene
