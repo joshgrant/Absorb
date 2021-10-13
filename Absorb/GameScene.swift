@@ -35,9 +35,9 @@ class GameScene: SKScene
         
         addChild(player)
         
-        run(.repeatForever(.sequence([.wait(forDuration: 0.5),
+        run(.repeatForever(.sequence([.wait(forDuration: 0.1),
                                       .run { [unowned self] in
-            addChild(Ball(radius: 5,
+            addChild(Ball(radius: 20,
                           position: .init(x: .random(in: -1000 ... 1000),
                                           y: .random(in: -1000 ... 1000))))
         }])))
@@ -126,12 +126,16 @@ class GameScene: SKScene
     /// been iterated through already
     public func permuteAllBallsAndSiblings(handler: (_ ball: Ball, _ sibling: Ball) -> Void)
     {
-        for i in 0 ..< children.count
+        let children = children // The array was being modified mid loop; this ensures the array remains stable
+        let count = children.count
+        
+        for i in 0 ..< count
         {
-            for j in i + 1 ..< children.count
+            for j in i + 1 ..< count
             {
-                guard let first = children[i] as? Ball else { continue }
-                guard let second = children[j] as? Ball else { continue }
+                guard let first = children[i] as? Ball,
+                      let second = children[j] as? Ball
+                else { continue }
                 handler(first, second)
             }
         }
