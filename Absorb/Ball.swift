@@ -112,6 +112,12 @@ public extension Ball
         // by the larger circle. In this case, we just return the smaller area
         return area.isNaN ? min(a.area, b.area) : area
     }
+    
+    func direction(to point: CGPoint) -> CGVector
+    {
+        let delta = (point - position).normalized
+        return CGVector(dx: delta.x, dy: delta.y)
+    }
 }
 
 public extension UIBezierPath

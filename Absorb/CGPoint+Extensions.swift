@@ -22,8 +22,18 @@ func *(_ a: CGPoint, _ b: CGFloat) -> CGPoint
     .init(x: a.x * b, y: a.y * b)
 }
 
+func /(_ a: CGPoint, _ b: CGFloat) -> CGPoint
+{
+    .init(x: a.x / b, y: a.y / b)
+}
+
 public extension CGPoint
 {
+    var normalized: CGPoint
+    {
+        self / sqrt(x * x + y * y)
+    }
+    
     func equalTo(_ point: CGPoint, allowedDelta: CGFloat) -> Bool
     {
         let dx = abs(point.x - x)

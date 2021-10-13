@@ -155,4 +155,24 @@ class AbsorbTests: XCTestCase
         
         XCTAssertNil(ball.parent)
     }
+    
+    func test_directionToPoint_fromBall()
+    {
+        let ball = Ball(radius: 1.0, position: .zero)
+        let point = CGPoint(x: 10, y: 0)
+        
+        XCTAssertEqual(ball.direction(to: point), CGVector(dx: 1.0, dy: 0.0))
+    }
+    
+    func test_multipyVector()
+    {
+        let vector = CGVector(dx: 10, dy: 5)
+        XCTAssertEqual(vector * 5, CGVector(dx: 50, dy: 25))
+    }
+    
+    func test_dividePoint()
+    {
+        let point = CGPoint(x: 10, y: 5)
+        XCTAssertEqual(point / 5, CGPoint(x: 2, y: 1))
+    }
 }
