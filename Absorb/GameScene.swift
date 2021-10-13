@@ -10,13 +10,12 @@ import GameplayKit
 
 class GameScene: SKScene
 {
-    var lastTime: TimeInterval = 0
-    
     let ball = Ball(radius: 10, position: CGPoint(x: 200, y: 400))
     let player = Ball(radius: 10, position: CGPoint(x: 150, y: 390))
     
     /// Perform one-time setup
-    override func sceneDidLoad() {
+    override func sceneDidLoad()
+    {
         super.sceneDidLoad()
         
         physicsWorld.gravity = .zero
@@ -29,43 +28,32 @@ class GameScene: SKScene
     
     /// Called once per frame before any actions are evaluated or any
     /// physics are simulated
-    override func update(_ currentTime: TimeInterval) {
+    override func update(_ currentTime: TimeInterval)
+    {
         player.physicsBody?.velocity.dx = 10
         
-        if Ball.overlapping(player, ball) {
+        if Ball.overlapping(player, ball)
+        {
             let overlappingArea = Ball.overlappingArea(player, ball)
             player.updateArea(delta: overlappingArea)
             ball.updateArea(delta: -overlappingArea)
             
         }
         
-        lastTime = currentTime
-        
         moveCameraToPlayer()
     }
-    
-    override func didEvaluateActions() {
-        super.didEvaluateActions()
-    }
-    
-    override func didSimulatePhysics() {
-        super.didSimulatePhysics()
-    }
-    
-    // Any updates here are not applied until the next update
-    override func didFinishUpdate() {
-        super.didFinishUpdate()
-    }
-    
+
     // TODO: - Utility
     
-    func addCamera() {
+    func addCamera()
+    {
         let camera = SKCameraNode()
         addChild(camera)
         scene?.camera = camera
     }
     
-    func moveCameraToPlayer() {
+    func moveCameraToPlayer()
+    {
         guard let camera = camera else { return }
         
         if !camera.position.equalTo(player.position, allowedDelta: 1.0)

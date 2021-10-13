@@ -49,11 +49,16 @@ public class Ball: SKShapeNode
     
     private func configurePhysicsBody()
     {
-        physicsBody = .init(circleOfRadius: radius)
+        if let body = physicsBody
+        {
+            physicsBody = .init(physicsBody: body, radius: radius)
+        }
+        else
+        {
+            physicsBody = .init(circleOfRadius: radius)
+        }
+        
         physicsBody?.isDynamic = true
-        physicsBody?.contactTestBitMask = .zero
-        physicsBody?.collisionBitMask = .zero
-        physicsBody?.categoryBitMask = .zero
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative

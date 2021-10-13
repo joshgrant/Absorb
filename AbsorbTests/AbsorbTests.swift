@@ -135,4 +135,12 @@ class AbsorbTests: XCTestCase
         let radius: CGFloat = 10
         XCTAssertEqual(radius.radiusToArea, 314.15, accuracy: 0.01)
     }
+    
+    func test_updatingRadiusPreservesVelocity()
+    {
+        let ball = Ball(radius: 10, position: .zero)
+        ball.physicsBody?.velocity = .init(dx: 10, dy: 0)
+        ball.updateArea(to: 20)
+        XCTAssertEqual(ball.physicsBody?.velocity, .init(dx: 10.000001907348633, dy: 0))
+    }
 }
