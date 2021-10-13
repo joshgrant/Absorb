@@ -34,6 +34,8 @@ class GameScene: SKScene
         
         if Ball.overlapping(player, ball) {
             let overlappingArea = Ball.overlappingArea(player, ball)
+            player.updateArea(delta: overlappingArea)
+            ball.updateArea(delta: -overlappingArea)
             
         }
         

@@ -116,4 +116,23 @@ class AbsorbTests: XCTestCase
         XCTAssertEqual(ball.physicsBody!.area * pow(150, 2), 15, accuracy: 0.00001)
         XCTAssertEqual(ball.physicsBody?.mass, 0.0006666667759418488)// TODO: Check later
     }
+    
+    func test_increaseRadius_withDeltaArea()
+    {
+        let ball = Ball(radius: 5, position: .zero)
+        ball.updateArea(delta: 5)
+        XCTAssertEqual(ball.radius, 5.15, accuracy: 0.01)
+    }
+    
+    func test_convertAreaToRadius()
+    {
+        let area: CGFloat = 314.15
+        XCTAssertEqual(area.areaToRadius, 10, accuracy: 1.0)
+    }
+    
+    func test_convertRadiusToArea()
+    {
+        let radius: CGFloat = 10
+        XCTAssertEqual(radius.radiusToArea, 314.15, accuracy: 0.01)
+    }
 }

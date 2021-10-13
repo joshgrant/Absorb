@@ -35,8 +35,14 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
-        radius = sqrt(newArea / .pi)
+        radius = newArea.areaToRadius
         radiusUpdated()
+    }
+    
+    public func updateArea(delta: CGFloat)
+    {
+        let newArea = area + delta
+        updateArea(to: newArea)
     }
     
     // MARK: - Private functions
