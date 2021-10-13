@@ -252,4 +252,35 @@ class AbsorbTests: XCTestCase
         XCTAssertEqual(s, second)
         XCTAssertEqual(l, first)
     }
+    
+    func test_speedOfPermutation()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        
+        measure
+        {
+            sut.permuteAllBallsAndSiblings { ball, sibling in
+                doSomething(duration: 1)
+            }
+        }
+    }
+    
+    // MARK: - Test helpers
+    
+    func makeGameSceneWithLotsOfChildren() -> GameScene
+    {
+        let sut = GameScene()
+        
+        for _ in 0 ..< 200
+        {
+            sut.addChild(Ball(radius: .random(in: 1 ..< 100), position: .zero))
+        }
+        
+        return sut
+    }
+    
+    func doSomething(duration: useconds_t)
+    {
+        usleep(duration)
+    }
 }

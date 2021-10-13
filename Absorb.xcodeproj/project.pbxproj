@@ -66,6 +66,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		037CBC0527174B8200103FD0 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				037CBC012716822400103FD0 /* CGVector+Extensions.swift */,
+				03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */,
+				0335116127167BAD00F50928 /* CGFloat+Extensions.swift */,
+				0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */,
+				037CBC032717456100103FD0 /* Hashable+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		03AB379A2715D18D00E1BD2C = {
 			isa = PBXGroup;
 			children = (
@@ -88,16 +100,12 @@
 			isa = PBXGroup;
 			children = (
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
+				03AB37E82715E81300E1BD2C /* Ball.swift */,
 				03AB37AC2715D18D00E1BD2C /* GameScene.swift */,
 				03AB37AE2715D18D00E1BD2C /* GameViewController.swift */,
 				03AB37B32715D18F00E1BD2C /* Assets.xcassets */,
+				037CBC0527174B8200103FD0 /* Extensions */,
 				03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */,
-				03AB37E82715E81300E1BD2C /* Ball.swift */,
-				037CBC012716822400103FD0 /* CGVector+Extensions.swift */,
-				03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */,
-				0335116127167BAD00F50928 /* CGFloat+Extensions.swift */,
-				0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */,
-				037CBC032717456100103FD0 /* Hashable+Extensions.swift */,
 			);
 			path = Absorb;
 			sourceTree = "<group>";

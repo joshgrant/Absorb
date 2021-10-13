@@ -37,9 +37,9 @@ class GameScene: SKScene
         
         run(.repeatForever(.sequence([.wait(forDuration: 0.5),
                                       .run { [unowned self] in
-            self.addChild(Ball(radius: Constants.referenceRadius - 10,
-                               position: self.player.position + .init(x: .random(in: 100 ... 300),
-                                                                      y: .random(in: 100 ... 400))))
+            addChild(Ball(radius: 5,
+                          position: .init(x: .random(in: -1000 ... 1000),
+                                          y: .random(in: -1000 ... 1000))))
         }])))
         
         addCamera()
@@ -61,7 +61,13 @@ class GameScene: SKScene
     {
         var currentRadius: CGFloat = Constants.referenceRadius
         
+        // 1. If a node is a projectile and not overlapping the player, convert it to an npc
+        // 2. Calculate total impluse between enemies and prey
+        // 3. Remove nodes outside of the kill zone
+        // 4. Bounce nodes that are far away
+        
         permuteAllBallsAndSiblings { ball, sibling in
+            
             if Ball.overlapping(ball, sibling)
             {
                 let (smaller, larger) = Ball.orderByRadius(ball, sibling)
@@ -89,11 +95,6 @@ class GameScene: SKScene
         
         playerRadius += currentRadius - Constants.referenceRadius
         
-        if playerRadius < 1 {
-            // Game Over
-            assertionFailure()
-        }
-        
         // 2 for loops is expensive... at least this isn't a nested loop
         iterateNPCs { ball in
             ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
@@ -120,24 +121,18 @@ class GameScene: SKScene
         }
     }
     
+    /// This is a less-naive approach than I was currently taking, I previously iterated through
+    /// the entire children array twice, but here we avoid that by making sure the sibling hasn't
+    /// been iterated through already
     public func permuteAllBallsAndSiblings(handler: (_ ball: Ball, _ sibling: Ball) -> Void)
     {
-        var encounteredPairs: Set<Int> = []
-        
-        for child in children
+        for i in 0 ..< children.count
         {
-            guard let child = child as? Ball else { continue }
-            for sibling in children
+            for j in i + 1 ..< children.count
             {
-                guard let sibling = sibling as? Ball else { continue }
-                guard child != sibling else { continue }
-                
-                // An additional step to reduce the number of comparisons
-                let hash = Ball.hashTogether([child, sibling])
-                if encounteredPairs.contains(hash) { continue }
-                encounteredPairs.insert(hash)
-                
-                handler(child, sibling)
+                guard let first = children[i] as? Ball else { continue }
+                guard let second = children[j] as? Ball else { continue }
+                handler(first, second)
             }
         }
     }
@@ -171,9 +166,9 @@ class GameScene: SKScene
     
     private func checkGameOver()
     {
-        if player.parent == nil
-        {
-            // Show the game over screen
+        if playerRadius < 1 {
+            // Game Over
+            assertionFailure()
         }
     }
 }
