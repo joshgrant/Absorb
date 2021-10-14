@@ -143,9 +143,8 @@ public class GameScene: SKScene
             if ballIsNPC
             {
                 handleOverlap(smaller: smaller, larger: larger)
+                applyMovement(smaller: smaller, larger: larger)
             }
-            
-            applyMovement(smaller: smaller, larger: larger)
         }
         
         moveCameraToPlayer()
@@ -340,6 +339,7 @@ private extension GameScene
         
         // Side effect - modifies the temporary radius
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
+        npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
     
     func updateScore(to newScore: CGFloat)
