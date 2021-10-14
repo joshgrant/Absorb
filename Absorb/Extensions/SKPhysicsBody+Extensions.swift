@@ -39,4 +39,10 @@ extension SKPhysicsBody
         velocity.dx *= value
         velocity.dy *= value
     }
+    
+    func limitVelocity(to value: CGVector)
+    {
+        velocity.dx = velocity.dx.limitMagnitude(to: value.dx)
+        velocity.dy = velocity.dy.limitMagnitude(to: value.dy)
+    }
 }

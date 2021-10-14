@@ -10,4 +10,20 @@ public extension CGFloat
     var areaToRadius: CGFloat { sqrt(self / .pi) }
     var radiusToArea: CGFloat { self * self * .pi }
     var radians: CGFloat { self * (.pi / 180) }
+    
+    func limitMagnitude(to value: CGFloat) -> CGFloat
+    {
+        if self > value
+        {
+            return value
+        }
+        else if self < -value
+        {
+            return -value
+        }
+        else
+        {
+            return self
+        }
+    }
 }

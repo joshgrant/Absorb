@@ -118,13 +118,13 @@ class AbsorbTests: XCTestCase
         let ball = Ball(radius: 10, position: .zero)
         XCTAssertEqual(ball.radius, 10)
         XCTAssertEqual(ball.physicsBody!.area * pow(150, 2), .pi * 100, accuracy: 0.001)
-        XCTAssertEqual(ball.physicsBody!.mass, 0.013962635770440102)
+        XCTAssertEqual(ball.physicsBody!.mass, 0.00007, accuracy: 0.01)
         
         ball.updateArea(to: 15)
         
         XCTAssertEqual(ball.radius, 2.1850968611841584)
         XCTAssertEqual(ball.physicsBody!.area * pow(150, 2), 15, accuracy: 0.00001)
-        XCTAssertEqual(ball.physicsBody?.mass, 0.0006666667759418488)// TODO: Check later
+        XCTAssertEqual(ball.physicsBody!.mass, 0.00007, accuracy: 0.01)
     }
     
     func test_increaseRadius_withDeltaArea()
@@ -346,9 +346,24 @@ class AbsorbTests: XCTestCase
         body.velocity = .init(dx: 10, dy: 10)
         body.applyFriction(0.95)
         
-        XCTAssertEqual(body.velocity.dy, 9.5)
-        XCTAssertEqual(body.velocity.dy, 9.5)
+        XCTAssertEqual(body.velocity.dy, 9.5, accuracy: 0.01)
+        XCTAssertEqual(body.velocity.dy, 9.5, accuracy: 0.01)
         
+    }
+    
+    func test_limitVelocity()
+    {
+        let body = SKPhysicsBody()
+        
+        body.velocity = .init(dx: 100, dy: 100)
+        body.limitVelocity(to: CGVector(dx: 10, dy: 10))
+        XCTAssertEqual(body.velocity.dx, 10, accuracy: 0.01)
+        XCTAssertEqual(body.velocity.dy, 10, accuracy: 0.01)
+        
+        body.velocity = .init(dx: -100, dy: -100)
+        body.limitVelocity(to: CGVector(dx: 10, dy: 10))
+        XCTAssertEqual(body.velocity.dx, -10, accuracy: 0.01)
+        XCTAssertEqual(body.velocity.dy, -10, accuracy: 0.01)
     }
     
     // MARK: - Test helpers

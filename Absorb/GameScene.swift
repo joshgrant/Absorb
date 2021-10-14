@@ -18,17 +18,18 @@ public class GameScene: SKScene
     
     struct Constants
     {
-        static let referenceRadius: CGFloat = 22
-        static let playerMovement: CGFloat = referenceRadius * 18
+        static let referenceRadius: CGFloat = 20
+        static let playerMovement: CGFloat = 1
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.2
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
-        static let expulsionForceModifier: CGFloat = -0.1
+        static let expulsionForceModifier: CGFloat = 0
         static let npcMovementModifier: CGFloat = 20
         static let enemyBounceModifier: CGFloat = 2.0
+        static let maxVelocity: CGVector = .init(dx: 10, dy: 10)
         
-        static let frictionalCoefficient: CGFloat = 0.98
+        static let frictionalCoefficient: CGFloat = 0.97
         
         static let minimumNPCSize: CGFloat = Constants.referenceRadius / 6
         static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.5
@@ -157,6 +158,7 @@ public class GameScene: SKScene
             }
             
             applyMovement(smaller: smaller, larger: larger)
+            smaller.physicsBody?.limitVelocity(to: Constants.maxVelocity)
         }
         
         moveCameraToPlayer()
@@ -223,12 +225,12 @@ public class GameScene: SKScene
 
         if smaller != player
         {
-            smaller.physicsBody?.applyForce(force)
+            smaller.run(.applyForce(force, duration: Constants.frameDuration))
         }
         
         if larger != player
         {
-            larger.physicsBody?.applyForce(force)
+            larger.run(.applyForce(force, duration: Constants.frameDuration))
         }
     }
     

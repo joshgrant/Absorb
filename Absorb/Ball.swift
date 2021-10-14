@@ -73,6 +73,7 @@ public class Ball: SKShapeNode
         
         body.isDynamic = true
         body.collisionBitMask = .zero
+        body.mass = 0.00007 // (this just) needs to be relative to the screen size really...
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative
