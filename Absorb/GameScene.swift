@@ -25,7 +25,7 @@ public class GameScene: SKScene
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
         static let expulsionForceModifier: CGFloat = -0.1
-        static let npcMovementModifier: CGFloat = 2
+        static let npcMovementModifier: CGFloat = 20
         static let enemyBounceModifier: CGFloat = 2.0
         
         static let frictionalCoefficient: CGFloat = 0.98
@@ -216,7 +216,7 @@ public class GameScene: SKScene
         // This just scales the force depending on the distance. It should be
         // inverse square (as in, the larger the distance, the smaller the value
         let distance = CGPoint.distance(smaller.position, larger.position)
-        let inverseSquare = 1 / sqrt(distance)
+        let inverseSquare = 1 / (distance * distance)
         
         let force = CGVector(dx: direction.x * inverseSquare * Constants.npcMovementModifier,
                              dy: direction.y * inverseSquare * Constants.npcMovementModifier)
