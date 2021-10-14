@@ -134,6 +134,12 @@ public class GameScene: SKScene
     /// physics are simulated
     public override func update(_ currentTime: TimeInterval)
     {
+        update()
+    }
+    
+    /// Making this a separate function for tests
+    public func update()
+    {
         permuteAllBallsAndSiblings { ball, sibling in
             
             let (smaller, larger) = Ball.orderByRadius(ball, sibling)
@@ -150,7 +156,7 @@ public class GameScene: SKScene
         moveCameraToPlayer()
     }
     
-    // If true, this is not a projectile and we can handle overlap
+    /// If true, this is not a projectile and we can handle overlap
     public func updateProjectileToNPCIfNotOverlappingPlayer(ball: Ball) -> Bool
     {
         if ball.kind == .projectile
@@ -168,7 +174,7 @@ public class GameScene: SKScene
         return true
     }
     
-    private func handleOverlap(smaller: Ball, larger: Ball)
+    public func handleOverlap(smaller: Ball, larger: Ball)
     {
         if Ball.overlapping(larger, smaller)
         {
@@ -197,27 +203,31 @@ public class GameScene: SKScene
     }
     
     public func applyMovement(smaller: Ball, larger: Ball) {
-        // This all seems really expensive to compute...
-        
-        let direction = (smaller.position - larger.position).normalized
-        
         // This just scales the force depending on the distance. It should be
         // inverse square (as in, the larger the distance, the smaller the value
-        let distance = CGPoint.distance(smaller.position, larger.position)
-        let inverseSquare = 1 / (distance * distance)
         
-        let force = CGVector(dx: direction.x * inverseSquare * Constants.npcMovementModifier,
-                             dy: direction.y * inverseSquare * Constants.npcMovementModifier)
-
-        if smaller != player
-        {
-            smaller.run(.applyForce(force, duration: Constants.frameDuration))
-        }
-        
-        if larger != player
-        {
-            larger.run(.applyForce(force, duration: Constants.frameDuration))
-        }
+        // Old
+//        let force = CGVector(dx: direction.x * inverseSquare * Constants.npcMovementModifier,
+//                             dy: direction.y * inverseSquare * Constants.npcMovementModifier)
+//        
+//        let force = Constants.npcMovementModifier / (smaller.position - larger.position)
+//        
+//        
+//        let dx = smaller.position.x - larger.position.x
+//        let dy = smaller.position.y - larger.position.y
+//        let distance = sqrt(dx * dx + dy * dy)
+//        let inverseSquare = 1 / (distance * distance)
+//        
+//
+//        if smaller != player
+//        {
+//            smaller.run(.applyForce(force, duration: Constants.frameDuration))
+//        }
+//        
+//        if larger != player
+//        {
+//            larger.run(.applyForce(force, duration: Constants.frameDuration))
+//        }
     }
     
     public override func didFinishUpdate()

@@ -366,6 +366,48 @@ class AbsorbTests: XCTestCase
         XCTAssertEqual(body.velocity.dy, -10, accuracy: 0.01)
     }
     
+    func test_durationOfApplyMovement()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        measure
+        {
+            sut.permuteAllBallsAndSiblings { ball, sibling in
+                sut.applyMovement(smaller: ball, larger: sibling)
+            }
+        }
+    }
+    
+    func test_durationOfUpdateProjectileToNPC()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        measure
+        {
+            sut.permuteAllBallsAndSiblings { ball, sibling in
+                sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+            }
+        }
+    }
+    
+    func test_durationOfHandleOverlap()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        measure
+        {
+            sut.permuteAllBallsAndSiblings { ball, sibling in
+                sut.handleOverlap(smaller: ball, larger: sibling)
+            }
+        }
+    }
+    
+    func test_durationOfUpdate()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        measure
+        {
+            sut.update()
+        }
+    }
+    
     // MARK: - Test helpers
     
     func makeGameSceneInView(with configuration: GameScene.Configuration) -> GameScene

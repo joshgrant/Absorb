@@ -9,3 +9,17 @@ func *(_ a: CGVector, _ b: CGFloat) -> CGVector
 {
     return CGVector(dx: a.dx * b, dy: a.dy * b)
 }
+
+func /(_ a: CGVector, _ b: CGFloat) -> CGVector
+{
+    return CGVector(dx: a.dx / b, dy: a.dy / b)
+}
+
+public extension CGVector
+{
+    static func direction(from a: CGPoint, to b: CGPoint) -> CGVector
+    {
+        let normal = (b - a).normalized
+        return CGVector(dx: normal.x, dy: normal.y)
+    }
+}
