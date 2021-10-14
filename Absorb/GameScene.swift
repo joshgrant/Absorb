@@ -18,25 +18,27 @@ public class GameScene: SKScene
     
     struct Constants
     {
+        static let cameraScale: CGFloat = 1
+        
         static let referenceRadius: CGFloat = 20
         static let playerMovement: CGFloat = 1
         static let frameDuration: CGFloat = 1.0 / 60.0
-        static let addEnemyWaitDuration: TimeInterval = 0.2
+        static let addEnemyWaitDuration: TimeInterval = 0.3
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
         static let expulsionForceModifier: CGFloat = 0
-        static let npcMovementModifier: CGFloat = 20
-        static let enemyBounceModifier: CGFloat = 2.0
-        static let maxVelocity: CGVector = .init(dx: 10, dy: 10)
+        static let npcMovementModifier: CGFloat = 25
+        static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
         
-        static let frictionalCoefficient: CGFloat = 0.97
+        static let playerFrictionalCoefficient: CGFloat = 0.96
+        static let enemyFrictionalCoefficient: CGFloat = 0.978
         
         static let minimumNPCSize: CGFloat = Constants.referenceRadius / 6
         static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.5
         
         // TODO: Is this true when the user rotates the device?
         /// The area in which npcs are not allowed to spawn
-        static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height / 2
+        static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height
         /// The area in which npcs reverse their trajectory
         static let bounceBackRadius: CGFloat = safeAreaRadius * 2
         /// The area past which npcs despawn
@@ -134,20 +136,6 @@ public class GameScene: SKScene
     {
         permuteAllBallsAndSiblings { ball, sibling in
             
-            let distanceToPlayer = CGPoint.distance(ball.position, player.position)
-            
-            if distanceToPlayer > Constants.killZoneRadius
-            {
-                ball.removeFromParent()
-                return
-            }
-            else if distanceToPlayer > Constants.bounceBackRadius
-            {
-                let direction = (ball.position - player.position).normalized
-                let force = CGVector(dx: direction.x, dy: direction.y) * Constants.enemyBounceModifier
-                ball.physicsBody?.applyForce(force)
-            }
-            
             let (smaller, larger) = Ball.orderByRadius(ball, sibling)
             
             let ballIsNPC = updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
@@ -158,7 +146,6 @@ public class GameScene: SKScene
             }
             
             applyMovement(smaller: smaller, larger: larger)
-            smaller.physicsBody?.limitVelocity(to: Constants.maxVelocity)
         }
         
         moveCameraToPlayer()
@@ -241,11 +228,22 @@ public class GameScene: SKScene
         let npcScale = Constants.referenceRadius / temporaryRadius
         
         iterateNPCs { ball in
-            ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
-            ball.physicsBody?.applyFriction(Constants.frictionalCoefficient)
+            let distanceToPlayer = CGPoint.distance(ball.position, player.position)
+            
+            if distanceToPlayer > Constants.killZoneRadius
+            {
+                ball.removeFromParent()
+                return
+            }
+            else
+            {
+                ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+                ball.physicsBody?.applyFriction(Constants.enemyFrictionalCoefficient)
+                ball.physicsBody?.limitVelocity(to: Constants.maxVelocity)
+            }
         }
         
-        player.physicsBody?.applyFriction(Constants.frictionalCoefficient)
+        player.physicsBody?.applyFriction(Constants.playerFrictionalCoefficient)
         
         playerRadius += temporaryRadius - Constants.referenceRadius
         temporaryRadius = Constants.referenceRadius
@@ -301,6 +299,7 @@ public class GameScene: SKScene
         let camera = SKCameraNode()
         addChild(camera)
         scene?.camera = camera
+        scene?.camera?.setScale(Constants.cameraScale)
     }
     
     private func moveCameraToPlayer()
@@ -341,13 +340,18 @@ private extension GameScene
         
         // Side effect - modifies the temporary radius
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
-        
-        npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
     
     func updateScore(to newScore: CGFloat)
     {
-        total.text = "\(Int(newScore))"
+        if newScore.isNaN || newScore.isInfinite
+        {
+            total.text = "0"
+        }
+        else
+        {
+            total.text = "\(Int(newScore))"
+        }
     }
 }
 
