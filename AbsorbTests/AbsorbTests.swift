@@ -57,6 +57,11 @@ class AbsorbTests: XCTestCase
         let second = Ball(radius: 15, position: CGPoint(x: 24, y: 0))
         
         XCTAssertTrue(Ball.overlapping(first, second))
+        
+        let a = Ball(radius: 1, position: .zero)
+        let b = Ball(radius: 1, position: .init(x: 1.9, y: 0))
+        
+        XCTAssertTrue(Ball.overlapping(a, b))
     }
     
     func test_balls_doNotOverlap()
@@ -65,6 +70,11 @@ class AbsorbTests: XCTestCase
         let second = Ball(radius: 15, position: CGPoint(x: 25, y: 0))
         
         XCTAssertFalse(Ball.overlapping(first, second))
+        
+        let a = Ball(radius: 1, position: .zero)
+        let b = Ball(radius: 1, position: .init(x: 2, y: 0))
+        
+        XCTAssertFalse(Ball.overlapping(a, b))
     }
     
     func test_distanceFormula()
@@ -215,7 +225,7 @@ class AbsorbTests: XCTestCase
         var iteratedBalls: [Ball] = []
         
         sut.permuteAllBallsAndSiblings { ball, sibling in
-           iteratedBalls += [ball, sibling]
+            iteratedBalls += [ball, sibling]
         }
         
         XCTAssertEqual(iteratedBalls, [
@@ -272,7 +282,79 @@ class AbsorbTests: XCTestCase
         XCTAssertEqual(CGFloat(0).radians, 0)
     }
     
+    func test_updateProjectileToNPC()
+    {
+        let sut = GameScene()
+        let ball = Ball(radius: 1, position: .zero)
+        ball.kind = .projectile
+        
+        sut.player.radius = 1
+        sut.player.position = .zero
+        
+        sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+        
+        XCTAssertEqual(ball.kind, .projectile)
+        
+        sut.player.position = .init(x: 2, y: 0)
+        
+        sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+        
+        XCTAssertEqual(ball.kind, .npc)
+    }
+    
+    // TODO: Test when they have the same position as well
+    func test_applyMovement()
+    {
+        let sut = makeGameSceneInView(with: .init(addsNPCs: false, addsPlayer: false))
+        
+        // They can't be overlapping or they will absorb each other
+        let smaller = Ball(radius: 10, position: .zero)
+        let larger = Ball(radius: 15, position: .init(x: 50, y: 0))
+        
+        sut.addChild(smaller)
+        sut.addChild(larger)
+        
+        sut.applyMovement(smaller: smaller, larger: larger)
+        
+        let exp = expectation(description: "Scene run loop update")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertLessThan(smaller.physicsBody!.velocity.dx, 0)
+            XCTAssertGreaterThan(larger.physicsBody!.velocity.dx, 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.3)
+    }
+    
+    func test_gameSceneThatDoesNotAddNPCs()
+    {
+        let sut = makeGameSceneInView(with: .init(addsNPCs: false))
+        
+        let exp = expectation(description: "Loads the main thread")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            XCTAssertEqual(sut.children.count, 2) // 1 is the player, 2 is the camera
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: - Test helpers
+    
+    func makeGameSceneInView(with configuration: GameScene.Configuration) -> GameScene
+    {
+        let controller = UIViewController()
+        let window = UIWindow()
+        window.rootViewController = controller
+        let view = SKView()
+        controller.view = view
+        let sut = GameScene(configuration: configuration)
+        window.makeKeyAndVisible()
+        view.presentScene(sut)
+        return sut
+    }
     
     func makeGameSceneWithLotsOfChildren() -> GameScene
     {

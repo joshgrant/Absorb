@@ -8,9 +8,15 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene
+public class GameScene: SKScene
 {
-    enum Constants
+    public struct Configuration
+    {
+        var addsNPCs = true
+        var addsPlayer = true
+    }
+    
+    struct Constants
     {
         static let referenceRadius: CGFloat = 22
         static let playerMovement: CGFloat = referenceRadius * 10
@@ -19,6 +25,7 @@ class GameScene: SKScene
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
         static let expulsionForceModifier: CGFloat = -0.1
+        static let npcMovementModifier: CGFloat = 0.001
         
         // TODO: Is this true when the user rotates the device?
         /// The area in which npcs are not allowed to spawn
@@ -28,6 +35,8 @@ class GameScene: SKScene
         /// The area past which npcs despawn
         static let killZoneRadius: CGFloat = bounceBackRadius * 2
     }
+    
+    private var configuration: Configuration
     
     private var temporaryRadius: CGFloat = Constants.referenceRadius
     private var playerRadius: CGFloat = Constants.referenceRadius
@@ -39,18 +48,40 @@ class GameScene: SKScene
         return ball
     }()
     
+    // MARK: - Initialization
+    
+    init(configuration: Configuration = .init())
+    {
+        self.configuration = configuration
+        super.init(size: .zero)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - View lifecycle
+    
     /// Perform one-time setup
-    override func sceneDidLoad()
+    public override func sceneDidLoad()
     {
         super.sceneDidLoad()
         
         physicsWorld.gravity = .zero
-        addChild(player)
         addCamera()
-        run(loopAddEnemies())
+        
+        if configuration.addsPlayer
+        {
+            addChild(player)
+        }
+        
+        if configuration.addsNPCs
+        {
+            run(loopAddEnemies())
+        }
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         super.touchesEnded(touches, with: event)
         
@@ -65,62 +96,93 @@ class GameScene: SKScene
     
     /// Called once per frame before any actions are evaluated or any
     /// physics are simulated
-    override func update(_ currentTime: TimeInterval)
+    public override func update(_ currentTime: TimeInterval)
     {
-        // 1. If a node is a projectile and not overlapping the player, convert it to an npc
         // 2. Calculate total impluse between enemies and prey
         // 3. Remove nodes outside of the kill zone
         // 4. Bounce nodes that are far away
         
         permuteAllBallsAndSiblings { ball, sibling in
             
-            // Check that the object is not a projectile. If so, check if it's overlapping the player.
-            // If it's not overlapping, convert it to a normal character. Otherwise, skip it
-            if ball.kind == .projectile
-            {
-                if Ball.overlapping(ball, player)
-                {
-                    return
-                }
-                else
-                {
-                    ball.kind = .npc
-                }
-            }
+            let (smaller, larger) = Ball.orderByRadius(ball, sibling)
             
-            if Ball.overlapping(ball, sibling)
-            {
-                let (smaller, larger) = Ball.orderByRadius(ball, sibling)
-                let overlappingArea = Ball.overlappingArea(smaller, larger)
-                
-                if smaller == player
-                {
-                    larger.updateArea(delta: overlappingArea)
-                    modifyRadiusScale(deltaArea: -overlappingArea, radius: &temporaryRadius)
-                }
-                else if larger == player
-                {
-                    smaller.updateArea(delta: -overlappingArea)
-                    modifyRadiusScale(deltaArea: overlappingArea, radius: &temporaryRadius)
-                }
-                else
-                {
-                    larger.updateArea(delta: overlappingArea)
-                    smaller.updateArea(delta: -overlappingArea)
-                }
-            }
+            updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+            handleOverlap(smaller: smaller, larger: larger)
+            applyMovement(smaller: smaller, larger: larger)
         }
         
         moveCameraToPlayer()
     }
     
-    override func didFinishUpdate()
+    public func updateProjectileToNPCIfNotOverlappingPlayer(ball: Ball)
+    {
+        if ball.kind == .projectile
+        {
+            if Ball.overlapping(ball, player)
+            {
+                return
+            }
+            else
+            {
+                ball.kind = .npc
+            }
+        }
+    }
+    
+    private func handleOverlap(smaller: Ball, larger: Ball)
+    {
+        if Ball.overlapping(larger, smaller)
+        {
+            let overlappingArea = Ball.overlappingArea(smaller, larger)
+            
+            if smaller == player
+            {
+                larger.updateArea(delta: overlappingArea)
+                modifyRadiusScale(
+                    deltaArea: -overlappingArea,
+                    radius: &temporaryRadius)
+            }
+            else if larger == player
+            {
+                smaller.updateArea(delta: -overlappingArea)
+                modifyRadiusScale(
+                    deltaArea: overlappingArea,
+                    radius: &temporaryRadius)
+            }
+            else
+            {
+                larger.updateArea(delta: overlappingArea)
+                smaller.updateArea(delta: -overlappingArea)
+            }
+        }
+    }
+    
+    public func applyMovement(smaller: Ball, larger: Ball) {
+        // This all seems really expensive to compute...
+        
+        let direction = (larger.position - smaller.position).normalized
+        let distance = CGPoint.distance(smaller.position, larger.position)
+        let squareRootDistance = sqrt(distance)
+        
+        let force = CGVector(dx: direction.x * squareRootDistance * Constants.npcMovementModifier,
+                             dy: direction.y * squareRootDistance * Constants.npcMovementModifier)
+
+        if smaller != player
+        {
+            smaller.physicsBody?.applyForce(force * -1)
+        }
+        
+        if larger != player
+        {
+            larger.physicsBody?.applyForce(force)
+        }
+    }
+    
+    public override func didFinishUpdate()
     {
         super.didFinishUpdate()
         
         let npcScale = Constants.referenceRadius / temporaryRadius
-        
-        print(npcScale)
         
         iterateNPCs { ball in
             ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
@@ -214,6 +276,7 @@ private extension GameScene
         
         insertChild(npc, at: 0)
         
+        // Side effect - modifies the temporary radius
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
         
         npc.run(.applyForce(force, duration: Constants.frameDuration))
