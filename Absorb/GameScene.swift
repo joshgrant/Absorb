@@ -202,32 +202,18 @@ public class GameScene: SKScene
         }
     }
     
-    public func applyMovement(smaller: Ball, larger: Ball) {
-        // This just scales the force depending on the distance. It should be
-        // inverse square (as in, the larger the distance, the smaller the value
+    /// Calculates the force between two balls
+    public func applyMovement(smaller: Ball, larger: Ball)
+    {
+        let distance = CGPoint.distance(smaller.position, larger.position)
+        let inverseSquare = 1 / (distance * distance)
         
-        // Old
-//        let force = CGVector(dx: direction.x * inverseSquare * Constants.npcMovementModifier,
-//                             dy: direction.y * inverseSquare * Constants.npcMovementModifier)
-//        
-//        let force = Constants.npcMovementModifier / (smaller.position - larger.position)
-//        
-//        
-//        let dx = smaller.position.x - larger.position.x
-//        let dy = smaller.position.y - larger.position.y
-//        let distance = sqrt(dx * dx + dy * dy)
-//        let inverseSquare = 1 / (distance * distance)
-//        
-//
-//        if smaller != player
-//        {
-//            smaller.run(.applyForce(force, duration: Constants.frameDuration))
-//        }
-//        
-//        if larger != player
-//        {
-//            larger.run(.applyForce(force, duration: Constants.frameDuration))
-//        }
+        let direction = CGVector.direction(from: larger.position, to: smaller.position)
+        let force = direction * inverseSquare * Constants.npcMovementModifier
+        
+        // These are summed up here and applied at the end
+        smaller.totalForce = smaller.totalForce + force
+        larger.totalForce = larger.totalForce + force
     }
     
     public override func didFinishUpdate()
@@ -247,8 +233,10 @@ public class GameScene: SKScene
             else
             {
                 ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+                ball.physicsBody?.applyForce(ball.totalForce)
                 ball.physicsBody?.applyFriction(Constants.enemyFrictionalCoefficient)
                 ball.physicsBody?.limitVelocity(to: Constants.maxVelocity)
+                ball.totalForce = .zero
             }
         }
         

@@ -5,6 +5,11 @@
 
 import SpriteKit
 
+func +(_ a: CGVector, _ b: CGVector) -> CGVector
+{
+    return CGVector(dx: a.dx + b.dx, dy: a.dy + b.dy)
+}
+
 func *(_ a: CGVector, _ b: CGFloat) -> CGVector
 {
     return CGVector(dx: a.dx * b, dy: a.dy * b)

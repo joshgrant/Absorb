@@ -383,7 +383,7 @@ class AbsorbTests: XCTestCase
         measure
         {
             sut.permuteAllBallsAndSiblings { ball, sibling in
-                sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+                _ = sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
             }
         }
     }

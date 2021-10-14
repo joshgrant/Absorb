@@ -20,6 +20,9 @@ public class Ball: SKShapeNode
     var radius: CGFloat
     var addsPointsToScore: Bool = true
     
+    /// We reset this every frame
+    var totalForce: CGVector = .zero
+    
     var area: CGFloat { CGFloat.pi * radius * radius }
     
     init(radius: CGFloat, position: CGPoint)
