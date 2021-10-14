@@ -33,4 +33,10 @@ extension SKPhysicsBody
         velocity = physicsBody.velocity
         angularVelocity = physicsBody.angularVelocity
     }
+    
+    func applyFriction(_ value: CGFloat)
+    {
+        velocity.dx *= value
+        velocity.dy *= value
+    }
 }

@@ -291,18 +291,17 @@ class AbsorbTests: XCTestCase
         sut.player.radius = 1
         sut.player.position = .zero
         
-        sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+        _ = sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
         
         XCTAssertEqual(ball.kind, .projectile)
         
         sut.player.position = .init(x: 2, y: 0)
         
-        sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+        _ = sut.updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
         
         XCTAssertEqual(ball.kind, .npc)
     }
     
-    // TODO: Test when they have the same position as well
     func test_applyMovement()
     {
         let sut = makeGameSceneInView(with: .init(addsNPCs: false, addsPlayer: false))
@@ -320,7 +319,7 @@ class AbsorbTests: XCTestCase
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             XCTAssertLessThan(smaller.physicsBody!.velocity.dx, 0)
-            XCTAssertGreaterThan(larger.physicsBody!.velocity.dx, 0)
+            XCTAssertLessThan(larger.physicsBody!.velocity.dx, 0)
             exp.fulfill()
         }
         
@@ -339,6 +338,17 @@ class AbsorbTests: XCTestCase
         }
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_applyFrictionalCoefficient()
+    {
+        let body = SKPhysicsBody()
+        body.velocity = .init(dx: 10, dy: 10)
+        body.applyFriction(0.95)
+        
+        XCTAssertEqual(body.velocity.dy, 9.5)
+        XCTAssertEqual(body.velocity.dy, 9.5)
+        
     }
     
     // MARK: - Test helpers

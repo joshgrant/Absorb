@@ -19,13 +19,19 @@ public class GameScene: SKScene
     struct Constants
     {
         static let referenceRadius: CGFloat = 22
-        static let playerMovement: CGFloat = referenceRadius * 10
+        static let playerMovement: CGFloat = referenceRadius * 18
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.2
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
         static let expulsionForceModifier: CGFloat = -0.1
-        static let npcMovementModifier: CGFloat = 0.001
+        static let npcMovementModifier: CGFloat = 2
+        static let enemyBounceModifier: CGFloat = 2.0
+        
+        static let frictionalCoefficient: CGFloat = 0.98
+        
+        static let minimumNPCSize: CGFloat = Constants.referenceRadius / 6
+        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.5
         
         // TODO: Is this true when the user rotates the device?
         /// The area in which npcs are not allowed to spawn
@@ -43,9 +49,17 @@ public class GameScene: SKScene
     
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
-                        position: CGPoint(x: 300, y: 0))
+                        position: CGPoint(x: 0, y: 300))
         ball.kind = .player
+        ball.fillColor = .systemBlue
         return ball
+    }()
+    
+    public let total: SKLabelNode = {
+        let node = SKLabelNode(text: "0")
+        node.fontColor = .black
+        node.fontSize = 34 // 68
+        return node
     }()
     
     // MARK: - Initialization
@@ -54,13 +68,32 @@ public class GameScene: SKScene
     {
         self.configuration = configuration
         super.init(size: .zero)
+        backgroundColor = .white
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - View lifecycle
+    
+    public override func didMove(to view: SKView)
+    {
+        super.didMove(to: view)
+        
+        DispatchQueue.main.async { [unowned self] in
+            // Add total
+            
+            camera?.addChild(total)
+            total.horizontalAlignmentMode = .left
+            let topLeft = scene!.convertPoint(fromView: .zero)
+            let padding = CGSize(width: view.safeAreaInsets.left + 20,
+                                 height: -view.safeAreaInsets.top - 40)
+            let newPoint = CGPoint(x: topLeft.x + padding.width,
+                                   y: topLeft.y + padding.height)
+            total.position = newPoint
+            
+            // END: Add total
+        }
+    }
     
     /// Perform one-time setup
     public override func sceneDidLoad()
@@ -98,35 +131,53 @@ public class GameScene: SKScene
     /// physics are simulated
     public override func update(_ currentTime: TimeInterval)
     {
-        // 2. Calculate total impluse between enemies and prey
-        // 3. Remove nodes outside of the kill zone
-        // 4. Bounce nodes that are far away
-        
         permuteAllBallsAndSiblings { ball, sibling in
+            
+            let distanceToPlayer = CGPoint.distance(ball.position, player.position)
+            
+            if distanceToPlayer > Constants.killZoneRadius
+            {
+                ball.removeFromParent()
+                return
+            }
+            else if distanceToPlayer > Constants.bounceBackRadius
+            {
+                let direction = (ball.position - player.position).normalized
+                let force = CGVector(dx: direction.x, dy: direction.y) * Constants.enemyBounceModifier
+                ball.physicsBody?.applyForce(force)
+            }
             
             let (smaller, larger) = Ball.orderByRadius(ball, sibling)
             
-            updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
-            handleOverlap(smaller: smaller, larger: larger)
+            let ballIsNPC = updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
+            
+            if ballIsNPC
+            {
+                handleOverlap(smaller: smaller, larger: larger)
+            }
+            
             applyMovement(smaller: smaller, larger: larger)
         }
         
         moveCameraToPlayer()
     }
     
-    public func updateProjectileToNPCIfNotOverlappingPlayer(ball: Ball)
+    // If true, this is not a projectile and we can handle overlap
+    public func updateProjectileToNPCIfNotOverlappingPlayer(ball: Ball) -> Bool
     {
         if ball.kind == .projectile
         {
             if Ball.overlapping(ball, player)
             {
-                return
+                return false
             }
             else
             {
                 ball.kind = .npc
             }
         }
+        
+        return true
     }
     
     private func handleOverlap(smaller: Ball, larger: Ball)
@@ -160,16 +211,19 @@ public class GameScene: SKScene
     public func applyMovement(smaller: Ball, larger: Ball) {
         // This all seems really expensive to compute...
         
-        let direction = (larger.position - smaller.position).normalized
-        let distance = CGPoint.distance(smaller.position, larger.position)
-        let squareRootDistance = sqrt(distance)
+        let direction = (smaller.position - larger.position).normalized
         
-        let force = CGVector(dx: direction.x * squareRootDistance * Constants.npcMovementModifier,
-                             dy: direction.y * squareRootDistance * Constants.npcMovementModifier)
+        // This just scales the force depending on the distance. It should be
+        // inverse square (as in, the larger the distance, the smaller the value
+        let distance = CGPoint.distance(smaller.position, larger.position)
+        let inverseSquare = 1 / sqrt(distance)
+        
+        let force = CGVector(dx: direction.x * inverseSquare * Constants.npcMovementModifier,
+                             dy: direction.y * inverseSquare * Constants.npcMovementModifier)
 
         if smaller != player
         {
-            smaller.physicsBody?.applyForce(force * -1)
+            smaller.physicsBody?.applyForce(force)
         }
         
         if larger != player
@@ -186,12 +240,17 @@ public class GameScene: SKScene
         
         iterateNPCs { ball in
             ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+            ball.physicsBody?.applyFriction(Constants.frictionalCoefficient)
         }
+        
+        player.physicsBody?.applyFriction(Constants.frictionalCoefficient)
         
         playerRadius += temporaryRadius - Constants.referenceRadius
         temporaryRadius = Constants.referenceRadius
         
         checkGameOver()
+        
+        updateScore(to: playerRadius)
     }
     
     // TODO: - Utility
@@ -256,7 +315,9 @@ public class GameScene: SKScene
     {
         if playerRadius < 0.5 {
             // Game Over
-            pause()
+            let scene = GameScene(configuration: configuration)
+            scene.scaleMode = .resizeFill
+            view?.presentScene(scene)
         }
     }
 }
@@ -280,6 +341,11 @@ private extension GameScene
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
         
         npc.run(.applyForce(force, duration: Constants.frameDuration))
+    }
+    
+    func updateScore(to newScore: CGFloat)
+    {
+        total.text = "\(Int(newScore))"
     }
 }
 
@@ -306,7 +372,7 @@ private extension GameScene
     
     func makeNPCRadius() -> CGFloat
     {
-        .random(in: Constants.referenceRadius / 6 ..< Constants.referenceRadius * 3)
+        .random(in: Constants.minimumNPCSize ..< Constants.maximumNPCSize)
     }
     
     func makeNPCSpawnPosition(playerPosition: CGPoint) -> CGPoint

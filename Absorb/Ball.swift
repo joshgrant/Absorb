@@ -69,8 +69,10 @@ public class Ball: SKShapeNode
             physicsBody = .init(circleOfRadius: radius)
         }
         
-        physicsBody?.isDynamic = true
-        physicsBody?.collisionBitMask = .zero
+        guard let body = physicsBody else { return }
+        
+        body.isDynamic = true
+        body.collisionBitMask = .zero
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative
