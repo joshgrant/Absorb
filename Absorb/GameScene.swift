@@ -14,7 +14,7 @@ public class GameScene: SKScene
     {
         var addsNPCs = true
         var addsPlayer = true
-        var npcsAreSmaller = true
+        var npcsAreSmaller = false
     }
     
     struct Constants
@@ -49,6 +49,8 @@ public class GameScene: SKScene
     private var temporaryRadius: CGFloat = Constants.referenceRadius
     private var playerRadius: CGFloat = Constants.referenceRadius
     
+    private var score: Int = 0
+    
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
                         position: CGPoint(x: 0, y: 300))
@@ -82,19 +84,20 @@ public class GameScene: SKScene
         super.didMove(to: view)
         
         DispatchQueue.main.async { [unowned self] in
-            // Add total
-            
-            camera?.addChild(total)
-            total.horizontalAlignmentMode = .left
-            let topLeft = scene!.convertPoint(fromView: .zero)
-            let padding = CGSize(width: view.safeAreaInsets.left + 20,
-                                 height: -view.safeAreaInsets.top - 40)
-            let newPoint = CGPoint(x: topLeft.x + padding.width,
-                                   y: topLeft.y + padding.height)
-            total.position = newPoint
-            
-            // END: Add total
+            addTotalLabel(to: view)
         }
+    }
+    
+    private func addTotalLabel(to view: SKView)
+    {
+        camera?.addChild(total)
+        total.horizontalAlignmentMode = .left
+        let topLeft = scene!.convertPoint(fromView: .zero)
+        let padding = CGSize(width: view.safeAreaInsets.left + 20,
+                             height: -view.safeAreaInsets.top - 40)
+        let newPoint = CGPoint(x: topLeft.x + padding.width,
+                               y: topLeft.y + padding.height)
+        total.position = newPoint
     }
     
     /// Perform one-time setup
@@ -182,12 +185,18 @@ public class GameScene: SKScene
             if smaller == player
             {
                 larger.updateArea(delta: overlappingArea)
+
                 modifyRadiusScale(
                     deltaArea: -overlappingArea,
                     radius: &temporaryRadius)
             }
             else if larger == player
             {
+                if smaller.addsPointsToScore
+                {
+                    score += Int(overlappingArea.areaToRadius)
+                }
+                
                 smaller.updateArea(delta: -overlappingArea)
                 modifyRadiusScale(
                     deltaArea: overlappingArea,
@@ -222,6 +231,7 @@ public class GameScene: SKScene
         let npcScale = Constants.referenceRadius / temporaryRadius
         
         iterateNPCs { ball in
+            
             let distanceToPlayer = CGPoint.distance(ball.position, player.position)
             
             if distanceToPlayer > Constants.killZoneRadius
@@ -248,9 +258,9 @@ public class GameScene: SKScene
         playerRadius += temporaryRadius - Constants.referenceRadius
         temporaryRadius = Constants.referenceRadius
         
-        checkGameOver()
+        updateScore(to: score)
         
-        updateScore(to: playerRadius)
+        checkGameOver()
     }
     
     // TODO: - Utility
@@ -343,16 +353,9 @@ private extension GameScene
         npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
     
-    func updateScore(to newScore: CGFloat)
+    func updateScore(to newScore: Int)
     {
-        if newScore.isNaN || newScore.isInfinite
-        {
-            total.text = "0"
-        }
-        else
-        {
-            total.text = "\(Int(newScore))"
-        }
+        total.text = "\(newScore)"
     }
 }
 
@@ -373,6 +376,7 @@ private extension GameScene
         let radius = makeNPCRadius()
         let position = makeNPCSpawnPosition(playerPosition: player.position)
         let npc = Ball(radius: radius, position: position)
+        npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.7, brightness: 1.0, alpha: 1.0)
         
         addChild(npc)
     }
@@ -381,7 +385,7 @@ private extension GameScene
     {
         if configuration.npcsAreSmaller
         {
-            return Constants.minimumNPCSize
+            return Constants.referenceRadius / 2
         }
         else
         {

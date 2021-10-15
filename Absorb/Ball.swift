@@ -80,6 +80,12 @@ public class Ball: SKShapeNode
         
         body.isDynamic = true
         body.collisionBitMask = .zero
+        body.allowsRotation = false
+        body.angularDamping = .zero
+        body.angularVelocity = .zero
+        body.friction = .zero
+        body.restitution = .zero
+        body.linearDamping = .zero
         body.mass = 0.00007 // (this just) needs to be relative to the screen size really...
     }
     
