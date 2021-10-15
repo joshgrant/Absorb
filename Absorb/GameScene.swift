@@ -61,7 +61,7 @@ public class GameScene: SKScene
     
     public let total: SKLabelNode = {
         let node = SKLabelNode(text: "0")
-        node.fontColor = .darkText
+        node.fontColor = .label
         node.fontSize = 34 // 68
         return node
     }()
