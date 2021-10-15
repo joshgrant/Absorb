@@ -213,7 +213,7 @@ public class GameScene: SKScene
     /// Calculates the force between two balls
     public func applyMovement(smaller: Ball, larger: Ball)
     {
-        let distance = Ball.edgeDistance(smaller, larger)
+        let distance = CGPoint.distance(smaller.position, larger.position)
         let inverseSquare = 1 / (distance * distance)
         
         let direction = CGVector.direction(from: larger.position, to: smaller.position)
