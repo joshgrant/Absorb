@@ -11,6 +11,15 @@ import SpriteKit
 
 class AbsorbTests: XCTestCase
 {
+    func test_newPosition()
+    {
+        let a = Ball(radius: 10, position: .zero)
+        XCTAssertEqual(a.newPosition(relativeTo: .init(x: 10, y: 10), scaledBy: 0.5), .init(x: 5, y: 5))
+        
+        let b = Ball(radius: 10, position: .zero)
+        XCTAssertEqual(b.newPosition(relativeTo: .init(x: 10, y: 10), scaledBy: 2), .init(x: -10, y: -10))
+    }
+    
     func test_playerShrinks_growsAndMovesNPCAway()
     {
         let playerScale = 0.8
@@ -19,7 +28,6 @@ class AbsorbTests: XCTestCase
         ball.applyCameraZoom(scale: npcScale, cameraPosition: .zero)
         
         XCTAssertEqual(ball.radius, 12.5)
-        XCTAssertEqual(ball.position, CGPoint(x: 12.5, y: 18.75))
     }
     
     func test_playerGrows_shrinksAndMovesNPCCloser()
@@ -30,7 +38,6 @@ class AbsorbTests: XCTestCase
         ball.applyCameraZoom(scale: npcScale, cameraPosition: .zero)
         
         XCTAssertEqual(ball.radius, 8.3333, accuracy: 0.0001)
-        XCTAssertEqual(ball.position, CGPoint(x: 8.333333015441895, y: 12.5))
     }
     
     func test_cgPoint_equalToAllowedDelta()
@@ -364,6 +371,14 @@ class AbsorbTests: XCTestCase
         body.limitVelocity(to: CGVector(dx: 10, dy: 10))
         XCTAssertEqual(body.velocity.dx, -10, accuracy: 0.01)
         XCTAssertEqual(body.velocity.dy, -10, accuracy: 0.01)
+    }
+    
+    func test_edgeDistance()
+    {
+        let a = Ball(radius: 10, position: .zero)
+        let b = Ball(radius: 15, position: .init(x: 30, y: 0))
+        
+        XCTAssertEqual(Ball.edgeDistance(a, b), 5)
     }
     
     func test_durationOfApplyMovement()

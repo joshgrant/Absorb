@@ -91,7 +91,7 @@ public class Ball: SKShapeNode
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative
     /// point should be the origin of the camera
-    private func newPosition(
+    public func newPosition(
         relativeTo point: CGPoint,
         scaledBy scale: CGFloat) -> CGPoint
     {
@@ -113,6 +113,12 @@ public class Ball: SKShapeNode
 
 public extension Ball
 {
+    static func edgeDistance(_ a: Ball, _ b: Ball) -> CGFloat
+    {
+        let distance = CGPoint.distance(a.position, b.position)
+        return distance - (a.radius + b.radius)
+    }
+    
     static func overlapping(_ a: Ball, _ b: Ball) -> Bool
     {
         let distance = CGPoint.distance(a.position, b.position)

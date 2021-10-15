@@ -213,7 +213,7 @@ public class GameScene: SKScene
     /// Calculates the force between two balls
     public func applyMovement(smaller: Ball, larger: Ball)
     {
-        let distance = CGPoint.distance(smaller.position, larger.position)
+        let distance = Ball.edgeDistance(smaller, larger)
         let inverseSquare = 1 / (distance * distance)
         
         let direction = CGVector.direction(from: larger.position, to: smaller.position)
@@ -376,7 +376,7 @@ private extension GameScene
         let radius = makeNPCRadius()
         let position = makeNPCSpawnPosition(playerPosition: player.position)
         let npc = Ball(radius: radius, position: position)
-        npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.7, brightness: 1.0, alpha: 1.0)
+        npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.6, brightness: 1.0, alpha: 1.0)
         
         addChild(npc)
     }
