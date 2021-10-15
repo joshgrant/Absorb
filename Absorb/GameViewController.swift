@@ -22,7 +22,6 @@ class GameViewController: UIViewController
         guard let view = view as? SKView else { return }
         
         let scene = GameScene()
-        scene.scaleMode = .resizeFill
         
         view.ignoresSiblingOrder = true
         view.showsFPS = true

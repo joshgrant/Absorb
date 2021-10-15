@@ -28,11 +28,11 @@ public class GameScene: SKScene
         static let minimumExpulsionAmount: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.15
         static let expulsionForceModifier: CGFloat = 0
-        static let npcMovementModifier: CGFloat = 25
+        static let npcMovementModifier: CGFloat = 20
         static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
         
         static let playerFrictionalCoefficient: CGFloat = 0.96
-        static let enemyFrictionalCoefficient: CGFloat = 0.978
+        static let enemyFrictionalCoefficient: CGFloat = 0.985
         
         static let minimumNPCSize: CGFloat = Constants.referenceRadius / 6
         static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.5
@@ -72,6 +72,7 @@ public class GameScene: SKScene
     {
         self.configuration = configuration
         super.init(size: .zero)
+        scaleMode = .resizeFill
         backgroundColor = .systemBackground
     }
     
@@ -324,11 +325,34 @@ public class GameScene: SKScene
     
     private func checkGameOver()
     {
-        if playerRadius < 0.5 || playerRadius.isNaN {
+        if playerRadius < 0.5 || playerRadius.isNaN
+        {
             // Game Over
-            let scene = GameScene(configuration: configuration)
-            scene.scaleMode = .resizeFill
-            view?.presentScene(scene)
+            
+            let reveal = SKTransition.fade(with: .systemBackground, duration: 1.0)
+            
+            let newScore = Score(context: Database.context)
+            newScore.name = "Josh" // TODO: Allow the user to enter their name
+            newScore.date = .now
+            newScore.score = Int64(score)
+            
+            try? Database.context.save()
+            
+            let topScore = Database.topScore
+            
+            let type: GameOverType
+            
+            if newScore.score == topScore?.score
+            {
+                type = .won
+            }
+            else
+            {
+                type = .lost
+            }
+            
+            let gameOverScene = GameOverScene(score: score, type: type)
+            view?.presentScene(gameOverScene, transition: reveal)
         }
     }
 }
