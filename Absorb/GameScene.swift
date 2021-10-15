@@ -38,11 +38,9 @@ public class GameScene: SKScene
         
         // TODO: Is this true when the user rotates the device?
         /// The area in which npcs are not allowed to spawn
-        static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height
-        /// The area in which npcs reverse their trajectory
-        static let bounceBackRadius: CGFloat = safeAreaRadius * 2
+        static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height / 2 + maximumNPCSize / 2
         /// The area past which npcs despawn
-        static let killZoneRadius: CGFloat = bounceBackRadius * 2
+        static let killZoneRadius: CGFloat = safeAreaRadius * 4
     }
     
     private var configuration: Configuration
@@ -60,7 +58,7 @@ public class GameScene: SKScene
     
     public let total: SKLabelNode = {
         let node = SKLabelNode(text: "0")
-        node.fontColor = .black
+        node.fontColor = .darkText
         node.fontSize = 34 // 68
         return node
     }()
@@ -71,7 +69,7 @@ public class GameScene: SKScene
     {
         self.configuration = configuration
         super.init(size: .zero)
-        backgroundColor = .white
+        backgroundColor = .systemBackground
     }
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -232,7 +230,11 @@ public class GameScene: SKScene
             }
             else
             {
-                ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+                if npcScale != 1.0
+                {
+                    ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
+                }
+                
                 ball.physicsBody?.applyForce(ball.totalForce)
                 ball.physicsBody?.applyFriction(Constants.enemyFrictionalCoefficient)
                 ball.physicsBody?.limitVelocity(to: Constants.maxVelocity)
@@ -311,7 +313,7 @@ public class GameScene: SKScene
     
     private func checkGameOver()
     {
-        if playerRadius < 0.5 {
+        if playerRadius < 0.5 || playerRadius.isNaN {
             // Game Over
             let scene = GameScene(configuration: configuration)
             scene.scaleMode = .resizeFill
@@ -382,7 +384,7 @@ private extension GameScene
     func makeNPCSpawnPosition(playerPosition: CGPoint) -> CGPoint
     {
         let distance = CGFloat.random(
-            in: Constants.safeAreaRadius ..< Constants.bounceBackRadius)
+            in: Constants.safeAreaRadius ..< Constants.safeAreaRadius * 2)
         
         let angle = CGFloat.random(in: 0 ..< 360).radians
         

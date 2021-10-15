@@ -42,9 +42,13 @@ public class Ball: SKShapeNode
     
     public func applyCameraZoom(scale: CGFloat, cameraPosition: CGPoint = .zero)
     {
-        position = newPosition(relativeTo: cameraPosition, scaledBy: scale)
+        let newPosition = newPosition(relativeTo: cameraPosition, scaledBy: scale)
+        run(.move(by: CGVector(dx: newPosition.x - position.x, dy: newPosition.y - position.y), duration: 0.1))
         radius = radius * scale
-        radiusUpdated()
+        
+        UIView.animate(withDuration: 0.1) { [unowned self] in
+            radiusUpdated()
+        }
     }
     
     public func updateArea(to newArea: CGFloat)
