@@ -14,6 +14,7 @@ public class GameScene: SKScene
     {
         var addsNPCs = true
         var addsPlayer = true
+        var npcsAreSmaller = true
     }
     
     struct Constants
@@ -378,7 +379,14 @@ private extension GameScene
     
     func makeNPCRadius() -> CGFloat
     {
-        .random(in: Constants.minimumNPCSize ..< Constants.maximumNPCSize)
+        if configuration.npcsAreSmaller
+        {
+            return Constants.minimumNPCSize
+        }
+        else
+        {
+            return .random(in: Constants.minimumNPCSize ..< Constants.maximumNPCSize)
+        }
     }
     
     func makeNPCSpawnPosition(playerPosition: CGPoint) -> CGPoint
