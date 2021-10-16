@@ -72,13 +72,20 @@ class GameOverScene: SKScene {
         // 4. Create the score label
         
         let scoreLabel = UILabel()
-        scoreLabel.font = .systemFont(ofSize: 60, weight: .bold)
+        scoreLabel.font = .monospacedDigitSystemFont(ofSize: 60, weight: .bold)
         scoreLabel.textColor = .label
         scoreLabel.text = "\(score)"
         
         stackView.addArrangedSubview(scoreLabel)
         
         stackView.addArrangedSubview(makeSpacerView(height:40))
+        
+        let highScoresHeader = UILabel()
+        highScoresHeader.text = "High scores:"
+        highScoresHeader.font = .systemFont(ofSize: 18, weight: .light)
+        highScoresHeader.textColor = .secondaryLabel
+        stackView.addArrangedSubview(highScoresHeader)
+        stackView.addSubview(makeSpacerView(height: 30))
         
         // 3. Create the top scores list
         
@@ -98,18 +105,25 @@ class GameOverScene: SKScene {
             ])
             
             let numberLabel = UILabel()
-            numberLabel.text = "\(i + 1). "
+            numberLabel.text = "\(i + 1).  "
             numberLabel.textColor = .label
-            numberLabel.font = .systemFont(ofSize: 20, weight: .light)
-            // TODO: make the number label right aligned and constant width... (so 10 isn't larger than 1)
-            // Also, maybe use a monospaced system font?
+            numberLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .light)
+            numberLabel.textAlignment = .right
+            
+            NSLayoutConstraint.activate([
+                numberLabel.widthAnchor.constraint(equalToConstant: numberLabel.font.pointSize * 2)
+            ])
+    
             horizontalStackView.addArrangedSubview(numberLabel)
             
             guard topScores.count > i else {
+                horizontalStackView.addArrangedSubview(makeSpacerView())
                 stackView.addArrangedSubview(horizontalStackView)
                 topScoresStackView.addArrangedSubview(horizontalStackView)
                 continue
             }
+            
+            horizontalStackView.addArrangedSubview(makeSpacerView(width: 5))
             
             let score = topScores[i]
             
@@ -125,7 +139,7 @@ class GameOverScene: SKScene {
             let scoreLabel = UILabel()
             scoreLabel.text = "\(score.score)"
             scoreLabel.textColor = .label
-            scoreLabel.font = .systemFont(ofSize: 20, weight: .bold)
+            scoreLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .bold)
             horizontalStackView.addArrangedSubview(scoreLabel)
             
             topScoresStackView.addArrangedSubview(horizontalStackView)
@@ -133,8 +147,6 @@ class GameOverScene: SKScene {
         
         stackView.addArrangedSubview(topScoresStackView)
         stackView.addArrangedSubview(makeSpacerView())
-        //        stackView.updateConstraints()
-        //        stackView.setNeedsLayout()
         
         // 4. Create the "Restart"/"Replay" button
         

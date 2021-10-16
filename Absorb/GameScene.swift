@@ -8,6 +8,23 @@
 import SpriteKit
 import GameplayKit
 
+// TODO: Populate the scene with enemies already
+// TODO: Better game over scene (zoom out/fade)
+// TODO: When you get too small - it should be clear you're about to die!
+// TODO: Save game state when quitting the app
+// TODO: Improved way to show relative size change
+// TODO: Spawn bigger circles further away...
+// TODO: More immediate start - like oh shit! I need to move..
+// TODO: Show high-scores list in the pause menu, above the replay button (Number list style, mono spaced text)
+// TODO: When the user loses, they can enter their name and it'll save the score
+// TODO: Annoying when trying to gain weight, long wait before smaller circles...
+// TODO: Add a way to "pause" the game
+// TODO: The center of the game is the center of a gradient? OR ... small single pixel dots that give the impression of movement
+// TODO: Highlight score in scoreboard
+// TODO: If you get too small, you start to shrink
+// TODO: Enter your name in the game over screen
+
+
 public class GameScene: SKScene
 {
     public struct Configuration
@@ -26,7 +43,7 @@ public class GameScene: SKScene
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.3
         static let minimumExpulsionAmount: CGFloat = 2
-        static let expulsionAmountRatio: CGFloat = 0.15
+        static let expulsionAmountRatio: CGFloat = 0.2
         static let expulsionForceModifier: CGFloat = 0
         static let npcMovementModifier: CGFloat = 20
         static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
@@ -363,12 +380,12 @@ private extension GameScene
 {
     func makeProjectile(force: CGVector)
     {
-        let radius = Constants.referenceRadius * Constants.expulsionAmountRatio
+        let radius = max(Constants.minimumExpulsionAmount, Constants.referenceRadius * Constants.expulsionAmountRatio)
         
         let npc = Ball(radius: radius, position: player.position)
         npc.kind = .projectile
         npc.addsPointsToScore = false
-        npc.fillColor = .purple
+        npc.fillColor = .systemBlue.withAlphaComponent(0.8)
         
         insertChild(npc, at: 0)
         
