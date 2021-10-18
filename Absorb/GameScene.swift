@@ -8,8 +8,6 @@
 import SpriteKit
 import GameplayKit
 
-// TODO: Populate the scene with enemies already
-// TODO: Better game over scene (zoom out/fade)
 // TODO: When you get too small - it should be clear you're about to die!
 // TODO: Save game state when quitting the app
 // TODO: Improved way to show relative size change
@@ -42,17 +40,17 @@ public class GameScene: SKScene
         static let playerMovement: CGFloat = 1
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.3
-        static let minimumExpulsionAmount: CGFloat = 2
+        static let minimumExpulsionRadius: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.2
         static let expulsionForceModifier: CGFloat = 0
-        static let npcMovementModifier: CGFloat = 20
+        static let npcMovementModifier: CGFloat = 10
         static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
         
         static let playerFrictionalCoefficient: CGFloat = 0.96
-        static let enemyFrictionalCoefficient: CGFloat = 0.985
+        static let enemyFrictionalCoefficient: CGFloat = 0.99
         
-        static let minimumNPCSize: CGFloat = Constants.referenceRadius / 6
-        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.5
+        static let minimumNPCSize: CGFloat = Constants.referenceRadius / 5
+        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2
         
         // TODO: Is this true when the user rotates the device?
         /// The area in which npcs are not allowed to spawn
@@ -133,6 +131,10 @@ public class GameScene: SKScene
         
         if configuration.addsNPCs
         {
+            for _ in 0 ..< 50 {
+                addNPC()
+            }
+            
             run(loopAddEnemies())
         }
     }
@@ -271,6 +273,12 @@ public class GameScene: SKScene
             }
         }
         
+        print(playerRadius)
+        
+        if playerRadius <= 20 {
+            player.updateArea(to: playerRadius.radiusToArea)
+        }
+        
         player.physicsBody?.applyFriction(Constants.playerFrictionalCoefficient)
         
         playerRadius += temporaryRadius - Constants.referenceRadius
@@ -346,7 +354,9 @@ public class GameScene: SKScene
         {
             // Game Over
             
-            let reveal = SKTransition.fade(with: .systemBackground, duration: 1.0)
+            let duration = 1.0
+            
+            let reveal = SKTransition.crossFade(withDuration: duration)
             
             let newScore = Score(context: Database.context)
             newScore.name = "Josh" // TODO: Allow the user to enter their name
@@ -368,6 +378,8 @@ public class GameScene: SKScene
                 type = .lost
             }
             
+            camera?.run(.scale(to: 10, duration: duration / 2))
+            
             let gameOverScene = GameOverScene(score: score, type: type)
             view?.presentScene(gameOverScene, transition: reveal)
         }
@@ -380,7 +392,7 @@ private extension GameScene
 {
     func makeProjectile(force: CGVector)
     {
-        let radius = max(Constants.minimumExpulsionAmount, Constants.referenceRadius * Constants.expulsionAmountRatio)
+        let radius = max(Constants.minimumExpulsionRadius, Constants.referenceRadius * Constants.expulsionAmountRatio)
         
         let npc = Ball(radius: radius, position: player.position)
         npc.kind = .projectile
@@ -430,7 +442,7 @@ private extension GameScene
         }
         else
         {
-            return .random(in: Constants.minimumNPCSize ..< Constants.maximumNPCSize)
+            return .random(in: Constants.minimumNPCSize ... Constants.maximumNPCSize)
         }
     }
     

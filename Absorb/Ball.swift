@@ -86,7 +86,8 @@ public class Ball: SKShapeNode
         body.friction = .zero
         body.restitution = .zero
         body.linearDamping = .zero
-        body.mass = 0.00007 // (this just) needs to be relative to the screen size really...
+        body.mass = radius / 250000
+//        body.mass = 0.00007 // (this just) needs to be relative to the screen size really...
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative
