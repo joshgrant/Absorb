@@ -55,9 +55,12 @@ class GameOverScene: SKScene {
         label.textColor = .secondaryLabel
         label.text = gameOverType.rawValue
         
-        stackView.addArrangedSubview(makeSpacerView(height: 40))
+        stackView.addArrangedSubview(makeSpacerView(height: 20))
         stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(makeSpacerView(height: 60))
+        
+        let firstSpacer = makeSpacerView()
+        
+        stackView.addArrangedSubview(firstSpacer)
         
         // 3. Create the "Your score" label
         
@@ -67,7 +70,7 @@ class GameOverScene: SKScene {
         yourScoreLabel.text = "Your score:"
         
         stackView.addArrangedSubview(yourScoreLabel)
-        stackView.addArrangedSubview(makeSpacerView(height: 20))
+        stackView.addArrangedSubview(makeSpacerView())
         
         // 4. Create the score label
         
@@ -78,14 +81,14 @@ class GameOverScene: SKScene {
         
         stackView.addArrangedSubview(scoreLabel)
         
-        stackView.addArrangedSubview(makeSpacerView(height:40))
+        stackView.addArrangedSubview(makeSpacerView())
         
         let highScoresHeader = UILabel()
         highScoresHeader.text = "High scores:"
         highScoresHeader.font = .systemFont(ofSize: 18, weight: .light)
         highScoresHeader.textColor = .secondaryLabel
         stackView.addArrangedSubview(highScoresHeader)
-        stackView.addSubview(makeSpacerView(height: 30))
+        stackView.addSubview(makeSpacerView())
         
         // 3. Create the top scores list
         
@@ -123,7 +126,7 @@ class GameOverScene: SKScene {
                 continue
             }
             
-            horizontalStackView.addArrangedSubview(makeSpacerView(width: 5))
+            horizontalStackView.addArrangedSubview(makeSpacerView())
             
             let score = topScores[i]
             
@@ -146,7 +149,10 @@ class GameOverScene: SKScene {
         }
         
         stackView.addArrangedSubview(topScoresStackView)
-        stackView.addArrangedSubview(makeSpacerView())
+        
+        let secondSpacer = makeSpacerView()
+        
+        stackView.addArrangedSubview(secondSpacer)
         
         // 4. Create the "Restart"/"Replay" button
         
@@ -169,13 +175,14 @@ class GameOverScene: SKScene {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
         
-        let bottomConstraint = stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        bottomConstraint.priority = .defaultLow
+        NSLayoutConstraint.activate([
+            firstSpacer.heightAnchor.constraint(equalTo: secondSpacer.heightAnchor)
+        ])
         
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: view.topAnchor),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomConstraint,
+            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
     }

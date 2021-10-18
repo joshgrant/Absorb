@@ -8,7 +8,8 @@
 import SpriteKit
 import GameplayKit
 
-// TODO: When you get too small - it should be clear you're about to die!
+// AbsOrb
+
 // TODO: Save game state when quitting the app
 // TODO: Improved way to show relative size change
 // TODO: Spawn bigger circles further away...
@@ -350,13 +351,11 @@ public class GameScene: SKScene
     
     private func checkGameOver()
     {
-        if playerRadius < 0.5 || playerRadius.isNaN
+        if playerRadius < 1 || playerRadius.isNaN
         {
             // Game Over
             
-            let duration = 1.0
-            
-            let reveal = SKTransition.crossFade(withDuration: duration)
+            let reveal = SKTransition.crossFade(withDuration: 1.0)
             
             let newScore = Score(context: Database.context)
             newScore.name = "Josh" // TODO: Allow the user to enter their name
@@ -377,8 +376,6 @@ public class GameScene: SKScene
             {
                 type = .lost
             }
-            
-            camera?.run(.scale(to: 10, duration: duration / 2))
             
             let gameOverScene = GameOverScene(score: score, type: type)
             view?.presentScene(gameOverScene, transition: reveal)
