@@ -11,16 +11,12 @@ import GameplayKit
 // AbsOrb
 
 // TODO: Save game state when quitting the app
-// TODO: Improved way to show relative size change
-// TODO: Spawn bigger circles further away...
 // TODO: More immediate start - like oh shit! I need to move..
 // TODO: Show high-scores list in the pause menu, above the replay button (Number list style, mono spaced text)
 // TODO: When the user loses, they can enter their name and it'll save the score
 // TODO: Annoying when trying to gain weight, long wait before smaller circles...
-// TODO: Add a way to "pause" the game
 // TODO: The center of the game is the center of a gradient? OR ... small single pixel dots that give the impression of movement
 // TODO: Highlight score in scoreboard
-// TODO: If you get too small, you start to shrink
 // TODO: Enter your name in the game over screen
 
 
@@ -102,7 +98,40 @@ public class GameScene: SKScene
         
         DispatchQueue.main.async { [unowned self] in
             addTotalLabel(to: view)
+            configurePlayPauseButton(with: view)
         }
+    }
+    
+    
+    private func configurePlayPauseButton(with view: UIView)
+    {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(.init(systemName: "pause.fill"), for: .normal)
+        button.tintColor = .darkGray
+        button.addTarget(self, action: #selector(playPauseButtonDidTouchUpInside(_:)), for: .touchUpInside)
+        view.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.widthAnchor.constraint(equalToConstant: 44),
+            button.heightAnchor.constraint(equalToConstant: 44),
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
+    {
+        if isPaused
+        {
+            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
+        }
+        else
+        {
+            sender.setImage(.init(systemName: "play.fill"), for: .normal)
+        }
+        
+        isPaused.toggle()
     }
     
     private func addTotalLabel(to view: SKView)
@@ -274,8 +303,6 @@ public class GameScene: SKScene
             }
         }
         
-        print(playerRadius)
-        
         if playerRadius <= 20 {
             player.updateArea(to: playerRadius.radiusToArea)
         }
@@ -378,6 +405,11 @@ public class GameScene: SKScene
             }
             
             let gameOverScene = GameOverScene(score: score, type: type)
+            
+            for subview in view?.subviews ?? [] {
+                subview.removeFromSuperview()
+            }
+            
             view?.presentScene(gameOverScene, transition: reveal)
         }
     }

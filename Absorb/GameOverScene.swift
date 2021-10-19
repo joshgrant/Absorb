@@ -108,7 +108,7 @@ class GameOverScene: SKScene {
             ])
             
             let numberLabel = UILabel()
-            numberLabel.text = "\(i + 1).  "
+            numberLabel.text = "\(i + 1). "
             numberLabel.textColor = .label
             numberLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .light)
             numberLabel.textAlignment = .right
@@ -126,7 +126,7 @@ class GameOverScene: SKScene {
                 continue
             }
             
-            horizontalStackView.addArrangedSubview(makeSpacerView())
+            horizontalStackView.addArrangedSubview(makeSpacerView(width: 5))
             
             let score = topScores[i]
             
