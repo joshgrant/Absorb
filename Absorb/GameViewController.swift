@@ -7,6 +7,7 @@
 
 import UIKit
 import SpriteKit
+import GameKit
 
 class GameViewController: UIViewController
 {

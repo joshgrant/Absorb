@@ -23,6 +23,7 @@
 		03AB37C12715D18F00E1BD2C /* AbsorbTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */; };
 		03AB37E92715E81300E1BD2C /* Ball.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37E82715E81300E1BD2C /* Ball.swift */; };
 		03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */; };
+		03BC283227244B6300AD3F63 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC283127244B6300AD3F63 /* Game.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		03AB37C02715D18F00E1BD2C /* AbsorbTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsorbTests.swift; sourceTree = "<group>"; };
 		03AB37E82715E81300E1BD2C /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
+		03BC283127244B6300AD3F63 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		03BC2833272455E200AD3F63 /* Absorb.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Absorb.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +129,7 @@
 		03AB37A52715D18D00E1BD2C /* Absorb */ = {
 			isa = PBXGroup;
 			children = (
+				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
 				039F09032719415400885B3A /* Database */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
@@ -135,6 +139,7 @@
 				03AB37B32715D18F00E1BD2C /* Assets.xcassets */,
 				037CBC0527174B8200103FD0 /* Extensions */,
 				03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */,
+				03BC283127244B6300AD3F63 /* Game.swift */,
 			);
 			path = Absorb;
 			sourceTree = "<group>";
@@ -250,6 +255,7 @@
 				039F09022719412800885B3A /* GameOverScene.swift in Sources */,
 				039F09072719415400885B3A /* Database.swift in Sources */,
 				03AB37E92715E81300E1BD2C /* Ball.swift in Sources */,
+				03BC283227244B6300AD3F63 /* Game.swift in Sources */,
 				03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */,
 				037CBC042717456100103FD0 /* Hashable+Extensions.swift in Sources */,
 				03AB37AD2715D18D00E1BD2C /* GameScene.swift in Sources */,
@@ -414,6 +420,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Absorb/Absorb.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 685257RUQP;
@@ -432,6 +440,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -444,6 +453,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = Absorb/Absorb.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 685257RUQP;
@@ -462,6 +473,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

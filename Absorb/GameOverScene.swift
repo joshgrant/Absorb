@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import GameKit
 
 enum GameOverType: String {
     case won = "New High Score! 🥳"
@@ -19,6 +20,8 @@ class GameOverScene: SKScene {
     var gameOverType: GameOverType
     var score: Int
     
+    var gameCenterButton: UIButton!
+    
     // MARK: - Initialization
     
     init(score: Int, type: GameOverType) {
@@ -29,6 +32,8 @@ class GameOverScene: SKScene {
         scaleMode = .resizeFill
         
         backgroundColor = .secondarySystemBackground
+        
+        Game.loadTopTenEntries()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -38,6 +43,12 @@ class GameOverScene: SKScene {
     override func didMove(to view: SKView) {
         super.didMove(to: view)
         configure(view: view)
+        
+        gameCenterButton = UIButton()
+        gameCenterButton.backgroundColor = .purple
+        gameCenterButton.setTitle("Game Center", for: .normal)
+        // TODO: Should just use the game center icon instead
+        view.addSubview(gameCenterButton)
     }
     
     private func configure(view: SKView) {
@@ -116,7 +127,7 @@ class GameOverScene: SKScene {
             NSLayoutConstraint.activate([
                 numberLabel.widthAnchor.constraint(equalToConstant: numberLabel.font.pointSize * 2)
             ])
-    
+            
             horizontalStackView.addArrangedSubview(numberLabel)
             
             guard topScores.count > i else {

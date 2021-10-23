@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GameKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate
@@ -20,5 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         return true
     }
+    
+    func applicationDidEnterBackground(_ application: UIApplication)
+    {
+        Game.save()
+    }
 }
-

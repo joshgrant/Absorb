@@ -7,6 +7,7 @@
 
 import SpriteKit
 import GameplayKit
+import GameKit
 
 // AbsOrb
 
@@ -382,19 +383,21 @@ public class GameScene: SKScene
         {
             // Game Over
             
-            let reveal = SKTransition.crossFade(withDuration: 1.0)
+            Game.submit(score: score)
             
+            let reveal = SKTransition.crossFade(withDuration: 1.0)
+
             let newScore = Score(context: Database.context)
             newScore.name = "Josh" // TODO: Allow the user to enter their name
             newScore.date = .now
             newScore.score = Int64(score)
-            
+
             try? Database.context.save()
-            
+
             let topScore = Database.topScore
-            
+
             let type: GameOverType
-            
+
             if newScore.score == topScore?.score
             {
                 type = .won
@@ -405,10 +408,6 @@ public class GameScene: SKScene
             }
             
             let gameOverScene = GameOverScene(score: score, type: type)
-            
-            for subview in view?.subviews ?? [] {
-                subview.removeFromSuperview()
-            }
             
             view?.presentScene(gameOverScene, transition: reveal)
         }
