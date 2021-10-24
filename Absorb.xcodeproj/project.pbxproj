@@ -11,9 +11,6 @@
 		0335116427167CDF00F50928 /* SKPhysicsBody+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */; };
 		037CBC022716822400103FD0 /* CGVector+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC012716822400103FD0 /* CGVector+Extensions.swift */; };
 		037CBC042717456100103FD0 /* Hashable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC032717456100103FD0 /* Hashable+Extensions.swift */; };
-		039F09022719412800885B3A /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F09012719412800885B3A /* GameOverScene.swift */; };
-		039F09072719415400885B3A /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039F09042719415400885B3A /* Database.swift */; };
-		039F09082719415400885B3A /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 039F09052719415400885B3A /* Model.xcdatamodeld */; };
 		039F090B271B698700885B3A /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 039F090A271B698600885B3A /* GameKit.framework */; };
 		03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37A62715D18D00E1BD2C /* AppDelegate.swift */; };
 		03AB37AD2715D18D00E1BD2C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37AC2715D18D00E1BD2C /* GameScene.swift */; };
@@ -41,9 +38,6 @@
 		0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKPhysicsBody+Extensions.swift"; sourceTree = "<group>"; };
 		037CBC012716822400103FD0 /* CGVector+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
 		037CBC032717456100103FD0 /* Hashable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Hashable+Extensions.swift"; sourceTree = "<group>"; };
-		039F09012719412800885B3A /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
-		039F09042719415400885B3A /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
-		039F09062719415400885B3A /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		039F090A271B698600885B3A /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		03AB37A32715D18D00E1BD2C /* Absorb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Absorb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AB37A62715D18D00E1BD2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -90,15 +84,6 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		039F09032719415400885B3A /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				039F09042719415400885B3A /* Database.swift */,
-				039F09052719415400885B3A /* Model.xcdatamodeld */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
 		039F0909271B698600885B3A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,10 +116,8 @@
 			children = (
 				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
-				039F09032719415400885B3A /* Database */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
 				03AB37AC2715D18D00E1BD2C /* GameScene.swift */,
-				039F09012719412800885B3A /* GameOverScene.swift */,
 				03AB37AE2715D18D00E1BD2C /* GameViewController.swift */,
 				03AB37B32715D18F00E1BD2C /* Assets.xcassets */,
 				037CBC0527174B8200103FD0 /* Extensions */,
@@ -252,8 +235,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				039F09022719412800885B3A /* GameOverScene.swift in Sources */,
-				039F09072719415400885B3A /* Database.swift in Sources */,
 				03AB37E92715E81300E1BD2C /* Ball.swift in Sources */,
 				03BC283227244B6300AD3F63 /* Game.swift in Sources */,
 				03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */,
@@ -264,7 +245,6 @@
 				0335116427167CDF00F50928 /* SKPhysicsBody+Extensions.swift in Sources */,
 				0335116227167BAD00F50928 /* CGFloat+Extensions.swift in Sources */,
 				03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */,
-				039F09082719415400885B3A /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,19 +541,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		039F09052719415400885B3A /* Model.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				039F09062719415400885B3A /* Model.xcdatamodel */,
-			);
-			currentVersion = 039F09062719415400885B3A /* Model.xcdatamodel */;
-			path = Model.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 03AB379B2715D18D00E1BD2C /* Project object */;
 }

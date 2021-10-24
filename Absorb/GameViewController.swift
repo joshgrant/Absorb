@@ -19,16 +19,8 @@ class GameViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        
-        guard let view = view as? SKView else { return }
-        
-        let scene = GameScene()
-        
-        view.ignoresSiblingOrder = true
-        view.showsFPS = true
-        view.showsNodeCount = true
-        
-        view.presentScene(scene)
+        presentScene()
+        authenticatePlayer()
     }
 
     override var shouldAutorotate: Bool { true }
@@ -41,5 +33,58 @@ class GameViewController: UIViewController
         } else {
             return .all
         }
+    }
+    
+    func authenticatePlayer()
+    {
+        GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
+            if GKLocalPlayer.local.isAuthenticated
+            {
+                print("Authenticated!")
+            }
+            else if let controller = controller
+            {
+                present(controller, animated: true, completion: nil)
+            }
+            else if let error = error
+            {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func presentScene()
+    {
+        guard let view = view as? SKView else { return }
+        
+        let scene = GameScene()
+        scene.gameSceneDelegate = self
+        
+        view.ignoresSiblingOrder = true
+        view.showsFPS = true
+        view.showsNodeCount = true
+        
+        view.presentScene(scene)
+    }
+}
+
+extension GameViewController: GKGameCenterControllerDelegate
+{
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
+    {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+        presentScene()
+    }
+}
+
+extension GameViewController: GameSceneDelegate
+{
+    func showLeaderboard()
+    {
+        let leaderboard = GKGameCenterViewController(
+            leaderboardID: "com.joshgrant.topscores",
+            playerScope: .global, timeScope: .allTime)
+        leaderboard.gameCenterDelegate = self
+        present(leaderboard, animated: true, completion: nil)
     }
 }

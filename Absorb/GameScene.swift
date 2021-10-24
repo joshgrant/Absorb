@@ -20,6 +20,10 @@ import GameKit
 // TODO: Highlight score in scoreboard
 // TODO: Enter your name in the game over screen
 
+protocol GameSceneDelegate: AnyObject
+{
+    func showLeaderboard()
+}
 
 public class GameScene: SKScene
 {
@@ -56,6 +60,8 @@ public class GameScene: SKScene
         /// The area past which npcs despawn
         static let killZoneRadius: CGFloat = safeAreaRadius * 4
     }
+    
+    weak var gameSceneDelegate: GameSceneDelegate?
     
     private var configuration: Configuration
     
@@ -377,39 +383,20 @@ public class GameScene: SKScene
         }
     }
     
+    var showing: Bool = false
+    
     private func checkGameOver()
     {
+        guard !showing else { return }
+        
         if playerRadius < 1 || playerRadius.isNaN
         {
-            // Game Over
+            showing = true
             
-            Game.submit(score: score)
-            
-            let reveal = SKTransition.crossFade(withDuration: 1.0)
-
-            let newScore = Score(context: Database.context)
-            newScore.name = "Josh" // TODO: Allow the user to enter their name
-            newScore.date = .now
-            newScore.score = Int64(score)
-
-            try? Database.context.save()
-
-            let topScore = Database.topScore
-
-            let type: GameOverType
-
-            if newScore.score == topScore?.score
-            {
-                type = .won
+            Game.submit(score: score) { [weak self] in
+                self?.gameSceneDelegate?.showLeaderboard()
             }
-            else
-            {
-                type = .lost
-            }
-            
-            let gameOverScene = GameOverScene(score: score, type: type)
-            
-            view?.presentScene(gameOverScene, transition: reveal)
+            view?.presentScene(nil)
         }
     }
 }
