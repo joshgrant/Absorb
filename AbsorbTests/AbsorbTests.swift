@@ -216,7 +216,7 @@ class AbsorbTests: XCTestCase
     
     func test_permuteAllBallsAndSiblings()
     {
-        let sut = GameScene()
+        let sut = GameScene(configuration: .init(addsNPCs: false, addsPlayer: true, npcsAreSmaller: false))
         
         sut.player.name = "Player"
         
