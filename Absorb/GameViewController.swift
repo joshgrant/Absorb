@@ -87,4 +87,9 @@ extension GameViewController: GameSceneDelegate
         leaderboard.gameCenterDelegate = self
         present(leaderboard, animated: true, completion: nil)
     }
+    
+    func gamePaused() {
+        let pauseViewController = PauseViewController()
+        present(pauseViewController, animated: true, completion: nil)
+    }
 }

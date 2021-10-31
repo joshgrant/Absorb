@@ -23,6 +23,7 @@ import GameKit
 protocol GameSceneDelegate: AnyObject
 {
     func showLeaderboard()
+    func gamePaused()
 }
 
 public class GameScene: SKScene
@@ -129,16 +130,17 @@ public class GameScene: SKScene
     
     @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
     {
+        isPaused.toggle()
+        
         if isPaused
         {
-            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
+            gameSceneDelegate?.gamePaused()
+            sender.setImage(.init(systemName: "play.fill"), for: .normal)
         }
         else
         {
-            sender.setImage(.init(systemName: "play.fill"), for: .normal)
+            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
         }
-        
-        isPaused.toggle()
     }
     
     private func addTotalLabel(to view: SKView)
@@ -393,11 +395,42 @@ public class GameScene: SKScene
         {
             showing = true
             
-            Game.submit(score: score) { [weak self] in
-                self?.gameSceneDelegate?.showLeaderboard()
-            }
-            view?.presentScene(nil)
+            showGameOverScreen()
         }
+    }
+    
+    private func showGameOverScreen()
+    {
+        // Game Over
+        
+        Game.submit(score: score, completion: { })
+        
+        let reveal = SKTransition.crossFade(withDuration: 1.0)
+        
+        let newScore = Score(context: Database.context)
+        newScore.name = "Josh" // TODO: Allow the user to enter their name
+        newScore.date = .now
+        newScore.score = Int64(score)
+        
+        try? Database.context.save()
+        
+        let topScore = Database.topScore
+        
+        let type: GameOverType
+        
+        if newScore.score == topScore?.score
+        {
+            type = .won
+        }
+        else
+        {
+            type = .lost
+        }
+        
+        let gameOverScene = GameOverScene(score: score, type: type)
+        gameOverScene.gameSceneDelegate = gameSceneDelegate
+        
+        view?.presentScene(gameOverScene, transition: reveal)
     }
 }
 

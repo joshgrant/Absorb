@@ -8,6 +8,15 @@ import GameKit
 
 final class Game
 {
+    static func loadTopTenEntries()
+    {
+        GKLeaderboard().loadEntries(for: [GKLocalPlayer.local], timeScope: .allTime) { entry, entries, error in
+            print(entry)
+            print(entries)
+            print(error)
+        }
+    }
+    
     static func submit(score: Int, completion: @escaping () -> Void)
     {
         GKLeaderboard.submitScore(score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["com.joshgrant.topscores"]) { error in
