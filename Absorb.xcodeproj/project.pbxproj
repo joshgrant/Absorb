@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		0335116227167BAD00F50928 /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0335116127167BAD00F50928 /* CGFloat+Extensions.swift */; };
 		0335116427167CDF00F50928 /* SKPhysicsBody+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */; };
-		03486F77272F07E300793820 /* PauseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F76272F07E300793820 /* PauseView.swift */; };
+		03486F77272F07E300793820 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F76272F07E300793820 /* PauseViewController.swift */; };
 		03486F79272F0D7C00793820 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F78272F0D7C00793820 /* UIView+Extensions.swift */; };
 		03738461272796A8007F0952 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03738460272796A8007F0952 /* Database.swift */; };
 		03738463272796B7007F0952 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03738462272796B7007F0952 /* GameOverScene.swift */; };
@@ -41,7 +41,7 @@
 /* Begin PBXFileReference section */
 		0335116127167BAD00F50928 /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKPhysicsBody+Extensions.swift"; sourceTree = "<group>"; };
-		03486F76272F07E300793820 /* PauseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseView.swift; sourceTree = "<group>"; };
+		03486F76272F07E300793820 /* PauseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		03486F78272F0D7C00793820 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		03738460272796A8007F0952 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		03738462272796B7007F0952 /* GameOverScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
@@ -137,7 +137,7 @@
 				037CBC0527174B8200103FD0 /* Extensions */,
 				03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */,
 				03BC283127244B6300AD3F63 /* Game.swift */,
-				03486F76272F07E300793820 /* PauseView.swift */,
+				03486F76272F07E300793820 /* PauseViewController.swift */,
 			);
 			path = Absorb;
 			sourceTree = "<group>";
@@ -264,7 +264,7 @@
 				037384662727979F007F0952 /* Model.xcdatamodeld in Sources */,
 				03486F79272F0D7C00793820 /* UIView+Extensions.swift in Sources */,
 				03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */,
-				03486F77272F07E300793820 /* PauseView.swift in Sources */,
+				03486F77272F07E300793820 /* PauseViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
