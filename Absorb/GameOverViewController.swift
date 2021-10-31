@@ -1,19 +1,17 @@
 //
-//  GameOverScene.swift
-//  Sorb
-//
-//  Created by Joshua Grant on 9/26/21.
+// Created by Joshua Grant on 10/31/21
+// Copyright © 2021 Joshua Grant. All rights reserved.
 //
 
-import SpriteKit
-import GameKit
+import Foundation
+import UIKit
 
 enum GameOverType: String {
     case won = "New High Score! 🥳"
     case lost = "Game Over 😥"
 }
 
-class GameOverScene: SKScene {
+class GameOverViewController: UIViewController {
     
     // MARK: - Variables
     
@@ -30,32 +28,20 @@ class GameOverScene: SKScene {
         self.gameOverType = type
         self.score = score
         
-        super.init(size: .zero)
-        scaleMode = .resizeFill
-        
-        backgroundColor = .secondarySystemBackground
-        
-        Game.loadTopTenEntries()
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func didMove(to view: SKView) {
-        super.didMove(to: view)
-        configure(view: view)
-        
-        gameCenterButton = UIButton()
-        gameCenterButton.backgroundColor = .purple
-        gameCenterButton.setTitle("Game Center", for: .normal)
-        // TODO: Should just use the game center icon instead
-        view.addSubview(gameCenterButton)
-    }
+    // MARK: - View lifecycle
     
-    private func configure(view: SKView) {
+    override func loadView() {
+        let containerView = UIView()
+        containerView.backgroundColor = .secondarySystemBackground
         
-        // 1. Create the parent stack view
+//        Game.loadTopTenEntries()
         
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -70,6 +56,12 @@ class GameOverScene: SKScene {
         
         stackView.addArrangedSubview(.spacer(height: 20))
         stackView.addArrangedSubview(label)
+        
+//        gameCenterButton = UIButton()
+//        gameCenterButton.backgroundColor = .purple
+//        gameCenterButton.setTitle("Game Center", for: .normal)
+//        // TODO: Should just use the game center icon instead
+//        view.addSubview(gameCenterButton)
         
         let firstSpacer = UIView.spacer()
         stackView.addArrangedSubview(firstSpacer)
@@ -167,60 +159,63 @@ class GameOverScene: SKScene {
         
         // 4. Create the "Restart"/"Replay" button
         
-        let button = UIButton()
-        button.setAttributedTitle(.init(string: "Restart", attributes: [
-            .foregroundColor: UIColor.secondaryLabel,
-            .font: UIFont.systemFont(ofSize: 20, weight: .light)
-        ]), for: .normal)
-        button.tintColor = .tertiarySystemFill
-        button.addTarget(self, action: #selector(restartButtonDidTouchUpInside(_:)), for: .touchUpInside)
-        button.configuration = .filled()
-        button.configuration?.titlePadding = 20
-        button.configuration?.cornerStyle = .capsule
-        button.configuration?.imageColorTransformer = .preferredTint
-        
-        stackView.addArrangedSubview(button)
+//        let button = UIButton()
+//        button.setAttributedTitle(.init(string: "Restart", attributes: [
+//            .foregroundColor: UIColor.secondaryLabel,
+//            .font: UIFont.systemFont(ofSize: 20, weight: .light)
+//        ]), for: .normal)
+//        button.tintColor = .tertiarySystemFill
+//        button.addTarget(self, action: #selector(restartButtonDidTouchUpInside(_:)), for: .touchUpInside)
+//        button.configuration = .filled()
+//        button.configuration?.titlePadding = 20
+//        button.configuration?.cornerStyle = .capsule
+//        button.configuration?.imageColorTransformer = .preferredTint
+//
+//        stackView.addArrangedSubview(button)
         
         stackView.addArrangedSubview(.spacer(height: 20))
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
+        containerView.addSubview(stackView)
         
         NSLayoutConstraint.activate([
             firstSpacer.heightAnchor.constraint(equalTo: secondSpacer.heightAnchor)
         ])
         
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.topAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
         ])
-    }
-    
-    func fadeOutViews(completion: @escaping () -> Void) {
         
-        guard let view = view else { return }
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            for subview in view.subviews {
-                subview.alpha = 0
-            }
-        }, completion: { _ in
-            for subview in view.subviews {
-                subview.removeFromSuperview()
-            }
-            completion()
-        })
+        view = containerView
     }
+
+//    func fadeOutViews(completion: @escaping () -> Void) {
+//
+//        guard let view = view else { return }
+//
+//        UIView.animate(withDuration: 0.3, animations: {
+//            for subview in view.subviews {
+//                subview.alpha = 0
+//            }
+//        }, completion: { _ in
+//            for subview in view.subviews {
+//                subview.removeFromSuperview()
+//            }
+//            completion()
+//        })
+//    }
     
-    @objc func restartButtonDidTouchUpInside(_ sender: UIButton) {
-        fadeOutViews { [unowned self] in
-            let reveal = SKTransition.fade(with: .secondarySystemBackground, duration: 0.5)
-            let scene = GameScene()
-            view?.presentScene(scene, transition: reveal)
-        }
-    }
+//    @objc func restartButtonDidTouchUpInside(_ sender: UIButton) {
+////        fadeOutViews { [unowned self] in
+////            let reveal = SKTransition.fade(with: .secondarySystemBackground, duration: 0.5)
+////            let scene = GameScene()
+////            view?.presentScene(scene, transition: reveal)
+////        }
+//        dismiss(animated: true, completion: nil)
+//    }
     
     func showLeaderboard()
     {

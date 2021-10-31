@@ -11,9 +11,11 @@ import GameKit
 
 class GameViewController: UIViewController
 {
+    lazy var gameView = SKView()
+    
     override func loadView()
     {
-        view = SKView()
+        view = gameView
     }
 
     override func viewDidLoad()
@@ -53,18 +55,18 @@ class GameViewController: UIViewController
         }
     }
     
-    func presentScene()
+    func presentScene(paused: Bool = false)
     {
-        guard let view = view as? SKView else { return }
-        
         let scene = GameScene()
         scene.gameSceneDelegate = self
         
-        view.ignoresSiblingOrder = true
-        view.showsFPS = true
-        view.showsNodeCount = true
+        gameView.ignoresSiblingOrder = true
+        gameView.showsFPS = true
+        gameView.showsNodeCount = true
         
-        view.presentScene(scene)
+        gameView.presentScene(scene)
+        
+        scene.isPaused = paused
     }
 }
 
@@ -90,6 +92,24 @@ extension GameViewController: GameSceneDelegate
     
     func gamePaused() {
         let pauseViewController = PauseViewController()
+        pauseViewController.presentationController?.delegate = self
         present(pauseViewController, animated: true, completion: nil)
     }
+    
+    func gameOver(score: Int, type: GameOverType) {
+        
+        presentScene(paused: true)
+        
+        let gameOver = GameOverViewController(score: score, type: type)
+        gameOver.presentationController?.delegate = self
+        present(gameOver, animated: true, completion: nil)
+    }
 }
+
+extension GameViewController: UIPopoverPresentationControllerDelegate
+{
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        gameView.scene?.isPaused = false
+    }
+}
+

@@ -24,6 +24,7 @@ protocol GameSceneDelegate: AnyObject
 {
     func showLeaderboard()
     func gamePaused()
+    func gameOver(score: Int, type: GameOverType)
 }
 
 public class GameScene: SKScene
@@ -427,10 +428,7 @@ public class GameScene: SKScene
             type = .lost
         }
         
-        let gameOverScene = GameOverScene(score: score, type: type)
-        gameOverScene.gameSceneDelegate = gameSceneDelegate
-        
-        view?.presentScene(gameOverScene, transition: reveal)
+        gameSceneDelegate?.gameOver(score: score, type: type)
     }
 }
 

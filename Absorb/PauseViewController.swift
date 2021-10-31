@@ -20,7 +20,6 @@ class PauseViewController: UIViewController {
         let gameCenterButton = UIButton()
         gameCenterButton.configuration = .filled()
         gameCenterButton.configuration?.cornerStyle = .medium
-        //        gameCenterButton.configuration?.background.backgroundColor = .darkText
         gameCenterButton.tintColor = .darkText
         gameCenterButton.configuration?.image = UIImage(named: "game_center")
         gameCenterButton.configuration?.imagePlacement = .all
