@@ -11,9 +11,9 @@ final class Game
     static func loadTopTenEntries()
     {
         GKLeaderboard().loadEntries(for: [GKLocalPlayer.local], timeScope: .allTime) { entry, entries, error in
-            print(entry)
-            print(entries)
-            print(error)
+//            print(entry)
+//            print(entries)
+//            print(error)
         }
     }
     
@@ -30,28 +30,28 @@ final class Game
         }
     }
     
-    static func save()
-    {
-        let data = makeSaveData()
-        save(data: data)
-    }
-    
-    private static func makeSaveData() -> Data
-    {
-        return Data()
-    }
-    
-    private static func save(data: Data)
-    {
-        GKLocalPlayer.local.saveGameData(data, withName: "current_game") { savedGame, error in
-            if let error = error
-            {
-                fatalError(error.localizedDescription)
-            }
-            else if let savedGame = savedGame
-            {
-                print("Saved Game: \(savedGame)")
-            }
-        }
-    }
+//    static func save()
+//    {
+//        let data = makeSaveData()
+//        save(data: data)
+//    }
+//    
+//    private static func makeSaveData() -> Data
+//    {
+//        return Data()
+//    }
+//    
+//    private static func save(data: Data)
+//    {
+//        GKLocalPlayer.local.saveGameData(data, withName: "current_game") { savedGame, error in
+//            if let error = error
+//            {
+//                fatalError(error.localizedDescription)
+//            }
+//            else if let savedGame = savedGame
+//            {
+//                print("Saved Game: \(savedGame)")
+//            }
+//        }
+//    }
 }

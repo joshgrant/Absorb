@@ -28,6 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     
     func applicationDidEnterBackground(_ application: UIApplication)
     {
-        Game.save()
+//        Game.save()
     }
 }

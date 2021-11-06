@@ -15,6 +15,8 @@ class GameViewController: UIViewController
     var playPauseButton: UIButton?
     
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
+    override var shouldAutorotate: Bool { false }
     
     override func loadView()
     {
@@ -33,9 +35,7 @@ class GameViewController: UIViewController
         ])
         
         playPauseButton = button
-        
-        
-        
+
         view = gameView
     }
     
@@ -44,17 +44,6 @@ class GameViewController: UIViewController
         super.viewDidLoad()
         presentScene()
         authenticatePlayer()
-    }
-    
-    override var shouldAutorotate: Bool { true }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask
-    {
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
-        } else {
-            return .all
-        }
     }
     
     func authenticatePlayer()

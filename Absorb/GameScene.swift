@@ -9,20 +9,12 @@ import SpriteKit
 import GameplayKit
 import GameKit
 
-// AbsOrb
-
 // TODO: Save game state when quitting the app
-// TODO: More immediate start - like oh shit! I need to move..
-// TODO: Show high-scores list in the pause menu, above the replay button (Number list style, mono spaced text)
 // TODO: When the user loses, they can enter their name and it'll save the score
-// TODO: Annoying when trying to gain weight, long wait before smaller circles...
-// TODO: The center of the game is the center of a gradient? OR ... small single pixel dots that give the impression of movement
 // TODO: Highlight score in scoreboard
-// TODO: Enter your name in the game over screen
 
 protocol GameSceneDelegate: AnyObject
 {
-//    func showLeaderboard()
     func gamePaused()
     func gameOver(score: Int, type: GameOverType)
     func gameRestarted()
@@ -148,9 +140,11 @@ public class GameScene: SKScene
         }
     }
     
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
+    {
         super.touchesBegan(touches, with: event)
-        if UserDefaults.standard.bool(forKey: "haptics") {
+        if UserDefaults.standard.bool(forKey: "haptics")
+        {
             generator.impactOccurred()
         }
     }
@@ -249,12 +243,14 @@ public class GameScene: SKScene
     /// Calculates the force between two balls
     public func applyMovement(smaller: Ball, larger: Ball)
     {
+        // This is wrong if the player shrinks?...
+        
         let distance = CGPoint.distance(smaller.position, larger.position)
         let inverseSquare = 1 / (distance * distance)
-        
+
         let direction = CGVector.direction(from: larger.position, to: smaller.position)
         let force = direction * inverseSquare * Constants.npcMovementModifier
-        
+
         // These are summed up here and applied at the end
         smaller.totalForce = smaller.totalForce + force
         larger.totalForce = larger.totalForce + force
@@ -282,6 +278,10 @@ public class GameScene: SKScene
                     ball.applyCameraZoom(scale: npcScale, cameraPosition: player.position)
                 }
                 
+                if abs(ball.totalForce.dx) == 0 && abs(ball.totalForce.dy) == 0 {
+                    print("Failure")
+                }
+                
                 ball.physicsBody?.applyForce(ball.totalForce)
                 ball.physicsBody?.applyFriction(Constants.enemyFrictionalCoefficient)
                 ball.physicsBody?.limitVelocity(to: Constants.maxVelocity)
@@ -289,7 +289,8 @@ public class GameScene: SKScene
             }
         }
         
-        if playerRadius <= 20 {
+        if playerRadius <= 20
+        {
             player.updateArea(to: playerRadius.radiusToArea)
         }
         
@@ -369,7 +370,7 @@ public class GameScene: SKScene
     {
         guard !showing else { return }
         
-        if playerRadius < 1 || playerRadius.isNaN
+        if playerRadius < 5 || playerRadius.isNaN
         {
             showing = true
             
@@ -383,8 +384,6 @@ public class GameScene: SKScene
         
         Game.submit(score: score, completion: { })
         
-//        let reveal = SKTransition.crossFade(withDuration: 1.0)
-        
         let newScore = Score(context: Database.context)
         newScore.name = UserDefaults.standard.string(forKey: "name") ?? "Johnny"
         newScore.date = .now
@@ -394,16 +393,7 @@ public class GameScene: SKScene
         
         let topScore = Database.topScore
         
-        let type: GameOverType
-        
-        if newScore.score == topScore?.score
-        {
-            type = .won
-        }
-        else
-        {
-            type = .lost
-        }
+        let type: GameOverType = (newScore.score == topScore?.score) ? .won : .lost
         
         gameSceneDelegate?.gameOver(score: score, type: type)
     }
