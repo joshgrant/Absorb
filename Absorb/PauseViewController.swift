@@ -5,53 +5,110 @@
 
 import Foundation
 import UIKit
+import GameKit
 
-class PauseViewController: UIViewController {
+extension UIButton {
     
-    override func loadView() {
-        
-        let containerView = UIView()
-        containerView.backgroundColor = .systemBackground
-        containerView.alpha = 0.85
-        
-        let logoView = UIImageView(image: .init(named: "absorby_logo"))
-        logoView.translatesAutoresizingMaskIntoConstraints = false
-        
+    static func makeGameCenterButton(action: UIAction) -> UIButton {
         let gameCenterButton = UIButton()
         gameCenterButton.configuration = .filled()
         gameCenterButton.configuration?.cornerStyle = .medium
-        gameCenterButton.tintColor = .darkText
+        gameCenterButton.tintColor = .label
         gameCenterButton.configuration?.image = UIImage(named: "game_center")
         gameCenterButton.configuration?.imagePlacement = .all
         gameCenterButton.configuration?.imagePadding = 10
         gameCenterButton.translatesAutoresizingMaskIntoConstraints = false
+        gameCenterButton.addAction(action, for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             gameCenterButton.widthAnchor.constraint(equalToConstant: 44),
             gameCenterButton.heightAnchor.constraint(equalToConstant: 44),
         ])
-        
-        let titleStackView = UIStackView(arrangedSubviews: [UIView.spacer(), logoView, UIView.spacer(), gameCenterButton, UIView.spacer(width: 10)])
+        return gameCenterButton
+    }
+}
+
+extension UIStackView {
+    static func makeTitleStackView(centerView: UIView, gameCenterAction: UIAction) -> UIStackView {
+        centerView.translatesAutoresizingMaskIntoConstraints = false
+        let titleStackView = UIStackView(arrangedSubviews: [
+            UIView.spacer(),
+            centerView,
+            UIView.spacer(),
+            UIButton.makeGameCenterButton(action: gameCenterAction),
+            UIView.spacer(width: 10)])
         titleStackView.axis = .horizontal
         titleStackView.translatesAutoresizingMaskIntoConstraints = false
         titleStackView.alignment = .center
         
         NSLayoutConstraint.activate([
-            logoView.centerXAnchor.constraint(equalTo: titleStackView.centerXAnchor)
+            centerView.centerXAnchor.constraint(equalTo: titleStackView.centerXAnchor)
         ])
+        return titleStackView
+    }
+}
+
+class PauseViewController: UIViewController {
+    
+    override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
+    
+    weak var gameSceneDelegate: GameSceneDelegate?
+    
+    override func loadView() {
+        
+        let containerView = UIView()
+        containerView.backgroundColor = .systemBackground
+        
+        let logoView = UIImageView(image: .init(named: "absorby_logo"))
+        
+        let titleStackView = UIStackView.makeTitleStackView(centerView: logoView, gameCenterAction: .init(handler: { [weak self] action in
+            self?.showLeaderboard()
+        }))
         
         let stackView = UIStackView(arrangedSubviews: [
             UIView.spacer(height: 20),
             titleStackView,
-            makeTextField(text: "Name", placeholder: "Johnny"),
+            makeTextField(text: "Name",
+                          placeholder: "Johnny",
+                          content: UserDefaults.standard.string(forKey: "name")),
             UIView.spacer(),
-            makeSwitch(text: "Sound"),
-            makeSwitch(text: "Haptics"),
-            makeSwitch(text: "Show Menu Bar"),
+            makeSwitch(text: "Sound",
+                       isOn: UserDefaults.standard.bool(forKey: "sound"),
+                       action: .init(handler: { action in
+                guard let sender = action.sender as? UISwitch else { return }
+                UserDefaults.standard.set(sender.isOn, forKey: "sound")
+            })),
+            makeSwitch(text: "Haptics",
+                       isOn: UserDefaults.standard.bool(forKey: "haptics"),
+                       action: .init(handler: { action in
+                guard let sender = action.sender as? UISwitch else { return }
+                UserDefaults.standard.set(sender.isOn, forKey: "haptics")
+            })),
+            makeSwitch(text: "Hide Status Bar",
+                       isOn: UserDefaults.standard.bool(forKey: "status"),
+                       action: .init(handler: { action in
+                guard let sender = action.sender as? UISwitch else { return }
+                UserDefaults.standard.set(sender.isOn, forKey: "status")
+            })),
             UIView.spacer(),
-            makeButton(title: "Restart", tint: .systemBlue),
-            makeButton(title: "Remove Ads", tint: .systemGreen),
-            makeButton(title: "Delete Scores", tint: .systemRed),
+            makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
+                self?.gameSceneDelegate?.gameRestarted()
+            })),
+            makeButton(title: "Remove Ads", tint: .systemGreen, action: .init(handler: { action in
+                
+            })),
+            makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
+                let alert = UIAlertController(
+                    title: "Delete Scores",
+                    message: "Are you sure you want to delete local scores? This cannot be undone.",
+                    preferredStyle: .alert)
+                alert.addAction(.init(title: "Cancel", style: .cancel, handler: nil))
+                alert.addAction(.init(title: "Delete", style: .destructive, handler: { [weak self] action in
+                    Database.deleteAllScores()
+                    self?.gameSceneDelegate?.gameRestarted()
+                }))
+                self.present(alert, animated: true, completion: nil)
+            })),
             UIView.spacer()])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -72,8 +129,9 @@ class PauseViewController: UIViewController {
         view = containerView
     }
     
-    func makeTextField(text: String, placeholder: String) -> UIStackView {
+    func makeTextField(text: String, placeholder: String, content: String? = nil) -> UIStackView {
         let textField = UITextField()
+        textField.text = content
         textField.placeholder = placeholder
         textField.font = .systemFont(ofSize: 24, weight: .medium)
         textField.delegate = self
@@ -88,17 +146,19 @@ class PauseViewController: UIViewController {
         return stackView
     }
     
-    func makeSwitch(text: String) -> UIStackView {
+    func makeSwitch(text: String, isOn: Bool, action: UIAction) -> UIStackView {
         let textLabel = UILabel()
         textLabel.text = text
         textLabel.font = .systemFont(ofSize: 24, weight: .regular)
         let toggle = UISwitch()
+        toggle.isOn = isOn
+        toggle.addAction(action, for: .valueChanged)
         let stackView = UIStackView(arrangedSubviews: [textLabel, UIView.spacer(), toggle])
         stackView.axis = .horizontal
         return stackView
     }
     
-    func makeButton(title: String, tint: UIColor) -> UIButton {
+    func makeButton(title: String, tint: UIColor, action: UIAction) -> UIButton {
         let button = UIButton()
         
         let rect = CGRect(x: 0, y: 0, width: 10, height: 10)
@@ -111,6 +171,7 @@ class PauseViewController: UIViewController {
         button.layer.cornerCurve = .continuous
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
+        button.addAction(action, for: .touchUpInside)
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .medium)
         //        button.configuration?.attributedTitle = .init(title, attributes: .init([.font: UIFont.systemFont(ofSize: 22, weight: .medium), .foregroundColor: UIColor.systemBackground]))
@@ -120,6 +181,15 @@ class PauseViewController: UIViewController {
         ])
         
         return button
+    }
+    
+    func showLeaderboard()
+    {
+        let leaderboard = GKGameCenterViewController(
+            leaderboardID: "com.joshgrant.topscores",
+            playerScope: .global, timeScope: .allTime)
+        leaderboard.gameCenterDelegate = self
+        present(leaderboard, animated: true, completion: nil)
     }
 }
 
@@ -131,6 +201,15 @@ extension PauseViewController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        // TODO: Save the name...
+        UserDefaults.standard.set(textField.text, forKey: "name")
+    }
+}
+
+extension PauseViewController: GKGameCenterControllerDelegate
+{
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
+    {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+//        presentScene()
     }
 }

@@ -12,22 +12,42 @@ import GameKit
 class GameViewController: UIViewController
 {
     lazy var gameView = SKView()
+    var playPauseButton: UIButton?
+    
+    override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     
     override func loadView()
     {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(.init(systemName: "pause.fill"), for: .normal)
+        button.tintColor = .darkGray
+        button.addTarget(self, action: #selector(playPauseButtonDidTouchUpInside(_:)), for: .touchUpInside)
+        gameView.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.widthAnchor.constraint(equalToConstant: 44),
+            button.heightAnchor.constraint(equalToConstant: 44),
+            button.trailingAnchor.constraint(equalTo: gameView.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: gameView.bottomAnchor)
+        ])
+        
+        playPauseButton = button
+        
+        
+        
         view = gameView
     }
-
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
         presentScene()
         authenticatePlayer()
     }
-
+    
     override var shouldAutorotate: Bool { true }
-    override var prefersStatusBarHidden: Bool { true }
-
+    
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask
     {
         if UIDevice.current.userInterfaceIdiom == .phone {
@@ -68,30 +88,29 @@ class GameViewController: UIViewController
         
         scene.isPaused = paused
     }
-}
-
-extension GameViewController: GKGameCenterControllerDelegate
-{
-    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
+    
+    @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
     {
-        gameCenterViewController.dismiss(animated: true, completion: nil)
-        presentScene()
+        gameView.scene?.isPaused.toggle()
+        //        isPaused.toggle()
+        
+        if gameView.scene?.isPaused ?? false
+        {
+            gamePaused()
+            sender.setImage(.init(systemName: "play.fill"), for: .normal)
+        }
+        else
+        {
+            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
+        }
     }
 }
 
 extension GameViewController: GameSceneDelegate
 {
-    func showLeaderboard()
-    {
-        let leaderboard = GKGameCenterViewController(
-            leaderboardID: "com.joshgrant.topscores",
-            playerScope: .global, timeScope: .allTime)
-        leaderboard.gameCenterDelegate = self
-        present(leaderboard, animated: true, completion: nil)
-    }
-    
     func gamePaused() {
         let pauseViewController = PauseViewController()
+        pauseViewController.gameSceneDelegate = self
         pauseViewController.presentationController?.delegate = self
         present(pauseViewController, animated: true, completion: nil)
     }
@@ -104,12 +123,19 @@ extension GameViewController: GameSceneDelegate
         gameOver.presentationController?.delegate = self
         present(gameOver, animated: true, completion: nil)
     }
+    
+    func gameRestarted() {
+        presentScene(paused: false)
+        presentedViewController?.dismiss(animated: true, completion: nil)
+    }
 }
 
 extension GameViewController: UIPopoverPresentationControllerDelegate
 {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         gameView.scene?.isPaused = false
+        
+        playPauseButton?.setImage(.init(systemName: "pause.fill"), for: .normal)
     }
 }
 

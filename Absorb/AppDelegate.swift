@@ -18,6 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         window = UIWindow()
         window?.rootViewController = GameViewController()
         window?.makeKeyAndVisible()
+
+        if UserDefaults.standard.value(forKey: "status") == nil {
+            UserDefaults.standard.set(false, forKey: "status")
+        }
         
         return true
     }

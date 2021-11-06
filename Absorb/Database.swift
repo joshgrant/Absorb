@@ -44,4 +44,13 @@ public class Database {
         fetchRequest.fetchLimit = 10
         return (try? context.fetch(fetchRequest)) ?? []
     }
+    
+    public static func deleteAllScores() {
+        let fetchRequest: NSFetchRequest<Score> = Score.fetchRequest()
+        guard let scores = try? context.fetch(fetchRequest) else { return }
+        for score in scores {
+            context.delete(score)
+        }
+        try? context.save()
+    }
 }

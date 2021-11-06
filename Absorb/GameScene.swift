@@ -22,13 +22,16 @@ import GameKit
 
 protocol GameSceneDelegate: AnyObject
 {
-    func showLeaderboard()
+//    func showLeaderboard()
     func gamePaused()
     func gameOver(score: Int, type: GameOverType)
+    func gameRestarted()
 }
 
 public class GameScene: SKScene
 {
+    let generator = UIImpactFeedbackGenerator(style: .light)
+    
     public struct Configuration
     {
         var addsNPCs = true
@@ -107,53 +110,19 @@ public class GameScene: SKScene
         
         DispatchQueue.main.async { [unowned self] in
             addTotalLabel(to: view)
-            configurePlayPauseButton(with: view)
-        }
-    }
-    
-    
-    private func configurePlayPauseButton(with view: UIView)
-    {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(.init(systemName: "pause.fill"), for: .normal)
-        button.tintColor = .darkGray
-        button.addTarget(self, action: #selector(playPauseButtonDidTouchUpInside(_:)), for: .touchUpInside)
-        view.addSubview(button)
-        
-        NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: 44),
-            button.heightAnchor.constraint(equalToConstant: 44),
-            button.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
-    
-    @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
-    {
-        isPaused.toggle()
-        
-        if isPaused
-        {
-            gameSceneDelegate?.gamePaused()
-            sender.setImage(.init(systemName: "play.fill"), for: .normal)
-        }
-        else
-        {
-            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
         }
     }
     
     private func addTotalLabel(to view: SKView)
     {
         camera?.addChild(total)
+
+        let padding = CGSize(width: 20, height: 40)
+        let topLeft = CGPoint(x: view.frame.size.width * -0.5 + padding.width,
+                              y: view.frame.size.height * 0.5 - padding.height)
+        
         total.horizontalAlignmentMode = .left
-        let topLeft = scene!.convertPoint(fromView: .zero)
-        let padding = CGSize(width: view.safeAreaInsets.left + 20,
-                             height: -view.safeAreaInsets.top - 40)
-        let newPoint = CGPoint(x: topLeft.x + padding.width,
-                               y: topLeft.y + padding.height)
-        total.position = newPoint
+        total.position = topLeft
     }
     
     /// Perform one-time setup
@@ -176,6 +145,13 @@ public class GameScene: SKScene
             }
             
             run(loopAddEnemies())
+        }
+    }
+    
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        if UserDefaults.standard.bool(forKey: "haptics") {
+            generator.impactOccurred()
         }
     }
     
@@ -370,10 +346,11 @@ public class GameScene: SKScene
     
     private func addCamera()
     {
+        guard let scene = scene else { return }
         let camera = SKCameraNode()
         addChild(camera)
-        scene?.camera = camera
-        scene?.camera?.setScale(Constants.cameraScale)
+        scene.camera = camera
+        scene.camera?.setScale(Constants.cameraScale)
     }
     
     private func moveCameraToPlayer()
@@ -406,10 +383,10 @@ public class GameScene: SKScene
         
         Game.submit(score: score, completion: { })
         
-        let reveal = SKTransition.crossFade(withDuration: 1.0)
+//        let reveal = SKTransition.crossFade(withDuration: 1.0)
         
         let newScore = Score(context: Database.context)
-        newScore.name = "Josh" // TODO: Allow the user to enter their name
+        newScore.name = UserDefaults.standard.string(forKey: "name") ?? "Johnny"
         newScore.date = .now
         newScore.score = Int64(score)
         

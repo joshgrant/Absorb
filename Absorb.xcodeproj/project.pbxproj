@@ -41,6 +41,7 @@
 /* Begin PBXFileReference section */
 		0335116127167BAD00F50928 /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		0335116327167CDF00F50928 /* SKPhysicsBody+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKPhysicsBody+Extensions.swift"; sourceTree = "<group>"; };
+		0344E7D52736FFF500BA6D3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		03486F76272F07E300793820 /* PauseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		03486F78272F0D7C00793820 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		03486F7A272F214500793820 /* GameOverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverViewController.swift; sourceTree = "<group>"; };
@@ -124,6 +125,7 @@
 		03AB37A52715D18D00E1BD2C /* Absorb */ = {
 			isa = PBXGroup;
 			children = (
+				0344E7D52736FFF500BA6D3B /* Info.plist */,
 				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
@@ -426,6 +428,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 685257RUQP;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Absorb/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = gamekit;
@@ -459,6 +462,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 685257RUQP;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Absorb/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = gamekit;

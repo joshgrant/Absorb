@@ -5,13 +5,16 @@
 
 import Foundation
 import UIKit
+import GameKit
 
 enum GameOverType: String {
-    case won = "New High Score! 🥳"
+    case won = "High Score! 🥳"
     case lost = "Game Over 😥"
 }
 
 class GameOverViewController: UIViewController {
+    
+    override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     
     // MARK: - Variables
     
@@ -27,7 +30,6 @@ class GameOverViewController: UIViewController {
     init(score: Int, type: GameOverType) {
         self.gameOverType = type
         self.score = score
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,13 +41,13 @@ class GameOverViewController: UIViewController {
     
     override func loadView() {
         let containerView = UIView()
-        containerView.backgroundColor = .secondarySystemBackground
-        
-//        Game.loadTopTenEntries()
+        containerView.backgroundColor = .systemBackground
         
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.alignment = .center
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+//        stackView.alignment = .center
         
         // 2. Create the "You won!/Game Over!" Label
         
@@ -54,14 +56,12 @@ class GameOverViewController: UIViewController {
         label.textColor = .secondaryLabel
         label.text = gameOverType.rawValue
         
-        stackView.addArrangedSubview(.spacer(height: 20))
-        stackView.addArrangedSubview(label)
+        let titleStackView = UIStackView.makeTitleStackView(centerView: label, gameCenterAction: .init(handler: { [weak self] action in
+            self?.showLeaderboard()
+        }))
         
-//        gameCenterButton = UIButton()
-//        gameCenterButton.backgroundColor = .purple
-//        gameCenterButton.setTitle("Game Center", for: .normal)
-//        // TODO: Should just use the game center icon instead
-//        view.addSubview(gameCenterButton)
+        stackView.addArrangedSubview(.spacer(height: 40))
+        stackView.addArrangedSubview(titleStackView)
         
         let firstSpacer = UIView.spacer()
         stackView.addArrangedSubview(firstSpacer)
@@ -72,6 +72,8 @@ class GameOverViewController: UIViewController {
         yourScoreLabel.font = .systemFont(ofSize: 18, weight: .light)
         yourScoreLabel.textColor = .secondaryLabel
         yourScoreLabel.text = "Your score:"
+        yourScoreLabel.textAlignment = .center
+        yourScoreLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         stackView.addArrangedSubview(yourScoreLabel)
         stackView.addArrangedSubview(.spacer())
@@ -81,7 +83,9 @@ class GameOverViewController: UIViewController {
         let scoreLabel = UILabel()
         scoreLabel.font = .monospacedDigitSystemFont(ofSize: 60, weight: .bold)
         scoreLabel.textColor = .label
+        scoreLabel.textAlignment = .center
         scoreLabel.text = "\(score)"
+        scoreLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         stackView.addArrangedSubview(scoreLabel)
         
@@ -91,8 +95,10 @@ class GameOverViewController: UIViewController {
         highScoresHeader.text = "High scores:"
         highScoresHeader.font = .systemFont(ofSize: 18, weight: .light)
         highScoresHeader.textColor = .secondaryLabel
+        highScoresHeader.textAlignment = .center
+        highScoresHeader.setContentHuggingPriority(.defaultLow, for: .horizontal)
         stackView.addArrangedSubview(highScoresHeader)
-        stackView.addSubview(.spacer())
+        stackView.addSubview(.spacer(height: 20))
         
         // 3. Create the top scores list
         
@@ -106,11 +112,7 @@ class GameOverViewController: UIViewController {
             let horizontalStackView = UIStackView()
             horizontalStackView.axis = .horizontal
             horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-            
-            NSLayoutConstraint.activate([
-                horizontalStackView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.size.width - 80) // TODO: Extract this as score padding
-            ])
-            
+                        
             let numberLabel = UILabel()
             numberLabel.text = "\(i + 1). "
             numberLabel.textColor = .label
@@ -157,22 +159,6 @@ class GameOverViewController: UIViewController {
         
         stackView.addArrangedSubview(secondSpacer)
         
-        // 4. Create the "Restart"/"Replay" button
-        
-//        let button = UIButton()
-//        button.setAttributedTitle(.init(string: "Restart", attributes: [
-//            .foregroundColor: UIColor.secondaryLabel,
-//            .font: UIFont.systemFont(ofSize: 20, weight: .light)
-//        ]), for: .normal)
-//        button.tintColor = .tertiarySystemFill
-//        button.addTarget(self, action: #selector(restartButtonDidTouchUpInside(_:)), for: .touchUpInside)
-//        button.configuration = .filled()
-//        button.configuration?.titlePadding = 20
-//        button.configuration?.cornerStyle = .capsule
-//        button.configuration?.imageColorTransformer = .preferredTint
-//
-//        stackView.addArrangedSubview(button)
-        
         stackView.addArrangedSubview(.spacer(height: 20))
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,34 +177,22 @@ class GameOverViewController: UIViewController {
         
         view = containerView
     }
-
-//    func fadeOutViews(completion: @escaping () -> Void) {
-//
-//        guard let view = view else { return }
-//
-//        UIView.animate(withDuration: 0.3, animations: {
-//            for subview in view.subviews {
-//                subview.alpha = 0
-//            }
-//        }, completion: { _ in
-//            for subview in view.subviews {
-//                subview.removeFromSuperview()
-//            }
-//            completion()
-//        })
-//    }
-    
-//    @objc func restartButtonDidTouchUpInside(_ sender: UIButton) {
-////        fadeOutViews { [unowned self] in
-////            let reveal = SKTransition.fade(with: .secondarySystemBackground, duration: 0.5)
-////            let scene = GameScene()
-////            view?.presentScene(scene, transition: reveal)
-////        }
-//        dismiss(animated: true, completion: nil)
-//    }
     
     func showLeaderboard()
     {
-        gameSceneDelegate?.showLeaderboard()
+        let leaderboard = GKGameCenterViewController(
+            leaderboardID: "com.joshgrant.topscores",
+            playerScope: .global, timeScope: .allTime)
+        leaderboard.gameCenterDelegate = self
+        present(leaderboard, animated: true, completion: nil)
+    }
+}
+
+extension GameOverViewController: GKGameCenterControllerDelegate
+{
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
+    {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+        //        presentScene()
     }
 }
