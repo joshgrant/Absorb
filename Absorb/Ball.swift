@@ -53,10 +53,6 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
-        if newArea < 1 {
-            print("Bad")
-        }
-        
         radius = newArea.areaToRadius
         radiusUpdated()
     }

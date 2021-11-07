@@ -9,7 +9,6 @@ import SpriteKit
 import GameplayKit
 import GameKit
 
-// TODO: Save game state when quitting the app
 // TODO: When the user loses, they can enter their name and it'll save the score
 // TODO: Highlight score in scoreboard
 
@@ -156,15 +155,15 @@ public class GameScene: SKScene
             let (smaller, larger) = Ball.orderByRadius(ball, sibling)
             
             // I don't know why these are NaN but they are sometimes...
-//            if smaller.position.x.isNaN || smaller.position.y.isNaN {
-//                smaller.removeFromParent()
-//                if smaller == player { checkGameOver() }
-//                return
-//            } else if larger.position.x.isNaN || larger.position.y.isNaN {
-//                larger.removeFromParent()
-//                if larger == player { checkGameOver() }
-//                return
-//            }
+            //            if smaller.position.x.isNaN || smaller.position.y.isNaN {
+            //                smaller.removeFromParent()
+            //                if smaller == player { checkGameOver() }
+            //                return
+            //            } else if larger.position.x.isNaN || larger.position.y.isNaN {
+            //                larger.removeFromParent()
+            //                if larger == player { checkGameOver() }
+            //                return
+            //            }
             
             let ballIsNPC = updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
             
@@ -253,10 +252,10 @@ public class GameScene: SKScene
         // This distance is messed up... like we shrink all the balls but we don't move them
         // further from the player, or something? It's around 121 at the start
         let inverseSquare = Constants.npcMovementModifier / (distance * distance)
-
+        
         let direction = CGVector.direction(from: larger.position, to: smaller.position)
         let force = direction * inverseSquare
-
+        
         // These are summed up here and applied at the end
         smaller.totalForce = smaller.totalForce + force
         larger.totalForce = larger.totalForce + force
@@ -361,7 +360,7 @@ public class GameScene: SKScene
 
 // MARK: - Iterating utility
 
-private extension GameScene
+extension GameScene
 {
     public func iterateNPCs(handler: (Ball) -> Void)
     {
@@ -436,15 +435,24 @@ private extension GameScene
         }
     }
     
-    func makeNPCSpawnPosition(playerPosition: CGPoint) -> CGPoint
+    func makeNPCSpawnPosition(playerPosition: CGPoint, direction: CGVector) -> CGPoint
     {
         let distance = CGFloat.random(
-            in: Constants.safeAreaRadius ..< Constants.safeAreaRadius * 2)
+            in: Constants.safeAreaRadius ..< Constants.killZoneRadius * 0.5)
         
-        let angle = CGFloat.random(in: 0 ..< 360).radians
+        let radians: CGFloat
         
-        let x = distance * cos(angle)
-        let y = distance * sin(angle)
+        if direction.dx == 0 && direction.dy == 1 || direction.dx.isNaN || direction.dy.isNaN {
+            radians = CGFloat.random(in: 0 ..< 360).radians
+        } else {
+            let angle = atan2(direction.dy, direction.dx).degrees
+            radians = (360 + round(angle))
+                .truncatingRemainder(dividingBy: 360)
+                .radians
+        }
+        
+        let x = distance * cos(radians)
+        let y = distance * sin(radians)
         
         return CGPoint(x: player.position.x + x,
                        y: player.position.y + y)
@@ -484,7 +492,10 @@ extension GameScene
     func addNPC()
     {
         let radius = makeNPCRadius()
-        let position = makeNPCSpawnPosition(playerPosition: player.position)
+        // We can get the angle by the camera position and the player position
+        let direction = CGVector.direction(from: camera!.position, to: player.position)
+        
+        let position = makeNPCSpawnPosition(playerPosition: player.position, direction: direction)
         let npc = Ball(radius: radius, position: position)
         npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.6, brightness: 1.0, alpha: 1.0)
         

@@ -16,6 +16,7 @@ public extension CGFloat
     }
     var radiusToArea: CGFloat { self * self * .pi }
     var radians: CGFloat { self * (.pi / 180) }
+    var degrees: CGFloat { 180 * self / .pi }
     
     func limitMagnitude(to value: CGFloat) -> CGFloat
     {
