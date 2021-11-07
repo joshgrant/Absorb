@@ -30,8 +30,8 @@ class GameViewController: UIViewController
         NSLayoutConstraint.activate([
             button.widthAnchor.constraint(equalToConstant: 44),
             button.heightAnchor.constraint(equalToConstant: 44),
-            button.trailingAnchor.constraint(equalTo: gameView.trailingAnchor),
-            button.bottomAnchor.constraint(equalTo: gameView.bottomAnchor)
+            button.trailingAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.trailingAnchor),
+            button.topAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.topAnchor)
         ])
         
         playPauseButton = button
@@ -81,31 +81,26 @@ class GameViewController: UIViewController
     @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
     {
         gameView.scene?.isPaused.toggle()
-        //        isPaused.toggle()
         
         if gameView.scene?.isPaused ?? false
         {
             gamePaused()
-            sender.setImage(.init(systemName: "play.fill"), for: .normal)
-        }
-        else
-        {
-            sender.setImage(.init(systemName: "pause.fill"), for: .normal)
         }
     }
 }
 
 extension GameViewController: GameSceneDelegate
 {
-    func gamePaused() {
+    func gamePaused()
+    {
         let pauseViewController = PauseViewController()
         pauseViewController.gameSceneDelegate = self
         pauseViewController.presentationController?.delegate = self
         present(pauseViewController, animated: true, completion: nil)
     }
     
-    func gameOver(score: Int, type: GameOverType) {
-        
+    func gameOver(score: Int, type: GameOverType)
+    {
         presentScene(paused: true)
         
         let gameOver = GameOverViewController(score: score, type: type)
@@ -113,7 +108,8 @@ extension GameViewController: GameSceneDelegate
         present(gameOver, animated: true, completion: nil)
     }
     
-    func gameRestarted() {
+    func gameRestarted()
+    {
         presentScene(paused: false)
         presentedViewController?.dismiss(animated: true, completion: nil)
     }
@@ -121,9 +117,9 @@ extension GameViewController: GameSceneDelegate
 
 extension GameViewController: UIPopoverPresentationControllerDelegate
 {
-    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController)
+    {
         gameView.scene?.isPaused = false
-        
         playPauseButton?.setImage(.init(systemName: "pause.fill"), for: .normal)
     }
 }

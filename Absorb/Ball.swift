@@ -53,6 +53,10 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
+        if newArea < 1 {
+            print("Bad")
+        }
+        
         radius = newArea.areaToRadius
         radiusUpdated()
     }
@@ -81,13 +85,13 @@ public class Ball: SKShapeNode
         body.isDynamic = true
         body.collisionBitMask = .zero
         body.allowsRotation = false
-        body.angularDamping = .zero
-        body.angularVelocity = .zero
-        body.friction = .zero
-        body.restitution = .zero
-        body.linearDamping = .zero
+//        body.angularDamping = .zero
+//        body.angularVelocity = .zero
+        body.friction = 0.9
+//        body.restitution = .zero
+//        body.linearDamping = .zero
         //        body.mass = radius / 250000
-        body.mass = 0.00007 // (this just) needs to be relative to the screen size really...
+        body.mass = 0.045 // (this just) needs to be relative to the screen size really...
     }
     
     /// Returns the position this ball should be at when the viewport is scaled by the amount. The relative
