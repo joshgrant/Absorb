@@ -8,11 +8,19 @@
 import UIKit
 import SpriteKit
 import GameKit
+import GoogleMobileAds
 
 class GameViewController: UIViewController
 {
     lazy var gameView = SKView()
     var playPauseButton: UIButton?
+    lazy var bannerView: GADBannerView = {
+        let bannerView = GADBannerView(adSize: GADAdSizeBanner)
+        // Change this to production?
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        return bannerView
+    }()
     
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
@@ -25,6 +33,9 @@ class GameViewController: UIViewController
     
     override func loadView()
     {
+        let contentView = UIStackView()
+        contentView.axis = .vertical
+        
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(.init(systemName: "pause.fill"), for: .normal)
@@ -39,9 +50,14 @@ class GameViewController: UIViewController
             button.topAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.topAnchor)
         ])
         
+        // Check that the in-app purchase hasn't been made yet
+        
         playPauseButton = button
+        
+        contentView.addArrangedSubview(gameView)
+        contentView.addArrangedSubview(bannerView)
 
-        view = gameView
+        view = contentView
     }
     
     override func viewDidLoad()
@@ -49,6 +65,7 @@ class GameViewController: UIViewController
         super.viewDidLoad()
         presentScene()
         authenticatePlayer()
+        bannerView.load(GADRequest())
     }
     
     func authenticatePlayer()

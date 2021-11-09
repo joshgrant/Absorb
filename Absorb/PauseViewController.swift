@@ -6,6 +6,7 @@
 import Foundation
 import UIKit
 import GameKit
+import StoreKit
 
 extension UIButton {
     
@@ -53,6 +54,23 @@ class PauseViewController: UIViewController {
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     
     weak var gameSceneDelegate: GameSceneDelegate?
+    
+    let store: Store
+    let noAds: Product
+    let onPurchase: (Product) -> Void
+    
+    func purchase() {
+        do {
+            if try await store.purchase(fuel) != nil {
+                onPurchase(fuel)
+            }
+        } catch StoreError.failedVerification {
+            errorTitle = "Your purchase could not be verified by the App Store."
+            isShowingError = true
+        } catch {
+            print("Failed fuel purchase: \(error)")
+        }
+    }
     
     override func loadView() {
         
