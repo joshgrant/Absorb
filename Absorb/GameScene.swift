@@ -17,11 +17,16 @@ protocol GameSceneDelegate: AnyObject
     func gamePaused()
     func gameOver(score: Int, type: GameOverType)
     func gameRestarted()
+    func showLeaderboard()
 }
 
 public class GameScene: SKScene
 {
     let generator = UIImpactFeedbackGenerator(style: .light)
+    let avPlayer: AVAudioPlayer = {
+        let url = Bundle.main.url(forResource: "ping_audio", withExtension: "caf")!
+        return try! AVAudioPlayer(contentsOf: url)
+    }()
     
     public struct Configuration
     {
@@ -36,7 +41,7 @@ public class GameScene: SKScene
         static let cameraScale: CGFloat = 1
         
         static let referenceRadius: CGFloat = 20
-        static let playerMovement: CGFloat = 1000
+        static let playerMovement: CGFloat = 860
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.3
         static let minimumExpulsionRadius: CGFloat = 2
@@ -72,7 +77,7 @@ public class GameScene: SKScene
     
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
-                        position: CGPoint(x: 0, y: 300))
+                        position: CGPoint(x: 0, y: 30))
         ball.kind = .player
         ball.fillColor = .systemBlue
         return ball
@@ -125,6 +130,8 @@ public class GameScene: SKScene
         {
             generator.impactOccurred()
         }
+        
+        avPlayer.prepareToPlay()
     }
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -138,6 +145,16 @@ public class GameScene: SKScene
         player.run(.applyForce(force, duration: Constants.frameDuration))
         
         makeProjectile(force: force * Constants.expulsionForceModifier)
+        
+        if UserDefaults.standard.bool(forKey: "sound") {
+            DispatchQueue.global(qos: .default).async { [unowned self] in
+                if avPlayer.isPlaying {
+                    avPlayer.currentTime = 0
+                } else {
+                    avPlayer.play()
+                }
+            }
+        }
     }
     
     /// Called once per frame before any actions are evaluated or any
@@ -153,17 +170,6 @@ public class GameScene: SKScene
         permuteAllBallsAndSiblings { ball, sibling in
             
             let (smaller, larger) = Ball.orderByRadius(ball, sibling)
-            
-            // I don't know why these are NaN but they are sometimes...
-            //            if smaller.position.x.isNaN || smaller.position.y.isNaN {
-            //                smaller.removeFromParent()
-            //                if smaller == player { checkGameOver() }
-            //                return
-            //            } else if larger.position.x.isNaN || larger.position.y.isNaN {
-            //                larger.removeFromParent()
-            //                if larger == player { checkGameOver() }
-            //                return
-            //            }
             
             let ballIsNPC = updateProjectileToNPCIfNotOverlappingPlayer(ball: ball)
             
@@ -207,10 +213,6 @@ public class GameScene: SKScene
                 modifyRadiusScale(
                     deltaArea: -overlappingArea,
                     radius: &temporaryRadius)
-                
-                if larger.radius < 1 {
-                    larger.removeFromParent()
-                }
             }
             else if larger == player
             {
@@ -233,9 +235,6 @@ public class GameScene: SKScene
                 larger.updateArea(delta: overlappingArea)
                 smaller.updateArea(delta: -overlappingArea)
                 
-                if larger.radius < 1 {
-                    larger.removeFromParent()
-                }
                 if smaller.radius < 1 {
                     smaller.removeFromParent()
                 }
@@ -266,6 +265,10 @@ public class GameScene: SKScene
         super.didFinishUpdate()
         
         let npcScale = Constants.referenceRadius / temporaryRadius
+        
+        if npcScale.isInfinite || npcScale.isNaN {
+            showGameOverScreen()
+        }
         
         iterateNPCs { ball in
             
@@ -331,8 +334,6 @@ public class GameScene: SKScene
         
         if playerRadius < 5 || playerRadius.isNaN || player.position.x.isNaN || player.position.y.isNaN
         {
-            showing = true
-            
             showGameOverScreen()
         }
     }
@@ -340,6 +341,7 @@ public class GameScene: SKScene
     private func showGameOverScreen()
     {
         // Game Over
+        showing = true
         
         Game.submit(score: score, completion: { })
         
@@ -435,18 +437,22 @@ private extension GameScene
         }
     }
     
-    func makeNPCSpawnPosition(playerPosition: CGPoint, direction: CGVector) -> CGPoint
+    func makeNPCSpawnPosition(playerPosition: CGPoint, cameraPosition: CGPoint) -> CGPoint
     {
         let distance = CGFloat.random(
             in: Constants.safeAreaRadius ..< Constants.killZoneRadius * 0.5)
         
         let radians: CGFloat
         
-        if direction.dx == 0 && direction.dy == 1 || direction.dx.isNaN || direction.dy.isNaN {
+        let direction = playerPosition - cameraPosition
+        
+        if abs(direction.x) < 1 || abs(direction.y) < 1 {
+            // Anywhere works
             radians = CGFloat.random(in: 0 ..< 360).radians
         } else {
-            let angle = atan2(direction.dy, direction.dx).degrees
-            radians = (360 + round(angle))
+            let angle = atan2(direction.y, direction.x).degrees
+            // Random cone in a 30° area
+            radians = (360 + round(angle) + .random(in: -15 ... 15))
                 .truncatingRemainder(dividingBy: 360)
                 .radians
         }
@@ -493,9 +499,10 @@ extension GameScene
     {
         let radius = makeNPCRadius()
         // We can get the angle by the camera position and the player position
-        let direction = CGVector.direction(from: camera!.position, to: player.position)
         
-        let position = makeNPCSpawnPosition(playerPosition: player.position, direction: direction)
+        let position = makeNPCSpawnPosition(
+            playerPosition: player.position,
+            cameraPosition: camera!.position)
         let npc = Ball(radius: radius, position: position)
         npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.6, brightness: 1.0, alpha: 1.0)
         

@@ -62,7 +62,7 @@ class PauseViewController: UIViewController {
         let logoView = UIImageView(image: .init(named: "absorby_logo"))
         
         let titleStackView = UIStackView.makeTitleStackView(centerView: logoView, gameCenterAction: .init(handler: { [weak self] action in
-            self?.showLeaderboard()
+            self?.gameSceneDelegate?.showLeaderboard()
         }))
         
         let stackView = UIStackView(arrangedSubviews: [
@@ -91,13 +91,13 @@ class PauseViewController: UIViewController {
                 UserDefaults.standard.set(sender.isOn, forKey: "status")
             })),
             UIView.spacer(),
-            makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
+            Self.makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
                 self?.gameSceneDelegate?.gameRestarted()
             })),
-            makeButton(title: "Remove Ads", tint: .systemGreen, action: .init(handler: { action in
+            Self.makeButton(title: "Remove Ads", tint: .systemGreen, action: .init(handler: { action in
                 
             })),
-            makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
+            Self.makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
                 let alert = UIAlertController(
                     title: "Delete Scores",
                     message: "Are you sure you want to delete local scores? This cannot be undone.",
@@ -158,7 +158,7 @@ class PauseViewController: UIViewController {
         return stackView
     }
     
-    func makeButton(title: String, tint: UIColor, action: UIAction) -> UIButton {
+    static func makeButton(title: String, tint: UIColor, action: UIAction) -> UIButton {
         let button = UIButton()
         
         let rect = CGRect(x: 0, y: 0, width: 10, height: 10)
@@ -182,15 +182,6 @@ class PauseViewController: UIViewController {
         
         return button
     }
-    
-    func showLeaderboard()
-    {
-        let leaderboard = GKGameCenterViewController(
-            leaderboardID: "com.joshgrant.topscores",
-            playerScope: .global, timeScope: .allTime)
-        leaderboard.gameCenterDelegate = self
-        present(leaderboard, animated: true, completion: nil)
-    }
 }
 
 extension PauseViewController: UITextFieldDelegate {
@@ -202,14 +193,5 @@ extension PauseViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         UserDefaults.standard.set(textField.text, forKey: "name")
-    }
-}
-
-extension PauseViewController: GKGameCenterControllerDelegate
-{
-    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
-    {
-        gameCenterViewController.dismiss(animated: true, completion: nil)
-//        presentScene()
     }
 }

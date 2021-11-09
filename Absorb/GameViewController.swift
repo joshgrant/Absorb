@@ -18,6 +18,11 @@ class GameViewController: UIViewController
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
     override var shouldAutorotate: Bool { false }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        gameView.scene?.backgroundColor = .systemBackground
+    }
+    
     override func loadView()
     {
         let button = UIButton()
@@ -105,6 +110,7 @@ extension GameViewController: GameSceneDelegate
         
         let gameOver = GameOverViewController(score: score, type: type)
         gameOver.presentationController?.delegate = self
+        gameOver.gameSceneDelegate = self
         present(gameOver, animated: true, completion: nil)
     }
     
@@ -112,6 +118,16 @@ extension GameViewController: GameSceneDelegate
     {
         presentScene(paused: false)
         presentedViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    func showLeaderboard() {
+        let leaderboard = GKGameCenterViewController(
+            leaderboardID: "com.joshgrant.topscores",
+            playerScope: .global,
+            timeScope: .allTime)
+        leaderboard.gameCenterDelegate = self
+        
+        show(leaderboard, sender: self)
     }
 }
 
@@ -124,3 +140,10 @@ extension GameViewController: UIPopoverPresentationControllerDelegate
     }
 }
 
+extension GameViewController: GKGameCenterControllerDelegate
+{
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
+    {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
+    }
+}

@@ -22,6 +22,10 @@ func /(_ a: CGVector, _ b: CGFloat) -> CGVector
 
 public extension CGVector
 {
+    init(point: CGPoint) {
+        self.init(dx: point.x, dy: point.y)
+    }
+    
     static func direction(from a: CGPoint, to b: CGPoint) -> CGVector
     {
         let normal = (b - a).normalized

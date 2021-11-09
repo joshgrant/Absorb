@@ -22,6 +22,7 @@ class GameOverViewController: UIViewController {
     var score: Int
     
     var gameCenterButton: UIButton!
+//    var restartButton: UIButton!
     
     weak var gameSceneDelegate: GameSceneDelegate?
     
@@ -57,7 +58,7 @@ class GameOverViewController: UIViewController {
         label.text = gameOverType.rawValue
         
         let titleStackView = UIStackView.makeTitleStackView(centerView: label, gameCenterAction: .init(handler: { [weak self] action in
-            self?.showLeaderboard()
+            self?.gameSceneDelegate?.showLeaderboard()
         }))
         
         stackView.addArrangedSubview(.spacer(height: 40))
@@ -156,9 +157,17 @@ class GameOverViewController: UIViewController {
         stackView.addArrangedSubview(topScoresStackView)
         
         let secondSpacer = UIView.spacer()
-        
         stackView.addArrangedSubview(secondSpacer)
         
+        let restartButton = PauseViewController.makeButton(title: "Restart", tint: .tintColor, action: .init(handler: { [weak self] action in
+            self?.gameSceneDelegate?.gameRestarted()
+        }))
+        
+        let nested = UIStackView()
+        nested.addArrangedSubview(restartButton)
+        
+        stackView.addArrangedSubview(nested)
+
         stackView.addArrangedSubview(.spacer(height: 20))
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -176,23 +185,5 @@ class GameOverViewController: UIViewController {
         ])
         
         view = containerView
-    }
-    
-    func showLeaderboard()
-    {
-        let leaderboard = GKGameCenterViewController(
-            leaderboardID: "com.joshgrant.topscores",
-            playerScope: .global, timeScope: .allTime)
-        leaderboard.gameCenterDelegate = self
-        present(leaderboard, animated: true, completion: nil)
-    }
-}
-
-extension GameOverViewController: GKGameCenterControllerDelegate
-{
-    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
-    {
-        gameCenterViewController.dismiss(animated: true, completion: nil)
-        //        presentScene()
     }
 }
