@@ -7,6 +7,7 @@ import Foundation
 import UIKit
 import GameKit
 import StoreKit
+import Purchases
 
 extension UIButton {
     
@@ -30,14 +31,23 @@ extension UIButton {
 }
 
 extension UIStackView {
-    static func makeTitleStackView(centerView: UIView, gameCenterAction: UIAction) -> UIStackView {
+    static func makeTitleStackView(leftView: UIView? = nil, centerView: UIView, gameCenterAction: UIAction) -> UIStackView {
+        leftView?.translatesAutoresizingMaskIntoConstraints = false
         centerView.translatesAutoresizingMaskIntoConstraints = false
-        let titleStackView = UIStackView(arrangedSubviews: [
-            UIView.spacer(),
-            centerView,
-            UIView.spacer(),
-            UIButton.makeGameCenterButton(action: gameCenterAction),
-            UIView.spacer(width: 10)])
+        
+        let titleStackView = UIStackView()
+        
+        if let leftView = leftView {
+            titleStackView.addArrangedSubview(.spacer())
+            titleStackView.addArrangedSubview(leftView)
+        }
+        
+        titleStackView.addArrangedSubview(UIView.spacer())
+        titleStackView.addArrangedSubview(centerView)
+        titleStackView.addArrangedSubview(UIView.spacer())
+        titleStackView.addArrangedSubview(UIButton.makeGameCenterButton(action: gameCenterAction))
+        titleStackView.addArrangedSubview(UIView.spacer(width: 10))
+        
         titleStackView.axis = .horizontal
         titleStackView.translatesAutoresizingMaskIntoConstraints = false
         titleStackView.alignment = .center
@@ -55,20 +65,13 @@ class PauseViewController: UIViewController {
     
     weak var gameSceneDelegate: GameSceneDelegate?
     
-    let store: Store
-    let noAds: Product
-    let onPurchase: (Product) -> Void
-    
     func purchase() {
-        do {
-            if try await store.purchase(fuel) != nil {
-                onPurchase(fuel)
+        Purchases.shared.purchasePackage(package) { (transaction, purchaserInfo, error, userCancelled) in
+            if purchaserInfo?.entitlements.all["Pro"]?.isActive == true {
+                // Unlock that great "pro" content
+                // Set the shared user defaults?
+                UserDefaults.standard.set(<#T##value: Bool##Bool#>, forKey: <#T##String#>)
             }
-        } catch StoreError.failedVerification {
-            errorTitle = "Your purchase could not be verified by the App Store."
-            isShowingError = true
-        } catch {
-            print("Failed fuel purchase: \(error)")
         }
     }
     
@@ -93,27 +96,27 @@ class PauseViewController: UIViewController {
             makeSwitch(text: "Sound",
                        isOn: UserDefaults.standard.bool(forKey: "sound"),
                        action: .init(handler: { action in
-                guard let sender = action.sender as? UISwitch else { return }
-                UserDefaults.standard.set(sender.isOn, forKey: "sound")
-            })),
+                           guard let sender = action.sender as? UISwitch else { return }
+                           UserDefaults.standard.set(sender.isOn, forKey: "sound")
+                       })),
             makeSwitch(text: "Haptics",
                        isOn: UserDefaults.standard.bool(forKey: "haptics"),
                        action: .init(handler: { action in
-                guard let sender = action.sender as? UISwitch else { return }
-                UserDefaults.standard.set(sender.isOn, forKey: "haptics")
-            })),
+                           guard let sender = action.sender as? UISwitch else { return }
+                           UserDefaults.standard.set(sender.isOn, forKey: "haptics")
+                       })),
             makeSwitch(text: "Hide Status Bar",
                        isOn: UserDefaults.standard.bool(forKey: "status"),
                        action: .init(handler: { action in
-                guard let sender = action.sender as? UISwitch else { return }
-                UserDefaults.standard.set(sender.isOn, forKey: "status")
-            })),
+                           guard let sender = action.sender as? UISwitch else { return }
+                           UserDefaults.standard.set(sender.isOn, forKey: "status")
+                       })),
             UIView.spacer(),
             Self.makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
                 self?.gameSceneDelegate?.gameRestarted()
             })),
-            Self.makeButton(title: "Remove Ads", tint: .systemGreen, action: .init(handler: { action in
-                
+            Self.makeButton(title: Self.titleForRemoveAds(), tint: .systemGreen, action: .init(handler: { [weak self] action in
+                self?.purchase()
             })),
             Self.makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
                 let alert = UIAlertController(
@@ -174,6 +177,10 @@ class PauseViewController: UIViewController {
         let stackView = UIStackView(arrangedSubviews: [textLabel, UIView.spacer(), toggle])
         stackView.axis = .horizontal
         return stackView
+    }
+    
+    static func titleForRemoveAds() -> String {
+        return "Remove Ads"
     }
     
     static func makeButton(title: String, tint: UIColor, action: UIAction) -> UIButton {

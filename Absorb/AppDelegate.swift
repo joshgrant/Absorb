@@ -8,6 +8,7 @@
 import UIKit
 import GameKit
 import GoogleMobileAds
+import Purchases
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate
@@ -28,13 +29,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate
          Warning: Ads may be preloaded by the Mobile Ads SDK or mediation partner SDKs upon calling startWithCompletionHandler:. If you need to obtain consent from users in the European Economic Area (EEA), set any request-specific flags (such as tagForChildDirectedTreatment or tag_for_under_age_of_consent), or otherwise take action before loading ads, ensure you do so before initializing the Mobile Ads SDK.
          */
         
-        /*
-         Test ad thing:
-         ca-app-pub-3940256099942544/2934735716
-         */
-        
         // Check the in-app purchases to see if they've bought ad-free
         GADMobileAds.sharedInstance().start(completionHandler: nil)
+        
+        Purchases.debugLogsEnabled = true
+        Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
         
         return true
     }

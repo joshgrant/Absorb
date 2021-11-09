@@ -18,6 +18,7 @@ protocol GameSceneDelegate: AnyObject
     func gameOver(score: Int, type: GameOverType)
     func gameRestarted()
     func showLeaderboard()
+    func openPauseMenuFromGameOver()
 }
 
 public class GameScene: SKScene
