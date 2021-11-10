@@ -13,6 +13,8 @@
 		03486F77272F07E300793820 /* PauseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F76272F07E300793820 /* PauseViewController.swift */; };
 		03486F79272F0D7C00793820 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F78272F0D7C00793820 /* UIView+Extensions.swift */; };
 		03486F7B272F214500793820 /* GameOverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03486F7A272F214500793820 /* GameOverViewController.swift */; };
+		0355D431273B476200CBD415 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0355D430273B476200CBD415 /* GoogleService-Info.plist */; };
+		0355D432273B476200CBD415 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0355D430273B476200CBD415 /* GoogleService-Info.plist */; };
 		03738461272796A8007F0952 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03738460272796A8007F0952 /* Database.swift */; };
 		037384662727979F007F0952 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 037384642727979F007F0952 /* Model.xcdatamodeld */; };
 		037CBC022716822400103FD0 /* CGVector+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC012716822400103FD0 /* CGVector+Extensions.swift */; };
@@ -49,7 +51,7 @@
 		03486F76272F07E300793820 /* PauseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseViewController.swift; sourceTree = "<group>"; };
 		03486F78272F0D7C00793820 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		03486F7A272F214500793820 /* GameOverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverViewController.swift; sourceTree = "<group>"; };
-		0361A5CE273AECC00037A182 /* Products.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Products.plist; sourceTree = "<group>"; };
+		0355D430273B476200CBD415 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0361A5CF273AED3C0037A182 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		03738460272796A8007F0952 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		037384652727979F007F0952 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -145,7 +147,6 @@
 			children = (
 				0344E7D8273AE13700BA6D3B /* ping_audio.caf */,
 				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
-				0361A5CE273AECC00037A182 /* Products.plist */,
 				0361A5CF273AED3C0037A182 /* Products.storekit */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
@@ -157,6 +158,7 @@
 				03486F76272F07E300793820 /* PauseViewController.swift */,
 				03486F78272F0D7C00793820 /* UIView+Extensions.swift */,
 				03D0A538273B2BDD0008E8F3 /* Podfile */,
+				0355D430273B476200CBD415 /* GoogleService-Info.plist */,
 				03AB37B32715D18F00E1BD2C /* Assets.xcassets */,
 				037CBC0527174B8200103FD0 /* Extensions */,
 				03AB37B52715D18F00E1BD2C /* LaunchScreen.storyboard */,
@@ -270,6 +272,7 @@
 			files = (
 				03AB37B42715D18F00E1BD2C /* Assets.xcassets in Resources */,
 				0344E7D9273AE13700BA6D3B /* ping_audio.caf in Resources */,
+				0355D431273B476200CBD415 /* GoogleService-Info.plist in Resources */,
 				03D0A539273B2BDD0008E8F3 /* Podfile in Resources */,
 				03AB37B72715D18F00E1BD2C /* LaunchScreen.storyboard in Resources */,
 			);
@@ -279,6 +282,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0355D432273B476200CBD415 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,6 +7,7 @@ target 'Absorb' do
 
   pod 'Purchases'
   pod 'Google-Mobile-Ads-SDK'
+  pod 'Firebase/Analytics'
 
   target 'AbsorbTests' do
     inherit! :search_paths

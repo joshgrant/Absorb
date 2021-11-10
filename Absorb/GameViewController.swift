@@ -25,7 +25,11 @@ class GameViewController: UIViewController
     lazy var bannerView: GADBannerView = {
         let bannerView = GADBannerView(adSize: GADAdSizeBanner)
         // Change this to production?
+        #if DEBUG
         bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        #else
+        bannerView.adUnitID = "ca-app-pub-7759050985948144/7040274891"
+        #endif
         bannerView.rootViewController = self
         return bannerView
     }()

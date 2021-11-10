@@ -9,6 +9,7 @@ import UIKit
 import GameKit
 import GoogleMobileAds
 import Purchases
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate
@@ -32,10 +33,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         // How can I obtain consent from the EEA?
         
         // Check the in-app purchases to see if they've bought ad-free
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        if !UserDefaults.standard.bool(forKey: "premium") {
+            GADMobileAds.sharedInstance().start(completionHandler: nil)
+        }
         
-        Purchases.logLevel = .debug
+        #if DEBUG
+            Purchases.logLevel = .debug
+        #endif
+        
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
+        FirebaseApp.configure()
         
         return true
     }
