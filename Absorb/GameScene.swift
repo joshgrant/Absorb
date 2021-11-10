@@ -19,6 +19,7 @@ protocol GameSceneDelegate: AnyObject
     func gameRestarted()
     func showLeaderboard()
     func openPauseMenuFromGameOver()
+    func scoreUpdate(to score: Int)
 }
 
 public class GameScene: SKScene
@@ -75,6 +76,7 @@ public class GameScene: SKScene
     private var playerRadius: CGFloat = Constants.referenceRadius
     
     private var score: Int = 0
+    private var pScore: Int = 0
     
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
@@ -82,13 +84,6 @@ public class GameScene: SKScene
         ball.kind = .player
         ball.fillColor = .systemBlue
         return ball
-    }()
-    
-    public let total: SKLabelNode = {
-        let node = SKLabelNode(text: "0")
-        node.fontColor = .label
-        node.fontSize = 34 // 68
-        return node
     }()
     
     // MARK: - Initialization
@@ -104,15 +99,6 @@ public class GameScene: SKScene
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - View lifecycle
-    
-    public override func didMove(to view: SKView)
-    {
-        super.didMove(to: view)
-        
-        DispatchQueue.main.async { [unowned self] in
-            addTotalLabel(to: view)
-        }
-    }
     
     /// Perform one-time setup
     public override func sceneDidLoad()
@@ -303,7 +289,10 @@ public class GameScene: SKScene
         playerRadius += temporaryRadius - Constants.referenceRadius
         temporaryRadius = Constants.referenceRadius
         
-        updateScore(to: score)
+        if score != pScore {
+            gameSceneDelegate?.scoreUpdate(to: score)
+            pScore = score
+        }
         
         checkGameOver()
     }
@@ -416,10 +405,11 @@ private extension GameScene
         npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
     
-    func updateScore(to newScore: Int)
-    {
-        total.text = "\(newScore)"
-    }
+//    func updateScore(to newScore: Int)
+//    {
+////        total.text = "\(newScore)"
+//
+//    }
 }
 
 // MARK: - NPC
@@ -470,24 +460,6 @@ private extension GameScene
 
 extension GameScene
 {
-    private func addTotalLabel(to view: SKView)
-    {
-        camera?.addChild(total)
-        
-        let padding = CGSize(width: 20, height: 40)
-        // Sa
-        
-        let topLeft = CGPoint(x: view.frame.size.width * -0.5 + view.safeAreaInsets.left + padding.width,
-                              y: view.frame.size.height * 0.5 - view.safeAreaInsets.top - padding.height)
-        
-        total.horizontalAlignmentMode = .left
-        total.position = topLeft
-        
-        if configuration.zoomedOutCamera {
-            camera?.setScale(10)
-        }
-    }
-    
     func loopAddEnemies() -> SKAction
     {
         .repeatForever(.sequence([
@@ -516,7 +488,12 @@ extension GameScene
         let camera = SKCameraNode()
         addChild(camera)
         scene.camera = camera
-        scene.camera?.setScale(Constants.cameraScale)
+        
+        if configuration.zoomedOutCamera {
+            camera.setScale(10)
+        } else {
+            camera.setScale(Constants.cameraScale)
+        }
     }
     
     func addPlayer()

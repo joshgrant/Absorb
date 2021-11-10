@@ -57,13 +57,13 @@ class GameOverViewController: UIViewController {
         label.textColor = .secondaryLabel
         label.text = gameOverType.rawValue
         
-        let pauseMenuButton = UIButton()
-        pauseMenuButton.setImage(.init(systemName: "gearshape.fill"), for: .normal)
-        pauseMenuButton.addAction(.init(handler: { action in
-            self?.gameSceneDelegate?.openPauseMenuFromGameOver()
-        }), for: .touchUpInside)
+//        let pauseMenuButton = UIButton()
+//        pauseMenuButton.setImage(.init(systemName: "gearshape.fill"), for: .normal)
+//        pauseMenuButton.addAction(.init(handler: { [weak self] action in
+//            self?.gameSceneDelegate?.openPauseMenuFromGameOver()
+//        }), for: .touchUpInside)
         
-        let titleStackView = UIStackView.makeTitleStackView(leftView: pauseMenuButton, centerView: label, gameCenterAction: .init(handler: { [weak self] action in
+        let titleStackView = UIStackView.makeTitleStackView(leftView: nil, centerView: label, gameCenterAction: .init(handler: { [weak self] action in
             self?.gameSceneDelegate?.showLeaderboard()
         }))
         

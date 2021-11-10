@@ -14,6 +14,14 @@ class GameViewController: UIViewController
 {
     lazy var gameView = SKView()
     var playPauseButton: UIButton?
+    lazy var scoreLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .label
+        label.font = .systemFont(ofSize: 34, weight: .light)
+        return label
+    }()
+    
     lazy var bannerView: GADBannerView = {
         let bannerView = GADBannerView(adSize: GADAdSizeBanner)
         // Change this to production?
@@ -42,21 +50,27 @@ class GameViewController: UIViewController
         button.tintColor = .darkGray
         button.addTarget(self, action: #selector(playPauseButtonDidTouchUpInside(_:)), for: .touchUpInside)
         gameView.addSubview(button)
+        gameView.addSubview(scoreLabel)
         
         NSLayoutConstraint.activate([
             button.widthAnchor.constraint(equalToConstant: 44),
             button.heightAnchor.constraint(equalToConstant: 44),
-            button.trailingAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.trailingAnchor),
-            button.topAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.topAnchor)
+            button.trailingAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            button.topAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.topAnchor, constant: 20),
+            
+            scoreLabel.leadingAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            scoreLabel.topAnchor.constraint(equalTo: gameView.safeAreaLayoutGuide.topAnchor, constant: 20)
         ])
-        
-        // Check that the in-app purchase hasn't been made yet
         
         playPauseButton = button
         
         contentView.addArrangedSubview(gameView)
-        contentView.addArrangedSubview(bannerView)
-
+        
+        if !UserDefaults.standard.bool(forKey: "premium") {
+            contentView.addArrangedSubview(bannerView)
+        }
+        
+        
         view = contentView
     }
     
@@ -88,6 +102,8 @@ class GameViewController: UIViewController
     
     func presentScene(paused: Bool = false)
     {
+        scoreLabel.text = "0"
+        
         let scene = GameScene()
         scene.gameSceneDelegate = self
         
@@ -118,7 +134,7 @@ extension GameViewController: GameSceneDelegate
         let pauseViewController = PauseViewController()
         pauseViewController.gameSceneDelegate = self
         pauseViewController.presentationController?.delegate = self
-        present(pauseViewController, animated: true, completion: nil)
+        show(pauseViewController, sender: self)
     }
     
     func gameOver(score: Int, type: GameOverType)
@@ -128,7 +144,7 @@ extension GameViewController: GameSceneDelegate
         let gameOver = GameOverViewController(score: score, type: type)
         gameOver.presentationController?.delegate = self
         gameOver.gameSceneDelegate = self
-        present(gameOver, animated: true, completion: nil)
+        show(gameOver, sender: self)
     }
     
     func gameRestarted()
@@ -143,8 +159,28 @@ extension GameViewController: GameSceneDelegate
             playerScope: .global,
             timeScope: .allTime)
         leaderboard.gameCenterDelegate = self
-        
         show(leaderboard, sender: self)
+    }
+    
+    func openPauseMenuFromGameOver() {
+        let pause = PauseViewController()
+        pause.gameSceneDelegate = self
+        pause.presentationController?.delegate = self
+        show(pause, sender: self)
+    }
+    
+    func scoreUpdate(to score: Int) {
+        scoreLabel.text = "\(score)"
+        
+        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: [.beginFromCurrentState], animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5) {
+                self.scoreLabel.transform = .init(scaleX: 2.0, y: 2.0)
+            }
+            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
+                self.scoreLabel.transform = .init(scaleX: 1.0, y: 1.0)
+            }
+        }, completion: nil)
+
     }
 }
 

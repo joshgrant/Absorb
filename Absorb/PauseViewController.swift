@@ -65,12 +65,47 @@ class PauseViewController: UIViewController {
     
     weak var gameSceneDelegate: GameSceneDelegate?
     
+    lazy var purchaseButton: UIButton = {
+        Self.makeButton(title: Self.titleForRemoveAds(), tint: .systemGreen, action: .init(handler: { [weak self] action in
+            self?.purchase()
+        }))
+    }()
+    
     func purchase() {
-        Purchases.shared.purchasePackage(package) { (transaction, purchaserInfo, error, userCancelled) in
-            if purchaserInfo?.entitlements.all["Pro"]?.isActive == true {
-                // Unlock that great "pro" content
-                // Set the shared user defaults?
-                UserDefaults.standard.set(<#T##value: Bool##Bool#>, forKey: <#T##String#>)
+        
+        guard !UserDefaults.standard.bool(forKey: "premium") else {
+            let alert = UIAlertController(title: "No Ads", message: "You've already removed ads. Thank you!", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default)
+            alert.addAction(action)
+            show(alert, sender: self)
+            return
+        }
+        
+        Purchases.shared.restoreTransactions { [weak self] (purchaserInfo, error) in
+            //... check purchaserInfo to see if entitlement is now active
+            if purchaserInfo?.entitlements.all["Pro"]?.isActive ?? false {
+                // We have a purchase!
+                UserDefaults.standard.set(true, forKey: "premium")
+                self?.purchaseButton.setTitle(Self.titleForRemoveAds(), for: .normal)
+            } else {
+                Purchases.shared.offerings { (offerings, error) in
+                    if let offerings = offerings, let package = offerings.current?.availablePackages.first {
+                        Purchases.shared.purchasePackage(package) { transaction, purchaserInfo, error, cancelled in
+                            if transaction != nil && purchaserInfo != nil {
+                                UserDefaults.standard.set(true, forKey: "premium")
+                                self?.purchaseButton.setTitle(Self.titleForRemoveAds(), for: .normal)
+                                let alert = UIAlertController(
+                                    title: "Ads Removed",
+                                    message: "Thank you for removing ads!",
+                                    preferredStyle: .alert)
+                                let action = UIAlertAction(title: "OK", style: .default)
+                                alert.addAction(action)
+                                self?.show(alert, sender: self)
+                                return
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -115,9 +150,7 @@ class PauseViewController: UIViewController {
             Self.makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
                 self?.gameSceneDelegate?.gameRestarted()
             })),
-            Self.makeButton(title: Self.titleForRemoveAds(), tint: .systemGreen, action: .init(handler: { [weak self] action in
-                self?.purchase()
-            })),
+            purchaseButton,
             Self.makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
                 let alert = UIAlertController(
                     title: "Delete Scores",
@@ -180,7 +213,11 @@ class PauseViewController: UIViewController {
     }
     
     static func titleForRemoveAds() -> String {
-        return "Remove Ads"
+        if UserDefaults.standard.bool(forKey: "premium") {
+            return "Ads removed. Thank you!"
+        } else {
+            return "Remove Ads / Restore"
+        }
     }
     
     static func makeButton(title: String, tint: UIColor, action: UIAction) -> UIButton {
