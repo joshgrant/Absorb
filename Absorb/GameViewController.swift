@@ -10,6 +10,17 @@ import SpriteKit
 import GameKit
 import GoogleMobileAds
 
+protocol GameSceneDelegate: AnyObject
+{
+    func gamePaused()
+    func gameOver(score: Int)
+    func gameRestarted()
+    func showLeaderboard()
+    func openPauseMenuFromGameOver()
+    func scoreUpdate(to score: Int)
+    func disableAds()
+}
+
 class GameViewController: UIViewController
 {
     lazy var gameView = SKView()
@@ -135,17 +146,18 @@ extension GameViewController: GameSceneDelegate
 {
     func gamePaused()
     {
+        (view as? SKView)?.scene?.isPaused = true
         let pauseViewController = PauseViewController()
         pauseViewController.gameSceneDelegate = self
         pauseViewController.presentationController?.delegate = self
         show(pauseViewController, sender: self)
     }
     
-    func gameOver(score: Int, type: GameOverType)
+    func gameOver(score: Int)
     {
         presentScene(paused: true)
         
-        let gameOver = GameOverViewController(score: score, type: type)
+        let gameOver = GameOverViewController(score: score)
         gameOver.presentationController?.delegate = self
         gameOver.gameSceneDelegate = self
         show(gameOver, sender: self)
@@ -157,7 +169,8 @@ extension GameViewController: GameSceneDelegate
         presentedViewController?.dismiss(animated: true, completion: nil)
     }
     
-    func showLeaderboard() {
+    func showLeaderboard()
+    {
         let leaderboard = GKGameCenterViewController(
             leaderboardID: "com.joshgrant.topscores",
             playerScope: .global,
@@ -166,7 +179,8 @@ extension GameViewController: GameSceneDelegate
         show(leaderboard, sender: self)
     }
     
-    func openPauseMenuFromGameOver() {
+    func openPauseMenuFromGameOver()
+    {
         let pause = PauseViewController()
         pause.gameSceneDelegate = self
         pause.presentationController?.delegate = self
@@ -186,12 +200,17 @@ extension GameViewController: GameSceneDelegate
         }, completion: nil)
 
     }
+    
+    func disableAds() {
+        bannerView.removeFromSuperview()
+    }
 }
 
 extension GameViewController: UIPopoverPresentationControllerDelegate
 {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController)
     {
+        /// Check which controller dismisses... because if the game over dismisses, it... resumes the game?
         gameView.scene?.isPaused = false
         playPauseButton?.setImage(.init(systemName: "pause.fill"), for: .normal)
     }

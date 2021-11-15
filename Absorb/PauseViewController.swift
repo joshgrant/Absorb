@@ -78,6 +78,7 @@ class PauseViewController: UIViewController {
             let action = UIAlertAction(title: "OK", style: .default)
             alert.addAction(action)
             show(alert, sender: self)
+            gameSceneDelegate?.disableAds()
             return
         }
         
@@ -87,6 +88,7 @@ class PauseViewController: UIViewController {
                 // We have a purchase!
                 UserDefaults.standard.set(true, forKey: "premium")
                 self?.purchaseButton.setTitle(Self.titleForRemoveAds(), for: .normal)
+                self?.gameSceneDelegate?.disableAds()
             } else {
                 Purchases.shared.offerings { (offerings, error) in
                     if let offerings = offerings, let package = offerings.current?.availablePackages.first {
@@ -101,6 +103,7 @@ class PauseViewController: UIViewController {
                                 let action = UIAlertAction(title: "OK", style: .default)
                                 alert.addAction(action)
                                 self?.show(alert, sender: self)
+                                self?.gameSceneDelegate?.disableAds()
                                 return
                             }
                         }

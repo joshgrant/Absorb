@@ -47,8 +47,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         return true
     }
     
-    func applicationDidEnterBackground(_ application: UIApplication)
-    {
-//        Game.save()
-    }
+//    func applicationDidEnterBackground(_ application: UIApplication)
+//    {
+//        guard let controller = window?.rootViewController as? GameViewController else { return }
+//     
+//        if !controller.gameView.isPaused {
+//            controller.gamePaused()
+//        }
+//    }
 }

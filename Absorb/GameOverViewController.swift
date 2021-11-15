@@ -18,24 +18,62 @@ class GameOverViewController: UIViewController {
     
     // MARK: - Variables
     
-    var gameOverType: GameOverType
+    var gameOverType: GameOverType?
     var score: Int
     
     var gameCenterButton: UIButton!
-//    var restartButton: UIButton!
+    var alert: UIAlertController?
+    //    var restartButton: UIButton!
     
     weak var gameSceneDelegate: GameSceneDelegate?
     
     // MARK: - Initialization
     
-    init(score: Int, type: GameOverType) {
-        self.gameOverType = type
+    init(score: Int) {
         self.score = score
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        if UserDefaults.standard.string(forKey: "name") != nil {
+            addNewScore()
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if UserDefaults.standard.string(forKey: "name") == nil {
+            let askNameAlert = UIAlertController(title: "Enter your name:", message: nil, preferredStyle: .alert)
+            askNameAlert.addTextField { textField in
+                textField.delegate = self
+                textField.autocapitalizationType = .words
+                textField.autocorrectionType = .no
+            }
+            show(askNameAlert, sender: self)
+            self.alert = askNameAlert
+        }
+    }
+    
+    func addNewScore() {
+        let newScore = Score(context: Database.context)
+        newScore.name = UserDefaults.standard.string(forKey: "name") ?? "Easter Egg"
+        newScore.date = .now
+        newScore.score = Int64(score)
+        
+        try? Database.context.save()
+        
+        let topScore = Database.topScore
+        
+        self.gameOverType = (newScore.score == topScore?.score) ? .won : .lost
+        // Show the screen...
+        self.view.setNeedsDisplay()
     }
     
     // MARK: - View lifecycle
@@ -48,20 +86,20 @@ class GameOverViewController: UIViewController {
         stackView.axis = .vertical
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
-//        stackView.alignment = .center
+        //        stackView.alignment = .center
         
         // 2. Create the "You won!/Game Over!" Label
         
         let label = UILabel()
         label.font = .systemFont(ofSize: 30, weight: .regular)
         label.textColor = .secondaryLabel
-        label.text = gameOverType.rawValue
+        label.text = (gameOverType ?? .won).rawValue
         
-//        let pauseMenuButton = UIButton()
-//        pauseMenuButton.setImage(.init(systemName: "gearshape.fill"), for: .normal)
-//        pauseMenuButton.addAction(.init(handler: { [weak self] action in
-//            self?.gameSceneDelegate?.openPauseMenuFromGameOver()
-//        }), for: .touchUpInside)
+        //        let pauseMenuButton = UIButton()
+        //        pauseMenuButton.setImage(.init(systemName: "gearshape.fill"), for: .normal)
+        //        pauseMenuButton.addAction(.init(handler: { [weak self] action in
+        //            self?.gameSceneDelegate?.openPauseMenuFromGameOver()
+        //        }), for: .touchUpInside)
         
         let titleStackView = UIStackView.makeTitleStackView(leftView: nil, centerView: label, gameCenterAction: .init(handler: { [weak self] action in
             self?.gameSceneDelegate?.showLeaderboard()
@@ -119,7 +157,7 @@ class GameOverViewController: UIViewController {
             let horizontalStackView = UIStackView()
             horizontalStackView.axis = .horizontal
             horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-                        
+            
             let numberLabel = UILabel()
             numberLabel.text = "\(i + 1). "
             numberLabel.textColor = .label
@@ -173,7 +211,7 @@ class GameOverViewController: UIViewController {
         nested.addArrangedSubview(restartButton)
         
         stackView.addArrangedSubview(nested)
-
+        
         stackView.addArrangedSubview(.spacer(height: 20))
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -191,5 +229,23 @@ class GameOverViewController: UIViewController {
         ])
         
         view = containerView
+    }
+}
+
+extension GameOverViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        // Save the user name
+        UserDefaults.standard.set(textField.text, forKey: "name")
+        // Reload the view...
+        self.alert?.dismiss(animated: true, completion: { [weak self] in
+            self?.addNewScore()
+        })
+        
     }
 }

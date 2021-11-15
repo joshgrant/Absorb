@@ -12,16 +12,6 @@ import GameKit
 // TODO: When the user loses, they can enter their name and it'll save the score
 // TODO: Highlight score in scoreboard
 
-protocol GameSceneDelegate: AnyObject
-{
-    func gamePaused()
-    func gameOver(score: Int, type: GameOverType)
-    func gameRestarted()
-    func showLeaderboard()
-    func openPauseMenuFromGameOver()
-    func scoreUpdate(to score: Int)
-}
-
 public class GameScene: SKScene
 {
     let generator = UIImpactFeedbackGenerator(style: .light)
@@ -335,18 +325,7 @@ public class GameScene: SKScene
         
         Game.submit(score: score, completion: { })
         
-        let newScore = Score(context: Database.context)
-        newScore.name = UserDefaults.standard.string(forKey: "name") ?? "Johnny"
-        newScore.date = .now
-        newScore.score = Int64(score)
-        
-        try? Database.context.save()
-        
-        let topScore = Database.topScore
-        
-        let type: GameOverType = (newScore.score == topScore?.score) ? .won : .lost
-        
-        gameSceneDelegate?.gameOver(score: score, type: type)
+        gameSceneDelegate?.gameOver(score: score)
     }
 }
 
