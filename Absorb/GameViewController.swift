@@ -118,9 +118,11 @@ class GameViewController: UIViewController
     
     func authenticatePlayer()
     {
+        hackPaused = true
         GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
             if GKLocalPlayer.local.isAuthenticated
             {
+                hackPaused = false
                 print("Authenticated!")
             }
             else if let controller = controller
@@ -129,6 +131,7 @@ class GameViewController: UIViewController
             }
             else if let error = error
             {
+                hackPaused = false
                 print(error.localizedDescription)
             }
         }
