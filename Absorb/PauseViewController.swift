@@ -271,8 +271,11 @@ class PauseViewController: UIViewController {
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .medium)
         
+        let height = button.heightAnchor.constraint(lessThanOrEqualToConstant: 44)
+        height.priority = .defaultHigh
+        
         NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(lessThanOrEqualToConstant: 44),
+            height,
             button.heightAnchor.constraint(greaterThanOrEqualToConstant: 38),
         ])
         
