@@ -26,6 +26,10 @@ protocol GameSceneDelegate: AnyObject
 
 class GameViewController: UIViewController
 {
+    enum Constants {
+        static let screenshotMode = true
+    }
+    
     var fakeWindow: UIWindow?
     
     var hackPaused: Bool {
@@ -96,9 +100,10 @@ class GameViewController: UIViewController
         contentView.addArrangedSubview(gameView)
         
         if !UserDefaults.standard.bool(forKey: "premium") {
-            contentView.addArrangedSubview(bannerView)
+            if !Constants.screenshotMode {
+                contentView.addArrangedSubview(bannerView)
+            }
         }
-        
         
         view = contentView
     }
@@ -137,8 +142,13 @@ class GameViewController: UIViewController
         scene.gameSceneDelegate = self
         
         gameView.ignoresSiblingOrder = true
-        gameView.showsFPS = true
-        gameView.showsNodeCount = true
+        
+        #if DEBUG
+        if !Constants.screenshotMode {
+            gameView.showsFPS = true
+            gameView.showsNodeCount = true
+        }
+        #endif
         
         gameView.presentScene(scene)
         
