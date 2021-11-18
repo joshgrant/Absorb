@@ -27,7 +27,7 @@ protocol GameSceneDelegate: AnyObject
 class GameViewController: UIViewController
 {
     enum Constants {
-        static let screenshotMode = true
+        static let screenshotMode = false
     }
     
     var fakeWindow: UIWindow?

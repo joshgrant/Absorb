@@ -13,12 +13,15 @@ extension UIButton {
     
     static func makeGameCenterButton(action: UIAction) -> UIButton {
         let gameCenterButton = UIButton()
-        gameCenterButton.configuration = .filled()
-        gameCenterButton.configuration?.cornerStyle = .medium
+        
+        gameCenterButton.backgroundColor = .label
+        gameCenterButton.layer.cornerCurve = .continuous
+        gameCenterButton.layer.cornerRadius = 8
+        gameCenterButton.setImage(UIImage(named: "game_center"), for: .normal)
+        gameCenterButton.layoutMargins = .init(top: 10, left: 10, bottom: 10, right: 10)
+        
         gameCenterButton.tintColor = .label
-        gameCenterButton.configuration?.image = UIImage(named: "game_center")
-        gameCenterButton.configuration?.imagePlacement = .all
-        gameCenterButton.configuration?.imagePadding = 10
+        
         gameCenterButton.translatesAutoresizingMaskIntoConstraints = false
         gameCenterButton.addAction(action, for: .touchUpInside)
         
@@ -52,8 +55,11 @@ extension UIStackView {
         titleStackView.translatesAutoresizingMaskIntoConstraints = false
         titleStackView.alignment = .center
         
+        let centerAnchor = centerView.centerXAnchor.constraint(equalTo: titleStackView.centerXAnchor)
+        centerAnchor.priority = .defaultHigh
+        
         NSLayoutConstraint.activate([
-            centerView.centerXAnchor.constraint(equalTo: titleStackView.centerXAnchor)
+            centerAnchor
         ])
         return titleStackView
     }
@@ -166,10 +172,16 @@ class PauseViewController: UIViewController {
                 }))
                 self.present(alert, animated: true, completion: nil)
             })),
+            UIView.spacer(),
+            makeLink(text: "Privacy Policy", url: URL(string: "https://gist.github.com/joshgrant/c3d8c640d2b3c9bd75c737ae90fa60d3")!),
             UIView.spacer()])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 20
+        if UIScreen.main.bounds.height > 600 {
+            stackView.spacing = 20
+        } else {
+            stackView.spacing = 15
+        }
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
         containerView.addSubview(stackView)
@@ -186,6 +198,21 @@ class PauseViewController: UIViewController {
         view = containerView
     }
     
+    func makeLink(text: String, url: URL) -> UIButton {
+        let button = UIButton()
+        button.setTitle(text, for: .normal)
+        button.setTitleColor(.tertiaryLabel, for: .normal)
+        button.addAction(.init(handler: { action in
+            UIApplication.shared.open(url)
+        }), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 30)
+        ])
+        
+        return button
+    }
+    
     func makeTextField(text: String, placeholder: String, content: String? = nil) -> UIStackView {
         let textField = UITextField()
         textField.text = content
@@ -200,6 +227,7 @@ class PauseViewController: UIViewController {
         
         let stackView = UIStackView(arrangedSubviews: [label, UIView.spacer(), textField])
         stackView.axis = .horizontal
+        stackView.setContentCompressionResistancePriority(.required, for: .vertical)
         return stackView
     }
     
@@ -207,11 +235,14 @@ class PauseViewController: UIViewController {
         let textLabel = UILabel()
         textLabel.text = text
         textLabel.font = .systemFont(ofSize: 24, weight: .regular)
+        textLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         let toggle = UISwitch()
         toggle.isOn = isOn
         toggle.addAction(action, for: .valueChanged)
+        toggle.setContentCompressionResistancePriority(.required, for: .vertical)
         let stackView = UIStackView(arrangedSubviews: [textLabel, UIView.spacer(), toggle])
         stackView.axis = .horizontal
+        stackView.setContentCompressionResistancePriority(.required, for: .vertical)
         return stackView
     }
     
@@ -239,10 +270,10 @@ class PauseViewController: UIViewController {
         button.addAction(action, for: .touchUpInside)
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .medium)
-        //        button.configuration?.attributedTitle = .init(title, attributes: .init([.font: UIFont.systemFont(ofSize: 22, weight: .medium), .foregroundColor: UIColor.systemBackground]))
         
         NSLayoutConstraint.activate([
-            button.heightAnchor.constraint(equalToConstant: 44)
+            button.heightAnchor.constraint(lessThanOrEqualToConstant: 44),
+            button.heightAnchor.constraint(greaterThanOrEqualToConstant: 38),
         ])
         
         return button

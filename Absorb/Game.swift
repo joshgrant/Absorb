@@ -7,14 +7,7 @@ import Foundation
 import GameKit
 
 final class Game
-{
-    static func loadTopTenEntries()
-    {
-        GKLeaderboard().loadEntries(for: [GKLocalPlayer.local], timeScope: .allTime) { entry, entries, error in
-            print(entries)
-        }
-    }
-    
+{    
     static func submit(score: Int, completion: @escaping () -> Void)
     {
         guard GKLocalPlayer.local.isAuthenticated else { completion(); return }

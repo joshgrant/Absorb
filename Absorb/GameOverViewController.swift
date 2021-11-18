@@ -63,7 +63,7 @@ class GameOverViewController: UIViewController {
     func addNewScore() {
         let newScore = Score(context: Database.context)
         newScore.name = UserDefaults.standard.string(forKey: "name") ?? "Easter Egg"
-        newScore.date = .now
+        newScore.date = Date()
         newScore.score = Int64(score)
         
         try? Database.context.save()
@@ -104,7 +104,25 @@ extension GameOverViewController: UITextFieldDelegate {
 extension GameOverViewController {
     
     func makeContainerView() -> UIView {
-        let containerView = UIView()
+        
+        let colors: [CGColor]
+        
+        switch gameOverType {
+        case .won:
+            colors = [
+                UIColor(rawRed: 224, rawGreen: 32, rawBlue: 32, alpha: 0.35).cgColor,
+                UIColor(rawRed: 250, rawGreen: 100, rawBlue: 0, alpha: 0.35).cgColor,
+                UIColor(rawRed: 247, rawGreen: 181, rawBlue: 0, alpha: 0.35).cgColor,
+                UIColor(rawRed: 109, rawGreen: 212, rawBlue: 0, alpha: 0.35).cgColor,
+                UIColor(rawRed: 0, rawGreen: 145, rawBlue: 255, alpha: 0.35).cgColor,
+                UIColor(rawRed: 98, rawGreen: 54, rawBlue: 255, alpha: 0.35).cgColor,
+                UIColor(rawRed: 182, rawGreen: 32, rawBlue: 224, alpha: 0.35).cgColor,
+            ]
+        default:
+            colors = [UIColor.systemBackground.cgColor]
+        }
+        
+        let containerView = GradientView(colors: colors)
         containerView.backgroundColor = .systemBackground
         
         let stackView = makeStackView()
@@ -140,7 +158,7 @@ extension GameOverViewController {
         let secondSpacer = UIView.spacer()
         stackView.addArrangedSubview(secondSpacer)
         
-        let restartButton = PauseViewController.makeButton(title: "Restart", tint: .tintColor, action: .init(handler: { [weak self] action in
+        let restartButton = PauseViewController.makeButton(title: "Restart", tint: UIColor.link, action: .init(handler: { [weak self] action in
             self?.gameSceneDelegate?.gameRestarted()
         }))
         
