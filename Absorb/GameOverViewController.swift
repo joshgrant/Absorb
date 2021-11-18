@@ -23,7 +23,6 @@ class GameOverViewController: UIViewController {
     
     var gameCenterButton: UIButton!
     var alert: UIAlertController?
-    //    var restartButton: UIButton!
     
     weak var gameSceneDelegate: GameSceneDelegate?
     
@@ -72,38 +71,51 @@ class GameOverViewController: UIViewController {
         let topScore = Database.topScore
         
         self.gameOverType = (newScore.score == topScore?.score) ? .won : .lost
-        // Show the screen...
-        self.view.setNeedsDisplay()
+        view = makeContainerView()
     }
     
     // MARK: - View lifecycle
     
     override func loadView() {
+        view = makeContainerView()
+    }
+}
+
+extension GameOverViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        // Save the user name
+        UserDefaults.standard.set(textField.text, forKey: "name")
+        // Reload the view...
+        self.alert?.dismiss(animated: true, completion: { [weak self] in
+            self?.addNewScore()
+        })
+        
+    }
+}
+
+// MARK: - Factory
+
+extension GameOverViewController {
+    
+    func makeContainerView() -> UIView {
         let containerView = UIView()
         containerView.backgroundColor = .systemBackground
         
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
-        //        stackView.alignment = .center
+        let stackView = makeStackView()
+        let gameOverLabel = makeGameOverLabel()
         
-        // 2. Create the "You won!/Game Over!" Label
-        
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 30, weight: .regular)
-        label.textColor = .secondaryLabel
-        label.text = (gameOverType ?? .won).rawValue
-        
-        //        let pauseMenuButton = UIButton()
-        //        pauseMenuButton.setImage(.init(systemName: "gearshape.fill"), for: .normal)
-        //        pauseMenuButton.addAction(.init(handler: { [weak self] action in
-        //            self?.gameSceneDelegate?.openPauseMenuFromGameOver()
-        //        }), for: .touchUpInside)
-        
-        let titleStackView = UIStackView.makeTitleStackView(leftView: nil, centerView: label, gameCenterAction: .init(handler: { [weak self] action in
-            self?.gameSceneDelegate?.showLeaderboard()
-        }))
+        let titleStackView = UIStackView.makeTitleStackView(
+            leftView: nil,
+            centerView: gameOverLabel,
+            gameCenterAction: .init(handler: { [weak self] action in
+                self?.gameSceneDelegate?.showLeaderboard()
+            }))
         
         stackView.addArrangedSubview(.spacer(height: 40))
         stackView.addArrangedSubview(titleStackView)
@@ -111,46 +123,99 @@ class GameOverViewController: UIViewController {
         let firstSpacer = UIView.spacer()
         stackView.addArrangedSubview(firstSpacer)
         
-        // 3. Create the "Your score" label
-        
-        let yourScoreLabel = UILabel()
-        yourScoreLabel.font = .systemFont(ofSize: 18, weight: .light)
-        yourScoreLabel.textColor = .secondaryLabel
-        yourScoreLabel.text = "Your score:"
-        yourScoreLabel.textAlignment = .center
-        yourScoreLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
+        let yourScoreLabel = makeYourScoreLabel()
         stackView.addArrangedSubview(yourScoreLabel)
         stackView.addArrangedSubview(.spacer())
         
-        // 4. Create the score label
-        
-        let scoreLabel = UILabel()
-        scoreLabel.font = .monospacedDigitSystemFont(ofSize: 60, weight: .bold)
-        scoreLabel.textColor = .label
-        scoreLabel.textAlignment = .center
-        scoreLabel.text = "\(score)"
-        scoreLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
+        let scoreLabel = makeScoreLabel()
         stackView.addArrangedSubview(scoreLabel)
-        
         stackView.addArrangedSubview(.spacer())
         
-        let highScoresHeader = UILabel()
-        highScoresHeader.text = "High scores:"
-        highScoresHeader.font = .systemFont(ofSize: 18, weight: .light)
-        highScoresHeader.textColor = .secondaryLabel
-        highScoresHeader.textAlignment = .center
-        highScoresHeader.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        let highScoresHeader = makeHighScoresLabel()
         stackView.addArrangedSubview(highScoresHeader)
         stackView.addSubview(.spacer(height: 20))
         
-        // 3. Create the top scores list
+        let topScoresStackView = makeHighScoresStackView()
+        stackView.addArrangedSubview(topScoresStackView)
+        let secondSpacer = UIView.spacer()
+        stackView.addArrangedSubview(secondSpacer)
         
-        let topScoresStackView = UIStackView()
-        topScoresStackView.axis = .vertical
-        topScoresStackView.translatesAutoresizingMaskIntoConstraints = false
-        let topScores = Database.topTenScores
+        let restartButton = PauseViewController.makeButton(title: "Restart", tint: .tintColor, action: .init(handler: { [weak self] action in
+            self?.gameSceneDelegate?.gameRestarted()
+        }))
+        
+        let nested = UIStackView()
+        nested.addArrangedSubview(restartButton)
+        
+        stackView.addArrangedSubview(nested)
+        stackView.addArrangedSubview(.spacer(height: 20))
+        containerView.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            firstSpacer.heightAnchor.constraint(equalTo: secondSpacer.heightAnchor),
+            
+            stackView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+        ])
+        
+        return containerView
+    }
+    
+    func makeStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.directionalLayoutMargins = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
+        return stackView
+    }
+    
+    func makeGameOverLabel() -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 30, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.text = (gameOverType ?? .won).rawValue
+        return label
+    }
+    
+    func makeYourScoreLabel() -> UILabel {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 18, weight: .light)
+        label.textColor = .secondaryLabel
+        label.text = "Your score:"
+        label.textAlignment = .center
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return label
+    }
+    
+    func makeScoreLabel() -> UILabel {
+        let label = UILabel()
+        label.font = .monospacedDigitSystemFont(ofSize: 60, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.text = "\(score)"
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return label
+    }
+    
+    func makeHighScoresLabel() -> UILabel {
+        let label = UILabel()
+        label.text = "High scores:"
+        label.font = .systemFont(ofSize: 18, weight: .light)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return label
+    }
+    
+    func makeHighScoresStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let topScores = Database.topTenScores // TODO: Or fetch from game center?
         
         for i in 0 ... 9 {
             
@@ -173,7 +238,6 @@ class GameOverViewController: UIViewController {
             guard topScores.count > i else {
                 horizontalStackView.addArrangedSubview(.spacer())
                 stackView.addArrangedSubview(horizontalStackView)
-                topScoresStackView.addArrangedSubview(horizontalStackView)
                 continue
             }
             
@@ -195,57 +259,10 @@ class GameOverViewController: UIViewController {
             scoreLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .bold)
             horizontalStackView.addArrangedSubview(scoreLabel)
             
-            topScoresStackView.addArrangedSubview(horizontalStackView)
+            stackView.addArrangedSubview(horizontalStackView)
         }
         
-        stackView.addArrangedSubview(topScoresStackView)
-        
-        let secondSpacer = UIView.spacer()
-        stackView.addArrangedSubview(secondSpacer)
-        
-        let restartButton = PauseViewController.makeButton(title: "Restart", tint: .tintColor, action: .init(handler: { [weak self] action in
-            self?.gameSceneDelegate?.gameRestarted()
-        }))
-        
-        let nested = UIStackView()
-        nested.addArrangedSubview(restartButton)
-        
-        stackView.addArrangedSubview(nested)
-        
-        stackView.addArrangedSubview(.spacer(height: 20))
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(stackView)
-        
-        NSLayoutConstraint.activate([
-            firstSpacer.heightAnchor.constraint(equalTo: secondSpacer.heightAnchor)
-        ])
-        
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            stackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            stackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-        ])
-        
-        view = containerView
-    }
-}
-
-extension GameOverViewController: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+        return stackView
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        // Save the user name
-        UserDefaults.standard.set(textField.text, forKey: "name")
-        // Reload the view...
-        self.alert?.dismiss(animated: true, completion: { [weak self] in
-            self?.addNewScore()
-        })
-        
-    }
 }

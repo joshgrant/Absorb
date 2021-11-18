@@ -10,6 +10,9 @@ import SpriteKit
 import GameKit
 import GoogleMobileAds
 
+// 2. When the user enters their name, it should update the score...
+// 3. Game center view's bottom has a weird spacing...
+
 protocol GameSceneDelegate: AnyObject
 {
     func gamePaused()
@@ -23,6 +26,18 @@ protocol GameSceneDelegate: AnyObject
 
 class GameViewController: UIViewController
 {
+    var fakeWindow: UIWindow?
+    
+    var hackPaused: Bool {
+        get {
+            gameView.scene?.speed == 0
+        }
+        set {
+            gameView.scene?.speed = newValue ? 0 : 1
+            gameView.scene?.physicsWorld.speed = newValue ? 0 : 1
+        }
+    }
+    
     lazy var gameView = SKView()
     var playPauseButton: UIButton?
     lazy var scoreLabel: UILabel = {
@@ -35,7 +50,6 @@ class GameViewController: UIViewController
     
     lazy var bannerView: GADBannerView = {
         let bannerView = GADBannerView(adSize: GADAdSizeBanner)
-        // Change this to production?
         #if DEBUG
         bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
         #else
@@ -128,14 +142,14 @@ class GameViewController: UIViewController
         
         gameView.presentScene(scene)
         
-        scene.isPaused = paused
+        hackPaused = paused
     }
     
     @objc func playPauseButtonDidTouchUpInside(_ sender: UIButton)
     {
-        gameView.scene?.isPaused.toggle()
+        hackPaused.toggle()
         
-        if gameView.scene?.isPaused ?? false
+        if hackPaused
         {
             gamePaused()
         }
@@ -146,7 +160,7 @@ extension GameViewController: GameSceneDelegate
 {
     func gamePaused()
     {
-        (view as? SKView)?.scene?.isPaused = true
+        hackPaused = true
         let pauseViewController = PauseViewController()
         pauseViewController.gameSceneDelegate = self
         pauseViewController.presentationController?.delegate = self
@@ -171,12 +185,20 @@ extension GameViewController: GameSceneDelegate
     
     func showLeaderboard()
     {
+        hackPaused = true
+        
+        fakeWindow = UIWindow(frame: UIScreen.main.bounds)
+        fakeWindow?.rootViewController = UIViewController()
+        
         let leaderboard = GKGameCenterViewController(
             leaderboardID: "com.joshgrant.topscores",
             playerScope: .global,
             timeScope: .allTime)
         leaderboard.gameCenterDelegate = self
-        show(leaderboard, sender: self)
+        leaderboard.view.translatesAutoresizingMaskIntoConstraints = true
+        
+        fakeWindow?.makeKeyAndVisible()
+        fakeWindow?.rootViewController?.show(leaderboard, sender: self)
     }
     
     func openPauseMenuFromGameOver()
@@ -211,7 +233,7 @@ extension GameViewController: UIPopoverPresentationControllerDelegate
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController)
     {
         /// Check which controller dismisses... because if the game over dismisses, it... resumes the game?
-        gameView.scene?.isPaused = false
+        hackPaused = false
         playPauseButton?.setImage(.init(systemName: "pause.fill"), for: .normal)
     }
 }
@@ -220,6 +242,8 @@ extension GameViewController: GKGameCenterControllerDelegate
 {
     func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController)
     {
-        gameCenterViewController.dismiss(animated: true, completion: nil)
+        gameCenterViewController.dismiss(animated: true, completion: { [weak self] in
+            self?.fakeWindow = nil
+        })
     }
 }

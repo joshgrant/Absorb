@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         window?.makeKeyAndVisible()
 
         if UserDefaults.standard.value(forKey: "status") == nil {
-            UserDefaults.standard.set(false, forKey: "status")
+            UserDefaults.standard.set(true, forKey: "status")
         }
         
         /*
@@ -46,13 +46,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         return true
     }
-    
-//    func applicationDidEnterBackground(_ application: UIApplication)
-//    {
-//        guard let controller = window?.rootViewController as? GameViewController else { return }
-//     
-//        if !controller.gameView.isPaused {
-//            controller.gamePaused()
-//        }
-//    }
 }
