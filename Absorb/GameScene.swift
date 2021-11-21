@@ -26,7 +26,6 @@ public class GameScene: SKScene
         var addsPlayer = true
         var npcsAreSmaller = false
         var zoomedOutCamera = false
-        var alwaysShowTutorial = true
     }
     
     struct Constants
@@ -70,8 +69,6 @@ public class GameScene: SKScene
     private var score: Int = 0
     private var pScore: Int = 0
     
-    var tutorialNode: SKNode?
-    
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
                         position: CGPoint(x: 0, y: 30))
@@ -103,42 +100,6 @@ public class GameScene: SKScene
         addPlayer()
         addNPCs()
         addStartingEnemies()
-        addTutorialIfNeeded()
-    }
-    
-    func addTutorialIfNeeded() {
-        let tutorialShown = UserDefaults.standard.bool(forKey: "tutorial")
-        if !tutorialShown || configuration.alwaysShowTutorial {
-            UserDefaults.standard.set(true, forKey: "tutorial")
-            
-            let node = makeTutorialItem()
-            addChild(node)
-            node.position = .init(x: 0, y: -100)
-            node.run(.repeatForever(.sequence([
-                .scale(to: 1.1, duration: 0.8),
-                .scale(to: 1.0, duration: 0.8)
-            ])))
-            
-            tutorialNode = node
-            gameSceneDelegate?.tutorialShowing(showing: true)
-        }
-    }
-    
-    func makeTutorialItem() -> SKNode {
-        let tutorialNode = SKNode()
-        let labelNode = SKLabelNode(text: "Tap to move")
-        labelNode.fontColor = .secondaryLabel
-        labelNode.fontName = "SF-Pro-Rounded-Regular"
-        labelNode.fontSize = 17
-        let tapNode = SKSpriteNode(imageNamed: "Bold-L")
-        
-        tutorialNode.addChild(labelNode)
-        tutorialNode.addChild(tapNode)
-        
-        labelNode.position = .init(x: 0, y: 0)
-        tapNode.position = .init(x: 0, y: -20)
-        
-        return tutorialNode
     }
     
     func addStartingEnemies() {
@@ -154,12 +115,6 @@ public class GameScene: SKScene
         if UserDefaults.standard.bool(forKey: "haptics")
         {
             generator.impactOccurred()
-        }
-        
-        if tutorialNode != nil {
-            tutorialNode?.removeAllActions()
-            tutorialNode?.removeFromParent()
-            gameSceneDelegate?.tutorialShowing(showing: false)
         }
         
         avPlayer.prepareToPlay()

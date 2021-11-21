@@ -24,22 +24,26 @@ protocol GameSceneDelegate: AnyObject
     func disableAds()
     func authenticatePlayer()
     
-    func tutorialShowing(showing: Bool)
+    func resume()
 }
 
 class GameViewController: UIViewController
 {
     enum Constants {
         static let screenshotMode = false
+        static let alwaysShowTutorial = false
     }
     
     var fakeWindow: UIWindow?
+    var showingTutorial: Bool = false
+    var tutorialView: UIStackView?
     
     var hackPaused: Bool {
         get {
             gameView.scene?.speed == 0
         }
         set {
+            if showingTutorial { return }
             gameView.scene?.speed = newValue ? 0 : 1
             gameView.scene?.physicsWorld.speed = newValue ? 0 : 1
         }
@@ -57,11 +61,11 @@ class GameViewController: UIViewController
     
     lazy var bannerView: GADBannerView = {
         let bannerView = GADBannerView(adSize: GADAdSizeBanner)
-        #if DEBUG
+#if DEBUG
         bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
-        #else
+#else
         bannerView.adUnitID = "ca-app-pub-7759050985948144/7040274891"
-        #endif
+#endif
         bannerView.rootViewController = self
         return bannerView
     }()
@@ -114,9 +118,38 @@ class GameViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        presentScene()
+        
+        presentScene(paused: shouldPauseForTutorial())
         authenticatePlayer()
         bannerView.load(GADRequest())
+        
+        if shouldPauseForTutorial() {
+            tutorialView = makeTutorialView()
+            
+            view.addSubview(tutorialView!)
+            print("Adding tutorial view")
+            
+            NSLayoutConstraint.activate([
+                tutorialView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100),
+                tutorialView!.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            ])
+            
+            UIView.animate(withDuration: 1.5, delay: 0.0, options: [.repeat, .autoreverse], animations: { [weak self] in
+                self?.tutorialView!.transform = .init(scaleX: 1.2, y: 1.2)
+            }, completion: { done in
+                print("Done animating")
+            })
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        
+        if tutorialView != nil {
+            tutorialView?.removeFromSuperview()
+            resume()
+            UserDefaults.standard.set(true, forKey: "tutorial")
+        }
     }
     
     func presentScene(paused: Bool = false)
@@ -128,12 +161,12 @@ class GameViewController: UIViewController
         
         gameView.ignoresSiblingOrder = true
         
-        #if DEBUG
+#if DEBUG
         if !Constants.screenshotMode {
             gameView.showsFPS = true
             gameView.showsNodeCount = true
         }
-        #endif
+#endif
         
         gameView.presentScene(scene)
         
@@ -174,7 +207,7 @@ extension GameViewController: GameSceneDelegate
     
     func gameRestarted()
     {
-        presentScene(paused: false)
+        presentScene(paused: shouldPauseForTutorial())
         presentedViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -215,11 +248,15 @@ extension GameViewController: GameSceneDelegate
                 self.scoreLabel.transform = .init(scaleX: 1.0, y: 1.0)
             }
         }, completion: nil)
-
+        
     }
     
     func disableAds() {
         bannerView.removeFromSuperview()
+    }
+    
+    func shouldPauseForTutorial() -> Bool {
+        return UserDefaults.standard.bool(forKey: "tutorial") == false || Constants.alwaysShowTutorial
     }
     
     func authenticatePlayer()
@@ -228,7 +265,9 @@ extension GameViewController: GameSceneDelegate
         GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
             if GKLocalPlayer.local.isAuthenticated
             {
-                hackPaused = false
+                if !shouldPauseForTutorial() {
+                    hackPaused = false
+                }
                 print("Authenticated!")
             }
             else if let controller = controller
@@ -237,14 +276,16 @@ extension GameViewController: GameSceneDelegate
             }
             else if let error = error
             {
-                hackPaused = false
+                if !shouldPauseForTutorial() {
+                    hackPaused = false
+                }
                 print(error.localizedDescription)
             }
         }
     }
     
-    func tutorialShowing(showing: Bool) {
-        self.gameView.scene?.speed = showing ? 0.1 : 1.0
+    func resume() {
+        hackPaused = false
     }
 }
 
@@ -253,7 +294,7 @@ extension GameViewController: UIPopoverPresentationControllerDelegate
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController)
     {
         /// Check which controller dismisses... because if the game over dismisses, it... resumes the game?
-        hackPaused = false
+        hackPaused = shouldPauseForTutorial()
         playPauseButton?.setImage(.init(systemName: "pause.fill"), for: .normal)
     }
 }
@@ -265,5 +306,35 @@ extension GameViewController: GKGameCenterControllerDelegate
         gameCenterViewController.dismiss(animated: true, completion: { [weak self] in
             self?.fakeWindow = nil
         })
+    }
+}
+
+// MARK: - Tutorial
+
+extension GameViewController {
+    
+    func makeTutorialView() -> UIStackView {
+        let tapToMoveLabel = UILabel()
+        tapToMoveLabel.text = "Tap to move"
+        tapToMoveLabel.font = .systemFont(ofSize: 15)
+        tapToMoveLabel.textColor = .secondaryLabel
+        tapToMoveLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        tapToMoveLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        let tapNode = UIImageView(image: .init(systemName: "hand.tap")!)
+        tapNode.tintColor = .label
+        
+        let view = UIStackView(arrangedSubviews: [
+            tapToMoveLabel,
+            tapNode
+        ])
+        
+        view.axis = .vertical
+        view.spacing = 5
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.alignment = .center
+        view.isUserInteractionEnabled = false
+        
+        return view
     }
 }
