@@ -26,6 +26,7 @@ public class GameScene: SKScene
         var addsPlayer = true
         var npcsAreSmaller = false
         var zoomedOutCamera = false
+        var alwaysShowTutorial = true
     }
     
     struct Constants
@@ -33,20 +34,21 @@ public class GameScene: SKScene
         static let cameraScale: CGFloat = 1
         
         static let referenceRadius: CGFloat = 20
-        static let playerMovement: CGFloat = 860
+        static let playerMovement: CGFloat = 1100
         static let frameDuration: CGFloat = 1.0 / 60.0
-        static let addEnemyWaitDuration: TimeInterval = 0.3
+        static let addEnemyWaitDuration: TimeInterval = 0.35
         static let minimumExpulsionRadius: CGFloat = 2
         static let expulsionAmountRatio: CGFloat = 0.2
         static let expulsionForceModifier: CGFloat = 0
         static let npcMovementModifier: CGFloat = 6000
         static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
+        static let startingNodes: Int = 12
         
-        static let playerFrictionalCoefficient: CGFloat = 0.96
-        static let enemyFrictionalCoefficient: CGFloat = 0.99
+        static let playerFrictionalCoefficient: CGFloat = 0.94
+        static let enemyFrictionalCoefficient: CGFloat = 0.97
         
         static let minimumNPCSize: CGFloat = Constants.referenceRadius / 5
-        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2
+        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 1.8
         
         /// The area in which npcs are not allowed to spawn
         static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height / 2 + maximumNPCSize / 2
@@ -67,6 +69,8 @@ public class GameScene: SKScene
     
     private var score: Int = 0
     private var pScore: Int = 0
+    
+    var tutorialNode: SKNode?
     
     public let player: Ball = {
         let ball = Ball(radius: Constants.referenceRadius,
@@ -98,7 +102,51 @@ public class GameScene: SKScene
         addCamera()
         addPlayer()
         addNPCs()
+        addStartingEnemies()
+        addTutorialIfNeeded()
     }
+    
+    func addTutorialIfNeeded() {
+        let tutorialShown = UserDefaults.standard.bool(forKey: "tutorial")
+        if !tutorialShown || configuration.alwaysShowTutorial {
+            UserDefaults.standard.set(true, forKey: "tutorial")
+            
+            let node = makeTutorialItem()
+            addChild(node)
+            node.position = .init(x: 0, y: -100)
+            node.run(.repeatForever(.sequence([
+                .scale(to: 1.1, duration: 0.8),
+                .scale(to: 1.0, duration: 0.8)
+            ])))
+            
+            tutorialNode = node
+            gameSceneDelegate?.tutorialShowing(showing: true)
+        }
+    }
+    
+    func makeTutorialItem() -> SKNode {
+        let tutorialNode = SKNode()
+        let labelNode = SKLabelNode(text: "Tap to move")
+        labelNode.fontColor = .secondaryLabel
+        labelNode.fontName = "SF-Pro-Rounded-Regular"
+        labelNode.fontSize = 17
+        let tapNode = SKSpriteNode(imageNamed: "Bold-L")
+        
+        tutorialNode.addChild(labelNode)
+        tutorialNode.addChild(tapNode)
+        
+        labelNode.position = .init(x: 0, y: 0)
+        tapNode.position = .init(x: 0, y: -20)
+        
+        return tutorialNode
+    }
+    
+    func addStartingEnemies() {
+        for _ in 0 ..< Constants.startingNodes {
+            addStarterNPC()
+        }
+    }
+    
     
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
@@ -106,6 +154,12 @@ public class GameScene: SKScene
         if UserDefaults.standard.bool(forKey: "haptics")
         {
             generator.impactOccurred()
+        }
+        
+        if tutorialNode != nil {
+            tutorialNode?.removeAllActions()
+            tutorialNode?.removeFromParent()
+            gameSceneDelegate?.tutorialShowing(showing: false)
         }
         
         avPlayer.prepareToPlay()
@@ -383,12 +437,6 @@ private extension GameScene
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
         npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
-    
-//    func updateScore(to newScore: Int)
-//    {
-////        total.text = "\(newScore)"
-//
-//    }
 }
 
 // MARK: - NPC
@@ -445,6 +493,25 @@ extension GameScene
             .run(addNPC),
             .wait(forDuration: Constants.addEnemyWaitDuration)
         ]))
+    }
+    
+    func addStarterNPC() {
+        let radius = CGFloat.random(in: playerRadius * 0.25 ..< playerRadius * 0.75)
+        
+        let distance = CGFloat.random(in: 30 ..< Constants.safeAreaRadius)
+    
+        let radians = CGFloat.random(in: 0 ..< 360).radians
+        
+        let x = distance * cos(radians)
+        let y = distance * sin(radians)
+        
+        let position = CGPoint(x: player.position.x + x,
+                               y: player.position.y + y)
+        
+        let npc = Ball(radius: radius, position: position)
+        npc.fillColor = .init(hue: .random(in: 0 ... 1), saturation: 0.6, brightness: 1.0, alpha: 1.0)
+        
+        addChild(npc)
     }
     
     func addNPC()

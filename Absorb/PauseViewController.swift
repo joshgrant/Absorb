@@ -48,8 +48,11 @@ extension UIStackView {
         titleStackView.addArrangedSubview(UIView.spacer())
         titleStackView.addArrangedSubview(centerView)
         titleStackView.addArrangedSubview(UIView.spacer())
-        titleStackView.addArrangedSubview(UIButton.makeGameCenterButton(action: gameCenterAction))
-        titleStackView.addArrangedSubview(UIView.spacer(width: 10))
+        
+        if GKLocalPlayer.local.isAuthenticated {
+            titleStackView.addArrangedSubview(UIButton.makeGameCenterButton(action: gameCenterAction))
+            titleStackView.addArrangedSubview(UIView.spacer(width: 10))
+        }
         
         titleStackView.axis = .horizontal
         titleStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -127,7 +130,11 @@ class PauseViewController: UIViewController {
         let logoView = UIImageView(image: .init(named: "absorby_logo"))
         
         let titleStackView = UIStackView.makeTitleStackView(centerView: logoView, gameCenterAction: .init(handler: { [weak self] action in
-            self?.gameSceneDelegate?.showLeaderboard()
+            if GKLocalPlayer.local.isAuthenticated {
+                self?.gameSceneDelegate?.showLeaderboard()
+            } else {
+                self?.gameSceneDelegate?.authenticatePlayer()
+            }
         }))
         
         let stackView = UIStackView(arrangedSubviews: [
@@ -271,7 +278,7 @@ class PauseViewController: UIViewController {
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 22, weight: .medium)
         
-        let height = button.heightAnchor.constraint(lessThanOrEqualToConstant: 44)
+        let height = button.heightAnchor.constraint(lessThanOrEqualToConstant: 54)
         height.priority = .defaultHigh
         
         NSLayoutConstraint.activate([

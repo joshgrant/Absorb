@@ -132,7 +132,11 @@ extension GameOverViewController {
             leftView: nil,
             centerView: gameOverLabel,
             gameCenterAction: .init(handler: { [weak self] action in
-                self?.gameSceneDelegate?.showLeaderboard()
+                if GKLocalPlayer.local.isAuthenticated {
+                    self?.gameSceneDelegate?.showLeaderboard()
+                } else {
+                    self?.gameSceneDelegate?.authenticatePlayer()
+                }
             }))
         
         stackView.addArrangedSubview(.spacer(height: 40))

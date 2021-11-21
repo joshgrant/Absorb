@@ -22,6 +22,9 @@ protocol GameSceneDelegate: AnyObject
     func openPauseMenuFromGameOver()
     func scoreUpdate(to score: Int)
     func disableAds()
+    func authenticatePlayer()
+    
+    func tutorialShowing(showing: Bool)
 }
 
 class GameViewController: UIViewController
@@ -114,27 +117,6 @@ class GameViewController: UIViewController
         presentScene()
         authenticatePlayer()
         bannerView.load(GADRequest())
-    }
-    
-    func authenticatePlayer()
-    {
-        hackPaused = true
-        GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
-            if GKLocalPlayer.local.isAuthenticated
-            {
-                hackPaused = false
-                print("Authenticated!")
-            }
-            else if let controller = controller
-            {
-                present(controller, animated: true, completion: nil)
-            }
-            else if let error = error
-            {
-                hackPaused = false
-                print(error.localizedDescription)
-            }
-        }
     }
     
     func presentScene(paused: Bool = false)
@@ -238,6 +220,31 @@ extension GameViewController: GameSceneDelegate
     
     func disableAds() {
         bannerView.removeFromSuperview()
+    }
+    
+    func authenticatePlayer()
+    {
+        hackPaused = true
+        GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
+            if GKLocalPlayer.local.isAuthenticated
+            {
+                hackPaused = false
+                print("Authenticated!")
+            }
+            else if let controller = controller
+            {
+                present(controller, animated: true, completion: nil)
+            }
+            else if let error = error
+            {
+                hackPaused = false
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func tutorialShowing(showing: Bool) {
+        self.gameView.scene?.speed = showing ? 0.1 : 1.0
     }
 }
 
