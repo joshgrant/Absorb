@@ -23,8 +23,6 @@ protocol GameSceneDelegate: AnyObject
     func scoreUpdate(to score: Int)
     func disableAds()
     func authenticatePlayer()
-    
-    func resume()
 }
 
 class GameViewController: UIViewController
@@ -35,7 +33,6 @@ class GameViewController: UIViewController
     }
     
     var fakeWindow: UIWindow?
-    var showingTutorial: Bool = false
     var tutorialView: UIStackView?
     
     var hackPaused: Bool {
@@ -43,7 +40,7 @@ class GameViewController: UIViewController
             gameView.scene?.speed == 0
         }
         set {
-            if showingTutorial { return }
+            if tutorialView != nil { return }
             gameView.scene?.speed = newValue ? 0 : 1
             gameView.scene?.physicsWorld.speed = newValue ? 0 : 1
         }
@@ -147,6 +144,7 @@ class GameViewController: UIViewController
         
         if tutorialView != nil {
             tutorialView?.removeFromSuperview()
+            tutorialView = nil
             resume()
             UserDefaults.standard.set(true, forKey: "tutorial")
         }
@@ -261,12 +259,16 @@ extension GameViewController: GameSceneDelegate
     
     func authenticatePlayer()
     {
-        hackPaused = true
         GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
+            
+            let previouslyPaused = hackPaused
+            print("PREVIOUSLY: \(previouslyPaused)")
+            hackPaused = true
+            
             if GKLocalPlayer.local.isAuthenticated
             {
                 if !shouldPauseForTutorial() {
-                    hackPaused = false
+                    hackPaused = previouslyPaused
                 }
                 print("Authenticated!")
             }
@@ -277,7 +279,7 @@ extension GameViewController: GameSceneDelegate
             else if let error = error
             {
                 if !shouldPauseForTutorial() {
-                    hackPaused = false
+                    hackPaused = previouslyPaused
                 }
                 print(error.localizedDescription)
             }

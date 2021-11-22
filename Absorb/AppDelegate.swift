@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         }
         
         #if DEBUG
-            Purchases.logLevel = .debug
+        Purchases.logLevel = .error
         #endif
         
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")

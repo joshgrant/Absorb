@@ -42,12 +42,13 @@ public class GameScene: SKScene
         static let npcMovementModifier: CGFloat = 6000
         static let maxVelocity: CGVector = .init(dx: 100, dy: 100)
         static let startingNodes: Int = 12
+        static let startingEnemiesOutsideSafeArea: Int = 30
         
         static let playerFrictionalCoefficient: CGFloat = 0.94
         static let enemyFrictionalCoefficient: CGFloat = 0.97
         
-        static let minimumNPCSize: CGFloat = Constants.referenceRadius / 5
-        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 1.8
+        static let minimumNPCSize: CGFloat = Constants.referenceRadius * 0.2
+        static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.2
         
         /// The area in which npcs are not allowed to spawn
         static let safeAreaRadius: CGFloat = UIScreen.main.bounds.height / 2 + maximumNPCSize / 2
@@ -509,7 +510,7 @@ extension GameScene
     {
         if configuration.addsNPCs
         {
-            for _ in 0 ..< 50 {
+            for _ in 0 ..< Constants.startingEnemiesOutsideSafeArea {
                 addNPC()
             }
             
