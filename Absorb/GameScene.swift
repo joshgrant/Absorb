@@ -33,7 +33,7 @@ public class GameScene: SKScene
         static let cameraScale: CGFloat = 1
         
         static let referenceRadius: CGFloat = 20
-        static let playerMovement: CGFloat = 1100
+        static let playerMovement: CGFloat = 900
         static let frameDuration: CGFloat = 1.0 / 60.0
         static let addEnemyWaitDuration: TimeInterval = 0.35
         static let minimumExpulsionRadius: CGFloat = 2
@@ -44,7 +44,7 @@ public class GameScene: SKScene
         static let startingNodes: Int = 12
         static let startingEnemiesOutsideSafeArea: Int = 30
         
-        static let playerFrictionalCoefficient: CGFloat = 0.94
+        static let playerFrictionalCoefficient: CGFloat = 0.958
         static let enemyFrictionalCoefficient: CGFloat = 0.97
         
         static let minimumNPCSize: CGFloat = Constants.referenceRadius * 0.2
