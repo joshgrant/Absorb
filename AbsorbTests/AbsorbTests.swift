@@ -125,13 +125,13 @@ class AbsorbTests: XCTestCase
         let ball = Ball(radius: 10, position: .zero)
         XCTAssertEqual(ball.radius, 10)
         XCTAssertEqual(ball.physicsBody!.area * pow(150, 2), .pi * 100, accuracy: 0.001)
-        XCTAssertEqual(ball.physicsBody!.mass, 0.00007, accuracy: 0.01)
+        XCTAssertEqual(ball.physicsBody!.mass, 0.044999998062849045, accuracy: 0.01)
         
         ball.updateArea(to: 15)
         
         XCTAssertEqual(ball.radius, 2.1850968611841584)
         XCTAssertEqual(ball.physicsBody!.area * pow(150, 2), 15, accuracy: 0.00001)
-        XCTAssertEqual(ball.physicsBody!.mass, 0.00007, accuracy: 0.01)
+        XCTAssertEqual(ball.physicsBody!.mass, 0.044999998062849045, accuracy: 0.01)
     }
     
     func test_increaseRadius_withDeltaArea()
@@ -340,7 +340,7 @@ class AbsorbTests: XCTestCase
         let exp = expectation(description: "Loads the main thread")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            XCTAssertEqual(sut.children.count, 2) // 1 is the player, 2 is the camera
+            XCTAssertEqual(sut.children.count, 2) // 1 is the player, 2 is the camera, 12 for the starting npcs
             exp.fulfill()
         }
         

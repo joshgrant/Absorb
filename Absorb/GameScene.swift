@@ -99,8 +99,11 @@ public class GameScene: SKScene
         physicsWorld.gravity = .zero
         addCamera()
         addPlayer()
-        addNPCs()
-        addStartingEnemies()
+        
+        if configuration.addsNPCs {
+            addNPCs()
+            addStartingEnemies()
+        }
     }
     
     func addStartingEnemies() {
@@ -455,7 +458,7 @@ extension GameScene
         let radius = CGFloat.random(in: playerRadius * 0.25 ..< playerRadius * 0.75)
         
         let distance = CGFloat.random(in: 30 ..< Constants.safeAreaRadius)
-    
+        
         let radians = CGFloat.random(in: 0 ..< 360).radians
         
         let x = distance * cos(radians)
@@ -508,13 +511,10 @@ extension GameScene
     
     func addNPCs()
     {
-        if configuration.addsNPCs
-        {
-            for _ in 0 ..< Constants.startingEnemiesOutsideSafeArea {
-                addNPC()
-            }
-            
-            run(loopAddEnemies())
+        for _ in 0 ..< Constants.startingEnemiesOutsideSafeArea {
+            addNPC()
         }
+        
+        run(loopAddEnemies())
     }
 }

@@ -259,10 +259,12 @@ extension GameViewController: GameSceneDelegate
     
     func authenticatePlayer()
     {
+        // Note: authenticate player doesn't get called all the time, but this
+        // authenticate handler is stored and called on each launch
         GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
             
             let previouslyPaused = hackPaused
-            print("PREVIOUSLY: \(previouslyPaused)")
+//            print("PREVIOUSLY: \(previouslyPaused)")
             hackPaused = true
             
             if GKLocalPlayer.local.isAuthenticated
