@@ -92,6 +92,14 @@ class PauseViewController: UIViewController {
         }
         
         Purchases.shared.restoreTransactions { [weak self] (purchaserInfo, error) in
+            
+            if let error = error {
+                let alert = UIAlertController(title: "Error", message: "Sorry, there was an error processing your request. Please try again later!", preferredStyle: .alert)
+                alert.addAction(.init(title: "OK", style: .default))
+                self?.show(alert, sender: self)
+                return
+            }
+            
             //... check purchaserInfo to see if entitlement is now active
             if purchaserInfo?.entitlements.all["Pro"]?.isActive ?? false {
                 // We have a purchase!
