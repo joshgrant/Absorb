@@ -18,6 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setCategory(.ambient)
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+        
         window = UIWindow()
         window?.rootViewController = GameViewController()
         window?.makeKeyAndVisible()
@@ -39,6 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         #if DEBUG
         Purchases.logLevel = .error
+        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [ @"6a97eb8b7b670d3fae6ee853c17cd288"
+        ]
         #endif
         
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
