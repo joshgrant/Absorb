@@ -46,8 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         
         #if DEBUG
         Purchases.logLevel = .error
-        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = [ @"6a97eb8b7b670d3fae6ee853c17cd288"
-        ]
+        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["6a97eb8b7b670d3fae6ee853c17cd288"]
         #endif
         
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
