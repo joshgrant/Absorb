@@ -15,10 +15,10 @@ import GameKit
 public class GameScene: SKScene
 {
     let generator = UIImpactFeedbackGenerator(style: .light)
-    let avPlayer: AVAudioPlayer = {
-        let url = Bundle.main.url(forResource: "ping_audio", withExtension: "caf")!
-        return try! AVAudioPlayer(contentsOf: url)
-    }()
+//    let avPlayer: AVAudioPlayer = {
+//        let url = Bundle.main.url(forResource: "ping_audio", withExtension: "caf")!
+//        return try! AVAudioPlayer(contentsOf: url)
+//    }()
     
     public struct Configuration
     {
@@ -121,7 +121,7 @@ public class GameScene: SKScene
             generator.impactOccurred()
         }
         
-        avPlayer.prepareToPlay()
+//        avPlayer.prepareToPlay()
     }
     
     public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -136,15 +136,15 @@ public class GameScene: SKScene
         
         makeProjectile(force: force * Constants.expulsionForceModifier)
         
-        if UserDefaults.standard.bool(forKey: "sound") {
-            DispatchQueue.global(qos: .default).async { [unowned self] in
-                if avPlayer.isPlaying {
-                    avPlayer.currentTime = 0
-                } else {
-                    avPlayer.play()
-                }
-            }
-        }
+//        if UserDefaults.standard.bool(forKey: "sound") {
+//            DispatchQueue.global(qos: .default).async { [unowned self] in
+//                if avPlayer.isPlaying {
+//                    avPlayer.currentTime = 0
+//                } else {
+//                    avPlayer.play()
+//                }
+//            }
+//        }
     }
     
     /// Called once per frame before any actions are evaluated or any
