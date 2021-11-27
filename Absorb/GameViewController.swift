@@ -16,6 +16,7 @@ import GoogleMobileAds
 protocol GameSceneDelegate: AnyObject
 {
     func gamePaused()
+    func resumeGame()
     func gameOver(score: Int)
     func gameRestarted()
     func showLeaderboard()
@@ -184,6 +185,10 @@ class GameViewController: UIViewController
 
 extension GameViewController: GameSceneDelegate
 {
+    func resumeGame() {
+        hackPaused = false
+    }
+    
     func gamePaused()
     {
         hackPaused = true

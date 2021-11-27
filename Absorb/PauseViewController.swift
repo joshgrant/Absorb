@@ -90,10 +90,10 @@ class PauseViewController: UIViewController {
             gameSceneDelegate?.disableAds()
             return
         }
-        
+
         Purchases.shared.restoreTransactions { [weak self] (purchaserInfo, error) in
             
-            if let error = error {
+            if let _ = error {
                 let alert = UIAlertController(title: "Error", message: "Sorry, there was an error processing your request. Please try again later!", preferredStyle: .alert)
                 alert.addAction(.init(title: "OK", style: .default))
                 self?.show(alert, sender: self)
@@ -102,10 +102,14 @@ class PauseViewController: UIViewController {
             
             //... check purchaserInfo to see if entitlement is now active
             if purchaserInfo?.entitlements.all["Pro"]?.isActive ?? false {
-                // We have a purchase!
+                //  We want to restore
                 UserDefaults.standard.set(true, forKey: "premium")
                 self?.purchaseButton.setTitle(Self.titleForRemoveAds(), for: .normal)
                 self?.gameSceneDelegate?.disableAds()
+        
+                let alert = UIAlertController(title: "Purchase Restored", message: "Your purchase has been successfully restored, ads have been removed.", preferredStyle: .alert)
+                alert.addAction(.init(title: "OK", style: .default))
+                self?.show(alert, sender: self)
             } else {
                 Purchases.shared.offerings { (offerings, error) in
                     if let offerings = offerings, let package = offerings.current?.availablePackages.first {
@@ -171,8 +175,10 @@ class PauseViewController: UIViewController {
                            UserDefaults.standard.set(sender.isOn, forKey: "status")
                        })),
             UIView.spacer(),
-            Self.makeButton(title: "Restart", tint: .systemBlue, action: .init(handler: { [weak self] action in
-                self?.gameSceneDelegate?.gameRestarted()
+            Self.makeButton(title: "Resume", tint: .systemBlue, action: .init(handler: { [weak self] action in
+                self?.dismiss(animated: true, completion: {
+                    self?.gameSceneDelegate?.resumeGame()
+                })
             })),
             purchaseButton,
             Self.makeButton(title: "Delete Scores", tint: .systemRed, action: .init(handler: { action in
