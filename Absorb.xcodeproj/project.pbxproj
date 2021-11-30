@@ -20,6 +20,7 @@
 		037CBC022716822400103FD0 /* CGVector+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC012716822400103FD0 /* CGVector+Extensions.swift */; };
 		037CBC042717456100103FD0 /* Hashable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC032717456100103FD0 /* Hashable+Extensions.swift */; };
 		039F090B271B698700885B3A /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 039F090A271B698600885B3A /* GameKit.framework */; };
+		03A37AC52756C7C60006E60E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03A37AC42756C7C60006E60E /* GoogleService-Info.plist */; };
 		03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37A62715D18D00E1BD2C /* AppDelegate.swift */; };
 		03AB37AD2715D18D00E1BD2C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37AC2715D18D00E1BD2C /* GameScene.swift */; };
 		03AB37AF2715D18D00E1BD2C /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37AE2715D18D00E1BD2C /* GameViewController.swift */; };
@@ -30,7 +31,6 @@
 		03AB37EB2715FC8200E1BD2C /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */; };
 		03BC283227244B6300AD3F63 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03BC283127244B6300AD3F63 /* Game.swift */; };
 		03D0A539273B2BDD0008E8F3 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 03D0A538273B2BDD0008E8F3 /* Podfile */; };
-		03FB34EF274490E900FCDC1B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03FB34EE274490E900FCDC1B /* GoogleService-Info.plist */; };
 		1D78E800F396A4477CA46F54 /* Pods_AbsorbTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96079DFBED6736473E045311 /* Pods_AbsorbTests.framework */; };
 		2DA5901221974B50FA44B801 /* Pods_Absorb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A74DC84AA112CB86D931F341 /* Pods_Absorb.framework */; };
 /* End PBXBuildFile section */
@@ -60,6 +60,7 @@
 		037CBC012716822400103FD0 /* CGVector+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
 		037CBC032717456100103FD0 /* Hashable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Hashable+Extensions.swift"; sourceTree = "<group>"; };
 		039F090A271B698600885B3A /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		03A37AC42756C7C60006E60E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		03AB37A32715D18D00E1BD2C /* Absorb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Absorb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AB37A62715D18D00E1BD2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03AB37AC2715D18D00E1BD2C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -73,7 +74,6 @@
 		03BC283127244B6300AD3F63 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		03BC2833272455E200AD3F63 /* Absorb.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Absorb.entitlements; sourceTree = "<group>"; };
 		03D0A538273B2BDD0008E8F3 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; };
-		03FB34EE274490E900FCDC1B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		57945FAF0A5CE8F8849BBB57 /* Pods-Absorb.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Absorb.release.xcconfig"; path = "Target Support Files/Pods-Absorb/Pods-Absorb.release.xcconfig"; sourceTree = "<group>"; };
 		92003542457FC5A09E593AC0 /* Pods-Absorb.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Absorb.debug.xcconfig"; path = "Target Support Files/Pods-Absorb/Pods-Absorb.debug.xcconfig"; sourceTree = "<group>"; };
 		96079DFBED6736473E045311 /* Pods_AbsorbTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AbsorbTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,8 +151,8 @@
 				03D0A538273B2BDD0008E8F3 /* Podfile */,
 				0346803F2745DD28007143F0 /* ping_audio.caf */,
 				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
-				03FB34EE274490E900FCDC1B /* GoogleService-Info.plist */,
 				0361A5CF273AED3C0037A182 /* Products.storekit */,
+				03A37AC42756C7C60006E60E /* GoogleService-Info.plist */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
 				03738460272796A8007F0952 /* Database.swift */,
@@ -276,8 +276,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				03AB37B42715D18F00E1BD2C /* Assets.xcassets in Resources */,
-				03FB34EF274490E900FCDC1B /* GoogleService-Info.plist in Resources */,
 				034680402745DD28007143F0 /* ping_audio.caf in Resources */,
+				03A37AC52756C7C60006E60E /* GoogleService-Info.plist in Resources */,
 				03D0A539273B2BDD0008E8F3 /* Podfile in Resources */,
 				03AB37B72715D18F00E1BD2C /* LaunchScreen.storyboard in Resources */,
 			);
@@ -554,7 +554,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -591,7 +591,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -62,7 +62,7 @@ class GameViewController: UIViewController
 #if DEBUG
         bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
 #else
-        bannerView.adUnitID = "ca-app-pub-7759050985948144/7040274891"
+        bannerView.adUnitID = "ca-app-pub-7759050985948144~1963208036"
 #endif
         bannerView.rootViewController = self
         return bannerView
