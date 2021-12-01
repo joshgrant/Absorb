@@ -87,7 +87,7 @@ class PauseViewController: UIViewController {
             let action = UIAlertAction(title: "OK", style: .default)
             alert.addAction(action)
             show(alert, sender: self)
-            gameSceneDelegate?.disableAds()
+//            gameSceneDelegate?.disableAds()
             return
         }
 
@@ -105,7 +105,7 @@ class PauseViewController: UIViewController {
                 //  We want to restore
                 UserDefaults.standard.set(true, forKey: "premium")
                 self?.purchaseButton.setTitle(Self.titleForRemoveAds(), for: .normal)
-                self?.gameSceneDelegate?.disableAds()
+//                self?.gameSceneDelegate?.disableAds()
         
                 let alert = UIAlertController(title: "Purchase Restored", message: "Your purchase has been successfully restored, ads have been removed.", preferredStyle: .alert)
                 alert.addAction(.init(title: "OK", style: .default))
@@ -124,7 +124,7 @@ class PauseViewController: UIViewController {
                                 let action = UIAlertAction(title: "OK", style: .default)
                                 alert.addAction(action)
                                 self?.show(alert, sender: self)
-                                self?.gameSceneDelegate?.disableAds()
+//                                self?.gameSceneDelegate?.disableAds()
                                 return
                             }
                         }

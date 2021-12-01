@@ -23,7 +23,7 @@ protocol GameSceneDelegate: AnyObject
     func showLeaderboard()
     func openPauseMenuFromGameOver()
     func scoreUpdate(to score: Int)
-    func disableAds()
+//    func disableAds()
     func authenticatePlayer()
 }
 
@@ -37,6 +37,10 @@ class GameViewController: UIViewController
     var fakeWindow: UIWindow?
     var tutorialView: UIStackView?
     var updating: Bool = false // Whether or not the score label is updating
+    
+    private var interstitial: GADInterstitialAd?
+    
+    var score: Int?
     
     var hackPaused: Bool {
         get {
@@ -59,27 +63,27 @@ class GameViewController: UIViewController
         return label
     }()
     
-    var _bannerView: GADBannerView?
-    var bannerView: GADBannerView {
-        get {
-            if _bannerView == nil {
-                _bannerView = GADBannerView(adSize: GADAdSizeBanner)
-                #if DEBUG
-                _bannerView!.adUnitID = "ca-app-pub-3940256099942544/2934735716"
-                #else
-                _bannerView!.adUnitID = "ca-app-pub-7759050985948144/2574435753"
-                #endif
-                
-                _bannerView!.rootViewController = self
-                _bannerView!.delegate = self
-            }
-            
-            return _bannerView!
-        }
-        set {
-            _bannerView = newValue
-        }
-    }
+//    var _bannerView: GADBannerView?
+//    var bannerView: GADBannerView {
+//        get {
+//            if _bannerView == nil {
+//                _bannerView = GADBannerView(adSize: GADAdSizeBanner)
+////#if DEBUG
+////                _bannerView!.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+////#else
+//                _bannerView!.adUnitID = "ca-app-pub-7759050985948144/2574435753"
+////#endif
+//
+//                _bannerView!.rootViewController = self
+//                _bannerView!.delegate = self
+//            }
+//
+//            return _bannerView!
+//        }
+//        set {
+//            _bannerView = newValue
+//        }
+//    }
     
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
@@ -124,6 +128,8 @@ class GameViewController: UIViewController
     {
         super.viewDidLoad()
         
+        preloadAd()
+        
         presentScene(paused: shouldPauseForTutorial())
         authenticatePlayer()
         
@@ -145,12 +151,12 @@ class GameViewController: UIViewController
             })
         }
         
-        guard let view = view as? UIStackView else { assertionFailure(); return }
-        if UserDefaults.standard.bool(forKey: "premium") { return }
-        if Constants.screenshotMode { return }
+//        guard let view = view as? UIStackView else { assertionFailure(); return }
+//        if UserDefaults.standard.bool(forKey: "premium") { return }
+//        if Constants.screenshotMode { return }
         
-        view.addArrangedSubview(bannerView)
-        bannerView.load(GADRequest())
+//        view.addArrangedSubview(bannerView)
+//        bannerView.load(GADRequest())
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -213,18 +219,38 @@ extension GameViewController: GameSceneDelegate
     
     func gameOver(score: Int)
     {
+        self.score = score
+        
+        let gameOverCount = UserDefaults.standard.integer(forKey: "gameOverCount")
+        UserDefaults.standard.set(gameOverCount + 1, forKey: "gameOverCount")
+        
+        if gameOverCount > 10 || UserDefaults.standard.bool(forKey: "premium") {
+            UserDefaults.standard.set(0, forKey: "gameOverCount")
+            showGameOvewScreen()
+        } else {
+            showAd()
+        }
+    }
+    
+    private func showGameOvewScreen() {
         presentScene(paused: true)
+        
+        guard let score = self.score else { assertionFailure(); return }
         
         let gameOver = GameOverViewController(score: score)
         gameOver.presentationController?.delegate = self
         gameOver.gameSceneDelegate = self
         show(gameOver, sender: self)
+        
+        (gameView.scene as? GameScene)?.showing = false
     }
     
     func gameRestarted()
     {
+        score = nil
         presentScene(paused: shouldPauseForTutorial())
         presentedViewController?.dismiss(animated: true, completion: nil)
+        preloadAd()
     }
     
     func showLeaderboard()
@@ -275,10 +301,6 @@ extension GameViewController: GameSceneDelegate
         
     }
     
-    func disableAds() {
-        bannerView.removeFromSuperview()
-    }
-    
     func shouldPauseForTutorial() -> Bool {
         return UserDefaults.standard.bool(forKey: "tutorial") == false || Constants.alwaysShowTutorial
     }
@@ -290,7 +312,6 @@ extension GameViewController: GameSceneDelegate
         GKLocalPlayer.local.authenticateHandler = { [unowned self] controller, error in
             
             let previouslyPaused = hackPaused
-//            print("PREVIOUSLY: \(previouslyPaused)")
             hackPaused = true
             
             if GKLocalPlayer.local.isAuthenticated
@@ -369,29 +390,46 @@ extension GameViewController {
     }
 }
 
-extension GameViewController: GADBannerViewDelegate {
+extension GameViewController: GADFullScreenContentDelegate {
     
-    func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        Firebase.Analytics.logEvent("bannerViewDidReceiveAd", parameters: nil)
+    func showAd() {
+        if let interstitial = interstitial {
+            interstitial.present(fromRootViewController: self)
+          } else {
+            print("Ad wasn't ready")
+          showGameOvewScreen()
+          }
+    }
+    
+    func preloadAd() {
+        if interstitial != nil { return }
+        
+        let adUnitId = "ca-app-pub-7759050985948144/2429065718"
+        
+        let request = GADRequest()
+        GADInterstitialAd.load(withAdUnitID:adUnitId, request: request) { [weak self] ad, error in
+            if let error = error {
+                print("Failed to load interstital ad: \(error)")
+                return
+            }
+            self?.interstitial = ad
+            ad?.fullScreenContentDelegate = self
+        }
+    }
+    
+    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+        showGameOvewScreen()
+        interstitial = nil
+        preloadAd()
+    }
+    
+    /// Tells the delegate that the ad failed to present full screen content.
+    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+      print("Ad did fail to present full screen content.")
     }
 
-    func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        Firebase.Analytics.logEvent("didFailToReceiveAdWithError", parameters: ["error": error.localizedDescription.prefix(100)])
-    }
-
-    func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
-        Firebase.Analytics.logEvent("bannerViewDidRecordImpression", parameters: nil)
-    }
-
-    func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
-      print("bannerViewWillPresentScreen")
-    }
-
-    func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
-      print("bannerViewWillDismissScreen")
-    }
-
-    func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
-      print("bannerViewDidDismissScreen")
+    /// Tells the delegate that the ad presented full screen content.
+    func adDidPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+      print("Ad did present full screen content.")
     }
 }

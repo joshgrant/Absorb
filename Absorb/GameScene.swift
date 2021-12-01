@@ -66,7 +66,7 @@ public class GameScene: SKScene
     private var temporaryRadius: CGFloat = Constants.referenceRadius
     private var playerRadius: CGFloat = Constants.referenceRadius
     
-    private var score: Int = 0
+    internal var score: Int = 0
     private var pScore: Int = 0
     
     public let player: Ball = {
@@ -201,6 +201,9 @@ public class GameScene: SKScene
             modifyRadiusScale(
                 deltaArea: -overlappingArea,
                 radius: &temporaryRadius)
+            player.updateArea(delta: -overlappingArea)
+            // Doesn't actually update the player's radius so...
+            // Need to set the temporary radius directly!!!
         }
         else if larger == player
         {
@@ -213,6 +216,7 @@ public class GameScene: SKScene
             modifyRadiusScale(
                 deltaArea: overlappingArea,
                 radius: &temporaryRadius)
+            player.updateArea(delta: overlappingArea)
             
             if smaller.radius < 1 {
                 smaller.removeFromParent()
@@ -286,7 +290,7 @@ public class GameScene: SKScene
         
         player.physicsBody?.applyFriction(Constants.playerFrictionalCoefficient)
         
-        playerRadius += temporaryRadius - Constants.referenceRadius
+//        playerRadius += temporaryRadius - Constants.referenceRadius
         temporaryRadius = Constants.referenceRadius
         
         if score != pScore {
@@ -331,6 +335,8 @@ public class GameScene: SKScene
     
     private func showGameOverScreen()
     {
+        if showing { return }
+        
         // Game Over
         showing = true
         
@@ -392,6 +398,7 @@ private extension GameScene
         
         // Side effect - modifies the temporary radius
         modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
+        player.updateArea(delta: -radius.radiusToArea)
         npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
 }
