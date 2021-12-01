@@ -115,21 +115,16 @@ public extension Ball
         return distance - (a.radius + b.radius)
     }
     
-    static func overlapping(_ a: Ball, _ b: Ball) -> Bool
-    {
-        let distance = CGPoint.distance(a.position, b.position)
-        return distance < a.radius + b.radius
-    }
-    
     static func overlappingArea(_ a: Ball, _ b: Ball) -> CGFloat
     {
+        let d = CGPoint.distance(a.position, b.position)
+        if d >= a.radius + b.radius { return 0 }
+        
         let r = a.radius
         let R = b.radius
         
         let rr = r * r
         let RR = R * R
-        
-        let d = CGPoint.distance(a.position, b.position)
         let dd = d * d
         
         let area =

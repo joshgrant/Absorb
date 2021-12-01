@@ -63,12 +63,12 @@ class AbsorbTests: XCTestCase
         let first = Ball(radius: 10, position: .zero)
         let second = Ball(radius: 15, position: CGPoint(x: 24, y: 0))
         
-        XCTAssertTrue(Ball.overlapping(first, second))
+        XCTAssertTrue(Ball.overlappingArea(first, second) > 0)
         
         let a = Ball(radius: 1, position: .zero)
         let b = Ball(radius: 1, position: .init(x: 1.9, y: 0))
         
-        XCTAssertTrue(Ball.overlapping(a, b))
+        XCTAssertTrue(Ball.overlappingArea(a, b) > 0)
     }
     
     func test_balls_doNotOverlap()
@@ -76,12 +76,12 @@ class AbsorbTests: XCTestCase
         let first = Ball(radius: 10, position: .zero)
         let second = Ball(radius: 15, position: CGPoint(x: 25, y: 0))
         
-        XCTAssertFalse(Ball.overlapping(first, second))
+        XCTAssertFalse(Ball.overlappingArea(first, second) > 0)
         
         let a = Ball(radius: 1, position: .zero)
         let b = Ball(radius: 1, position: .init(x: 2, y: 0))
         
-        XCTAssertFalse(Ball.overlapping(a, b))
+        XCTAssertFalse(Ball.overlappingArea(a, b) > 0)
     }
     
     func test_distanceFormula()
@@ -381,6 +381,16 @@ class AbsorbTests: XCTestCase
         XCTAssertEqual(Ball.edgeDistance(a, b), 5)
     }
     
+    func test_durationOfOverlappingArea()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        measure {
+            sut.permuteAllBallsAndSiblings { ball, sibling in
+                _ = Ball.overlappingArea(ball, sibling)
+            }
+        }
+    }
+    
     func test_durationOfApplyMovement()
     {
         let sut = makeGameSceneWithLotsOfChildren()
@@ -420,6 +430,32 @@ class AbsorbTests: XCTestCase
         measure
         {
             sut.update()
+        }
+    }
+    
+    func test_durationOfModifyRadiusScale()
+    {
+        let sut = makeGameSceneWithLotsOfChildren()
+        let options = XCTMeasureOptions()
+        options.iterationCount = 1000
+        var radius: CGFloat = 3.2
+        measure(options: options) {
+            sut.modifyRadiusScale(deltaArea: 10, radius: &radius)
+        }
+    }
+    
+    func test_durationDidFinishUpdate() {
+        let sut = makeGameSceneWithLotsOfChildren()
+        
+        measure {
+            sut.didFinishUpdate()
+        }
+    }
+    
+    func test_durationOfUpdateArea() {
+        let circle = Ball(radius: 100, position: .zero)
+        measure {
+            circle.updateArea(delta: .random(in: -1 ..< 1))
         }
     }
     

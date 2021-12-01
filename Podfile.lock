@@ -91,9 +91,9 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - PromisesObjC (2.0.0)
-  - Purchases (3.13.0):
-    - PurchasesCoreSwift (= 3.13.0)
-  - PurchasesCoreSwift (3.13.0)
+  - Purchases (3.13.1):
+    - PurchasesCoreSwift (= 3.13.1)
+  - PurchasesCoreSwift (3.13.1)
 
 DEPENDENCIES:
   - Firebase/Analytics
@@ -130,8 +130,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: 684ee790a24f73ebb2d1d966e9711c203f2a4237
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
-  Purchases: a545d402454bc9395495cceaf0e893360670e0ad
-  PurchasesCoreSwift: e7f7267a6dc526da226baad19c61e8977fa664b4
+  Purchases: 2693d6444609de044ab25fcda9561bef038f24da
+  PurchasesCoreSwift: ca55f9ef671f89abed133775dd9e53f55007828d
 
 PODFILE CHECKSUM: 73aef72679105b482df3fdb9b5f4d92e7511c5c1
 

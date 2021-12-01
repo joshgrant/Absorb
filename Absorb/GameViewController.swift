@@ -9,6 +9,7 @@ import UIKit
 import SpriteKit
 import GameKit
 import GoogleMobileAds
+import Firebase
 
 // 2. When the user enters their name, it should update the score...
 // 3. Game center view's bottom has a weird spacing...
@@ -57,16 +58,27 @@ class GameViewController: UIViewController
         return label
     }()
     
-    lazy var bannerView: GADBannerView = {
-        let bannerView = GADBannerView(adSize: GADAdSizeBanner)
-#if DEBUG
-        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
-#else
-        bannerView.adUnitID = "ca-app-pub-7759050985948144~1963208036"
-#endif
-        bannerView.rootViewController = self
-        return bannerView
-    }()
+    var _bannerView: GADBannerView?
+    var bannerView: GADBannerView {
+        get {
+            if _bannerView == nil {
+                _bannerView = GADBannerView(adSize: GADAdSizeBanner)
+                #if DEBUG
+                _bannerView!.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+                #else
+                _bannerView!.adUnitID = "ca-app-pub-7759050985948144/2574435753"
+                #endif
+                
+                _bannerView!.rootViewController = self
+                _bannerView!.delegate = self
+            }
+            
+            return _bannerView!
+        }
+        set {
+            _bannerView = newValue
+        }
+    }
     
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
@@ -104,12 +116,6 @@ class GameViewController: UIViewController
         
         contentView.addArrangedSubview(gameView)
         
-        if !UserDefaults.standard.bool(forKey: "premium") {
-            if !Constants.screenshotMode {
-                contentView.addArrangedSubview(bannerView)
-            }
-        }
-        
         view = contentView
     }
     
@@ -119,7 +125,6 @@ class GameViewController: UIViewController
         
         presentScene(paused: shouldPauseForTutorial())
         authenticatePlayer()
-        bannerView.load(GADRequest())
         
         if shouldPauseForTutorial() {
             tutorialView = makeTutorialView()
@@ -138,6 +143,13 @@ class GameViewController: UIViewController
                 print("Done animating")
             })
         }
+        
+        guard let view = view as? UIStackView else { assertionFailure(); return }
+        if UserDefaults.standard.bool(forKey: "premium") { return }
+        if Constants.screenshotMode { return }
+        
+        view.addArrangedSubview(bannerView)
+        bannerView.load(GADRequest())
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -345,5 +357,32 @@ extension GameViewController {
         view.isUserInteractionEnabled = false
         
         return view
+    }
+}
+
+extension GameViewController: GADBannerViewDelegate {
+    
+    func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
+        Firebase.Analytics.logEvent("bannerViewDidReceiveAd", parameters: nil)
+    }
+
+    func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+        Firebase.Analytics.logEvent("didFailToReceiveAdWithError", parameters: ["error": error.localizedDescription.prefix(100)])
+    }
+
+    func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
+        Firebase.Analytics.logEvent("bannerViewDidRecordImpression", parameters: nil)
+    }
+
+    func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
+      print("bannerViewWillPresentScreen")
+    }
+
+    func bannerViewWillDismissScreen(_ bannerView: GADBannerView) {
+      print("bannerViewWillDismissScreen")
+    }
+
+    func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
+      print("bannerViewDidDismissScreen")
     }
 }

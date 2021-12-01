@@ -10,6 +10,7 @@ import GameKit
 import GoogleMobileAds
 import Purchases
 import Firebase
+import AdSupport
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate
@@ -18,6 +19,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
+        FirebaseApp.configure()
+        
+        #if DEBUG
+        Purchases.logLevel = .error
+        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["e5e26e1cf15032c6dea0674945c9d8a4", "GADSimulatorID"]
+        #endif
+        
+        // Check the in-app purchases to see if they've bought ad-free
+        if !UserDefaults.standard.bool(forKey: "premium") {
+            GADMobileAds.sharedInstance().start { status in
+                for thing in status.adapterStatusesByClassName {
+                    print(thing.key, thing.value)
+                }
+            }
+        }
+        
+        Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
+        
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(.ambient)
@@ -28,29 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         window = UIWindow()
         window?.rootViewController = GameViewController()
         window?.makeKeyAndVisible()
-
+        
         if UserDefaults.standard.value(forKey: "status") == nil {
             UserDefaults.standard.set(true, forKey: "status")
         }
-        
-        /*
-         Warning: Ads may be preloaded by the Mobile Ads SDK or mediation partner SDKs upon calling startWithCompletionHandler:. If you need to obtain consent from users in the European Economic Area (EEA), set any request-specific flags (such as tagForChildDirectedTreatment or tag_for_under_age_of_consent), or otherwise take action before loading ads, ensure you do so before initializing the Mobile Ads SDK.
-         */
-        
-        // How can I obtain consent from the EEA?
-        
-        // Check the in-app purchases to see if they've bought ad-free
-        if !UserDefaults.standard.bool(forKey: "premium") {
-            GADMobileAds.sharedInstance().start(completionHandler: nil)
-        }
-        
-        #if DEBUG
-        Purchases.logLevel = .error
-        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["641e46666bf8c38d7b5bd9478bc288b9"]
-        #endif
-        
-        Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
-        FirebaseApp.configure()
         
         return true
     }

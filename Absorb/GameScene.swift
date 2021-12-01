@@ -9,7 +9,6 @@ import SpriteKit
 import GameplayKit
 import GameKit
 
-// TODO: When the user loses, they can enter their name and it'll save the score
 // TODO: Highlight score in scoreboard
 
 public class GameScene: SKScene
@@ -178,7 +177,7 @@ public class GameScene: SKScene
     {
         if ball.kind == .projectile
         {
-            if Ball.overlapping(ball, player)
+            if Ball.overlappingArea(ball, player) > 0
             {
                 return false
             }
@@ -193,41 +192,39 @@ public class GameScene: SKScene
     
     public func handleOverlap(smaller: Ball, larger: Ball)
     {
-        if Ball.overlapping(larger, smaller)
+        let overlappingArea = Ball.overlappingArea(smaller, larger)
+        guard overlappingArea > 0 else { return }
+        
+        if smaller == player
         {
-            let overlappingArea = Ball.overlappingArea(smaller, larger)
+            larger.updateArea(delta: overlappingArea)
+            modifyRadiusScale(
+                deltaArea: -overlappingArea,
+                radius: &temporaryRadius)
+        }
+        else if larger == player
+        {
+            if smaller.addsPointsToScore
+            {
+                score += Int(overlappingArea.areaToRadius)
+            }
             
-            if smaller == player
-            {
-                larger.updateArea(delta: overlappingArea)
-                modifyRadiusScale(
-                    deltaArea: -overlappingArea,
-                    radius: &temporaryRadius)
+            smaller.updateArea(delta: -overlappingArea)
+            modifyRadiusScale(
+                deltaArea: overlappingArea,
+                radius: &temporaryRadius)
+            
+            if smaller.radius < 1 {
+                smaller.removeFromParent()
             }
-            else if larger == player
-            {
-                if smaller.addsPointsToScore
-                {
-                    score += Int(overlappingArea.areaToRadius)
-                }
-                
-                smaller.updateArea(delta: -overlappingArea)
-                modifyRadiusScale(
-                    deltaArea: overlappingArea,
-                    radius: &temporaryRadius)
-                
-                if smaller.radius < 1 {
-                    smaller.removeFromParent()
-                }
-            }
-            else
-            {
-                larger.updateArea(delta: overlappingArea)
-                smaller.updateArea(delta: -overlappingArea)
-                
-                if smaller.radius < 1 {
-                    smaller.removeFromParent()
-                }
+        }
+        else
+        {
+            larger.updateArea(delta: overlappingArea)
+            smaller.updateArea(delta: -overlappingArea)
+            
+            if smaller.radius < 1 {
+                smaller.removeFromParent()
             }
         }
     }
@@ -302,7 +299,8 @@ public class GameScene: SKScene
     
     /// Each overlap between the player and an npc causes the world to shrink
     /// This function calculates how that ratio is modified for a single overlap
-    private func modifyRadiusScale(deltaArea: CGFloat, radius: inout CGFloat)
+    internal
+    func modifyRadiusScale(deltaArea: CGFloat, radius: inout CGFloat)
     {
         let currentArea = radius.radiusToArea
         let newArea = currentArea + deltaArea
