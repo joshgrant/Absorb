@@ -23,7 +23,7 @@ protocol GameSceneDelegate: AnyObject
     func showLeaderboard()
     func openPauseMenuFromGameOver()
     func scoreUpdate(to score: Int)
-//    func disableAds()
+    //    func disableAds()
     func authenticatePlayer()
 }
 
@@ -62,28 +62,6 @@ class GameViewController: UIViewController
         label.font = .systemFont(ofSize: 34, weight: .light)
         return label
     }()
-    
-//    var _bannerView: GADBannerView?
-//    var bannerView: GADBannerView {
-//        get {
-//            if _bannerView == nil {
-//                _bannerView = GADBannerView(adSize: GADAdSizeBanner)
-////#if DEBUG
-////                _bannerView!.adUnitID = "ca-app-pub-3940256099942544/2934735716"
-////#else
-//                _bannerView!.adUnitID = "ca-app-pub-7759050985948144/2574435753"
-////#endif
-//
-//                _bannerView!.rootViewController = self
-//                _bannerView!.delegate = self
-//            }
-//
-//            return _bannerView!
-//        }
-//        set {
-//            _bannerView = newValue
-//        }
-//    }
     
     override var prefersStatusBarHidden: Bool { UserDefaults.standard.bool(forKey: "status") }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.portrait] }
@@ -150,13 +128,6 @@ class GameViewController: UIViewController
                 print("Done animating")
             })
         }
-        
-//        guard let view = view as? UIStackView else { assertionFailure(); return }
-//        if UserDefaults.standard.bool(forKey: "premium") { return }
-//        if Constants.screenshotMode { return }
-        
-//        view.addArrangedSubview(bannerView)
-//        bannerView.load(GADRequest())
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -224,10 +195,10 @@ extension GameViewController: GameSceneDelegate
         let gameOverCount = UserDefaults.standard.integer(forKey: "gameOverCount")
         UserDefaults.standard.set(gameOverCount + 1, forKey: "gameOverCount")
         
-        if gameOverCount > 10 || UserDefaults.standard.bool(forKey: "premium") {
-            UserDefaults.standard.set(0, forKey: "gameOverCount")
+        if gameOverCount < 3 || UserDefaults.standard.bool(forKey: "premium") {
             showGameOvewScreen()
         } else {
+            UserDefaults.standard.set(0, forKey: "gameOverCount")
             showAd()
         }
     }
@@ -393,12 +364,13 @@ extension GameViewController {
 extension GameViewController: GADFullScreenContentDelegate {
     
     func showAd() {
+        //        print("SHOWING")
         if let interstitial = interstitial {
             interstitial.present(fromRootViewController: self)
-          } else {
+        } else {
             print("Ad wasn't ready")
-          showGameOvewScreen()
-          }
+            showGameOvewScreen()
+        }
     }
     
     func preloadAd() {
@@ -425,11 +397,11 @@ extension GameViewController: GADFullScreenContentDelegate {
     
     /// Tells the delegate that the ad failed to present full screen content.
     func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
-      print("Ad did fail to present full screen content.")
+        print("Ad did fail to present full screen content.")
     }
-
+    
     /// Tells the delegate that the ad presented full screen content.
     func adDidPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
-      print("Ad did present full screen content.")
+        print("Ad did present full screen content.")
     }
 }

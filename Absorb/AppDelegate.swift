@@ -20,21 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
         FirebaseApp.configure()
-        
-        #if DEBUG
-        Purchases.logLevel = .error
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["e5e26e1cf15032c6dea0674945c9d8a4", "GADSimulatorID"]
-        #endif
         
-        // Check the in-app purchases to see if they've bought ad-free
-        if !UserDefaults.standard.bool(forKey: "premium") {
-            GADMobileAds.sharedInstance().start { status in
-                for thing in status.adapterStatusesByClassName {
-                    print(thing.key, thing.value)
-                }
-            }
-        }
-        
+        Purchases.logLevel = .error
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
         
         let session = AVAudioSession.sharedInstance()
