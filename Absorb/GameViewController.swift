@@ -36,6 +36,7 @@ class GameViewController: UIViewController
     
     var fakeWindow: UIWindow?
     var tutorialView: UIStackView?
+    var updating: Bool = false // Whether or not the score label is updating
     
     var hackPaused: Bool {
         get {
@@ -253,7 +254,13 @@ extension GameViewController: GameSceneDelegate
     }
     
     func scoreUpdate(to score: Int) {
+        
+        print("Update!")
+        
         scoreLabel.text = "\(score)"
+        
+        if updating { return }
+        updating = true
         
         UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: [.beginFromCurrentState], animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5) {
@@ -262,7 +269,9 @@ extension GameViewController: GameSceneDelegate
             UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
                 self.scoreLabel.transform = .init(scaleX: 1.0, y: 1.0)
             }
-        }, completion: nil)
+        }, completion: { [weak self] _ in
+            self?.updating = false
+        })
         
     }
     
