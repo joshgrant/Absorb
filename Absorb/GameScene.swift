@@ -307,10 +307,6 @@ public class GameScene: SKScene
         let currentArea = radius.radiusToArea
         let newArea = currentArea + deltaArea
         radius = newArea.areaToRadius
-        
-        // Side effect... changes the customPlayerRadius so when we calculate
-        // overlapping circles, it takes into account the smaller player size
-        player.customPlayerRadius = radius
     }
     
     private func moveCameraToPlayer()

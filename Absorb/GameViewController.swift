@@ -192,14 +192,19 @@ extension GameViewController: GameSceneDelegate
     {
         self.score = score
         
-        let gameOverCount = UserDefaults.standard.integer(forKey: "gameOverCount")
-        UserDefaults.standard.set(gameOverCount + 1, forKey: "gameOverCount")
-        
-        if gameOverCount < 3 || UserDefaults.standard.bool(forKey: "premium") {
+        if UserDefaults.standard.bool(forKey: "premium") {
             showGameOvewScreen()
-        } else {
-            UserDefaults.standard.set(0, forKey: "gameOverCount")
+            return
+        }
+        
+        let gameOverCount = UserDefaults.standard.integer(forKey: "gameOverCount")
+        
+        if gameOverCount >= 10 {
+            UserDefaults.standard.set(1, forKey: "gameOverCount")
             showAd()
+        } else {
+            UserDefaults.standard.set(gameOverCount + 1, forKey: "gameOverCount")
+            showGameOvewScreen()
         }
     }
     
@@ -364,8 +369,8 @@ extension GameViewController {
 extension GameViewController: GADFullScreenContentDelegate {
     
     func showAd() {
-        //        print("SHOWING")
         if let interstitial = interstitial {
+            hackPaused = true
             interstitial.present(fromRootViewController: self)
         } else {
             print("Ad wasn't ready")
@@ -376,16 +381,22 @@ extension GameViewController: GADFullScreenContentDelegate {
     func preloadAd() {
         if interstitial != nil { return }
         
+        #if DEBUG
+        let adUnitId = "ca-app-pub-3940256099942544/4411468910"
+        #else
         let adUnitId = "ca-app-pub-7759050985948144/2429065718"
+        #endif
         
         let request = GADRequest()
-        GADInterstitialAd.load(withAdUnitID:adUnitId, request: request) { [weak self] ad, error in
+        GADInterstitialAd.load(
+            withAdUnitID: adUnitId, request: request
+        ) { (ad, error) in
             if let error = error {
-                print("Failed to load interstital ad: \(error)")
+                print("Failed to load interstitial ad with error: \(error.localizedDescription)")
                 return
             }
-            self?.interstitial = ad
-            ad?.fullScreenContentDelegate = self
+            self.interstitial = ad
+            self.interstitial?.fullScreenContentDelegate = self
         }
     }
     

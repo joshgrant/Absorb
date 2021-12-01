@@ -21,11 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     {
         FirebaseApp.configure()
         GADMobileAds.sharedInstance().start(completionHandler: nil)
-        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["e5e26e1cf15032c6dea0674945c9d8a4", "GADSimulatorID"]
         
         Purchases.logLevel = .error
         Purchases.configure(withAPIKey: "skJjROkPtlcnwqeMdaxjxtuKQubDCyGy")
-        
+
         let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(.ambient)

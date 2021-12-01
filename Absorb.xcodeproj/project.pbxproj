@@ -19,8 +19,8 @@
 		0377D9C72747097C00807285 /* CGColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0377D9C62747097C00807285 /* CGColor+Extensions.swift */; };
 		037CBC022716822400103FD0 /* CGVector+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC012716822400103FD0 /* CGVector+Extensions.swift */; };
 		037CBC042717456100103FD0 /* Hashable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037CBC032717456100103FD0 /* Hashable+Extensions.swift */; };
+		03821E6B2757F9B6000018F5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03821E6A2757F9B6000018F5 /* GoogleService-Info.plist */; };
 		039F090B271B698700885B3A /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 039F090A271B698600885B3A /* GameKit.framework */; };
-		03A37AC52756C7C60006E60E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03A37AC42756C7C60006E60E /* GoogleService-Info.plist */; };
 		03A37AC72756DDBA0006E60E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03A37AC62756DDBA0006E60E /* StoreKit.framework */; };
 		03AB37A72715D18D00E1BD2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37A62715D18D00E1BD2C /* AppDelegate.swift */; };
 		03AB37AD2715D18D00E1BD2C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AB37AC2715D18D00E1BD2C /* GameScene.swift */; };
@@ -60,10 +60,10 @@
 		0377D9C62747097C00807285 /* CGColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGColor+Extensions.swift"; sourceTree = "<group>"; };
 		037CBC012716822400103FD0 /* CGVector+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
 		037CBC032717456100103FD0 /* Hashable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Hashable+Extensions.swift"; sourceTree = "<group>"; };
+		03821E6A2757F9B6000018F5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		039F090A271B698600885B3A /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		03A37AC42756C7C60006E60E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		03A37AC62756DDBA0006E60E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		03AB37A32715D18D00E1BD2C /* Absorb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Absorb.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		03AB37A32715D18D00E1BD2C /* absOrby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = absOrby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		03AB37A62715D18D00E1BD2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		03AB37AC2715D18D00E1BD2C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		03AB37AE2715D18D00E1BD2C /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -143,7 +143,7 @@
 		03AB37A42715D18D00E1BD2C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				03AB37A32715D18D00E1BD2C /* Absorb.app */,
+				03AB37A32715D18D00E1BD2C /* absOrby.app */,
 				03AB37BC2715D18F00E1BD2C /* AbsorbTests.xctest */,
 			);
 			name = Products;
@@ -152,11 +152,11 @@
 		03AB37A52715D18D00E1BD2C /* Absorb */ = {
 			isa = PBXGroup;
 			children = (
+				03821E6A2757F9B6000018F5 /* GoogleService-Info.plist */,
 				03D0A538273B2BDD0008E8F3 /* Podfile */,
 				0346803F2745DD28007143F0 /* ping_audio.caf */,
 				03BC2833272455E200AD3F63 /* Absorb.entitlements */,
 				0361A5CF273AED3C0037A182 /* Products.storekit */,
-				03A37AC42756C7C60006E60E /* GoogleService-Info.plist */,
 				03AB37A62715D18D00E1BD2C /* AppDelegate.swift */,
 				03AB37E82715E81300E1BD2C /* Ball.swift */,
 				03738460272796A8007F0952 /* Database.swift */,
@@ -198,9 +198,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		03AB37A22715D18D00E1BD2C /* Absorb */ = {
+		03AB37A22715D18D00E1BD2C /* absOrby */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 03AB37D02715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "Absorb" */;
+			buildConfigurationList = 03AB37D02715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "absOrby" */;
 			buildPhases = (
 				71A850D71BD3266ACF7FF806 /* [CP] Check Pods Manifest.lock */,
 				03AB379F2715D18D00E1BD2C /* Sources */,
@@ -212,9 +212,9 @@
 			);
 			dependencies = (
 			);
-			name = Absorb;
+			name = absOrby;
 			productName = Absorb;
-			productReference = 03AB37A32715D18D00E1BD2C /* Absorb.app */;
+			productReference = 03AB37A32715D18D00E1BD2C /* absOrby.app */;
 			productType = "com.apple.product-type.application";
 		};
 		03AB37BB2715D18F00E1BD2C /* AbsorbTests */ = {
@@ -268,7 +268,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				03AB37A22715D18D00E1BD2C /* Absorb */,
+				03AB37A22715D18D00E1BD2C /* absOrby */,
 				03AB37BB2715D18F00E1BD2C /* AbsorbTests */,
 			);
 		};
@@ -281,7 +281,7 @@
 			files = (
 				03AB37B42715D18F00E1BD2C /* Assets.xcassets in Resources */,
 				034680402745DD28007143F0 /* ping_audio.caf in Resources */,
-				03A37AC52756C7C60006E60E /* GoogleService-Info.plist in Resources */,
+				03821E6B2757F9B6000018F5 /* GoogleService-Info.plist in Resources */,
 				03D0A539273B2BDD0008E8F3 /* Podfile in Resources */,
 				03AB37B72715D18F00E1BD2C /* LaunchScreen.storyboard in Resources */,
 			);
@@ -398,7 +398,7 @@
 /* Begin PBXTargetDependency section */
 		03AB37BE2715D18F00E1BD2C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 03AB37A22715D18D00E1BD2C /* Absorb */;
+			target = 03AB37A22715D18D00E1BD2C /* absOrby */;
 			targetProxy = 03AB37BD2715D18F00E1BD2C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -559,6 +559,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -596,6 +600,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.joshgrant.Absorby;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -669,7 +677,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		03AB37D02715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "Absorb" */ = {
+		03AB37D02715D18F00E1BD2C /* Build configuration list for PBXNativeTarget "absOrby" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				03AB37D12715D18F00E1BD2C /* Debug */,

@@ -17,25 +17,19 @@ public class Ball: SKShapeNode
     }
     
     var kind: Kind
-    var _radius: CGFloat
-    var radius: CGFloat {
-        customPlayerRadius ?? _radius
-    }
+    var radius: CGFloat
     var addsPointsToScore: Bool = true
-    
-    var customPlayerRadius: CGFloat?
     
     /// We reset this every frame
     var totalForce: CGVector = .zero
     
     var area: CGFloat {
-        let r = customPlayerRadius ?? radius
-        return CGFloat.pi * r * r
+        CGFloat.pi * radius * radius
     }
     
     init(radius: CGFloat, position: CGPoint)
     {
-        self._radius = radius
+        self.radius = radius
         self.kind = .npc
         super.init()
         self.position = position
@@ -52,7 +46,7 @@ public class Ball: SKShapeNode
     {
         let newPosition = newPosition(relativeTo: cameraPosition, scaledBy: scale)
         run(.move(by: CGVector(dx: newPosition.x - position.x, dy: newPosition.y - position.y), duration: 0.1))
-        _radius = _radius * scale
+        radius = radius * scale
         
         UIView.animate(withDuration: 0.1) { [unowned self] in
             radiusUpdated()
@@ -61,7 +55,7 @@ public class Ball: SKShapeNode
     
     public func updateArea(to newArea: CGFloat)
     {
-        _radius = newArea.areaToRadius
+        radius = newArea.areaToRadius
         radiusUpdated()
     }
     
