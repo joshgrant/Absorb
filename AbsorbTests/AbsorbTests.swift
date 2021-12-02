@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Absorb
+@testable import absOrby
 import SpriteKit
 
 class AbsorbTests: XCTestCase
@@ -433,16 +433,16 @@ class AbsorbTests: XCTestCase
         }
     }
     
-    func test_durationOfModifyRadiusScale()
-    {
-        let sut = makeGameSceneWithLotsOfChildren()
-        let options = XCTMeasureOptions()
-        options.iterationCount = 1000
-        var radius: CGFloat = 3.2
-        measure(options: options) {
-            sut.modifyRadiusScale(deltaArea: 10, radius: &radius)
-        }
-    }
+//    func test_durationOfModifyRadiusScale()
+//    {
+//        let sut = makeGameSceneWithLotsOfChildren()
+//        let options = XCTMeasureOptions()
+//        options.iterationCount = 1000
+//        sut.player.radius = 3.2
+//        measure(options: options) {
+//            sut.player.updateArea(delta: 10)
+//        }
+//    }
     
     func test_durationDidFinishUpdate() {
         let sut = makeGameSceneWithLotsOfChildren()

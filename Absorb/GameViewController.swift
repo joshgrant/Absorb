@@ -370,12 +370,9 @@ extension GameViewController: GADFullScreenContentDelegate {
     
     func showAd() {
         if let interstitial = interstitial {
-            hackPaused = true
             interstitial.present(fromRootViewController: self)
-        } else {
-            print("Ad wasn't ready")
-            showGameOvewScreen()
         }
+        showGameOvewScreen()
     }
     
     func preloadAd() {
