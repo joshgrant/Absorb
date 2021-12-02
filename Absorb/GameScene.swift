@@ -46,7 +46,7 @@ public class GameScene: SKScene
         static let playerFrictionalCoefficient: CGFloat = 0.958
         static let enemyFrictionalCoefficient: CGFloat = 0.97
         
-        static let minimumNPCSize: CGFloat = Constants.referenceRadius * 0.2
+        static let minimumNPCSizeRatio: CGFloat = 0.2
         static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.2
         
         /// The area in which npcs are not allowed to spawn
@@ -193,14 +193,18 @@ public class GameScene: SKScene
     public func handleOverlap(smaller: Ball, larger: Ball)
     {
         let overlappingArea = Ball.overlappingArea(smaller, larger)
-
         guard overlappingArea > 0 else { return }
-
+        
         larger.updateArea(delta: overlappingArea)
         smaller.updateArea(delta: -overlappingArea)
-
+        
         if smaller.radius < 1 {
             smaller.removeFromParent()
+        }
+        
+        if larger == player && smaller.addsPointsToScore
+        {
+            score += Int(overlappingArea.areaToRadius)
         }
     }
     
@@ -263,8 +267,6 @@ public class GameScene: SKScene
         
         playerRadius += player.radius - Constants.referenceRadius
         player.radius = Constants.referenceRadius
-        
-        print(playerRadius)
         
         if score != pScore {
             gameSceneDelegate?.scoreUpdate(to: score)
@@ -372,11 +374,11 @@ private extension GameScene
     {
         if configuration.npcsAreSmaller
         {
-            return min(Constants.referenceRadius, playerRadius) / 2
+            return Constants.referenceRadius / 2
         }
         else
         {
-            return .random(in: Constants.minimumNPCSize ... Constants.maximumNPCSize)
+            return .random(in: Constants.minimumNPCSizeRatio * player.radius ... Constants.maximumNPCSize)
         }
     }
     

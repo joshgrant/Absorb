@@ -20,6 +20,7 @@ class GameOverViewController: UIViewController {
     
     var gameOverType: GameOverType?
     var score: Int
+    var showingAd: Bool
     
     var gameCenterButton: UIButton!
     var alert: UIAlertController?
@@ -28,8 +29,9 @@ class GameOverViewController: UIViewController {
     
     // MARK: - Initialization
     
-    init(score: Int) {
+    init(score: Int, showingAd: Bool = false) {
         self.score = score
+        self.showingAd = true
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -165,6 +167,10 @@ extension GameOverViewController {
         let restartButton = PauseViewController.makeButton(title: "Restart", tint: UIColor.link, action: .init(handler: { [weak self] action in
             self?.gameSceneDelegate?.gameRestarted()
         }))
+        
+//        if showingAd {
+//            restartButton.isEnabled = false
+//        }
         
         let nested = UIStackView()
         nested.addArrangedSubview(restartButton)

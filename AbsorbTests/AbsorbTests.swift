@@ -433,17 +433,6 @@ class AbsorbTests: XCTestCase
         }
     }
     
-//    func test_durationOfModifyRadiusScale()
-//    {
-//        let sut = makeGameSceneWithLotsOfChildren()
-//        let options = XCTMeasureOptions()
-//        options.iterationCount = 1000
-//        sut.player.radius = 3.2
-//        measure(options: options) {
-//            sut.player.updateArea(delta: 10)
-//        }
-//    }
-    
     func test_durationDidFinishUpdate() {
         let sut = makeGameSceneWithLotsOfChildren()
         
@@ -458,6 +447,13 @@ class AbsorbTests: XCTestCase
             circle.updateArea(delta: .random(in: -1 ..< 1))
         }
     }
+    
+//    func test_scoreUpdates() {
+//        let gameViewController = GameViewController()
+//        
+//        guard let scene = (gameViewController.gameView.scene as? GameScene) else { XCTFail(); return }
+//        
+//    }
     
     // MARK: - Test helpers
     

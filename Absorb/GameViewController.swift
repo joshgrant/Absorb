@@ -40,6 +40,13 @@ class GameViewController: UIViewController
     
     private var interstitial: GADInterstitialAd?
     
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let loadingIndicator = UIActivityIndicatorView(style: .large)
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.stopAnimating()
+        return loadingIndicator
+    }()
+    
     var score: Int?
     
     var hackPaused: Bool {
@@ -100,6 +107,14 @@ class GameViewController: UIViewController
         contentView.addArrangedSubview(gameView)
         
         view = contentView
+        
+        view.addSubview(loadingIndicator)
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     override func viewDidLoad()
@@ -199,7 +214,13 @@ extension GameViewController: GameSceneDelegate
         
         let gameOverCount = UserDefaults.standard.integer(forKey: "gameOverCount")
         
-        if gameOverCount >= 10 {
+        #if DEBUG
+        let countLimit = 3
+        #else
+        let countLimit = 10
+        #endif
+        
+        if gameOverCount >= countLimit {
             UserDefaults.standard.set(1, forKey: "gameOverCount")
             showAd()
         } else {
@@ -208,15 +229,17 @@ extension GameViewController: GameSceneDelegate
         }
     }
     
-    private func showGameOvewScreen() {
+    private func showGameOvewScreen(showingAd: Bool = false, completion: ((GameOverViewController) -> Void)? = nil)  {
         presentScene(paused: true)
         
-        guard let score = self.score else { assertionFailure(); return }
+        let score = self.score ?? 0
         
-        let gameOver = GameOverViewController(score: score)
+        let gameOver = GameOverViewController(score: score, showingAd: true)
         gameOver.presentationController?.delegate = self
         gameOver.gameSceneDelegate = self
-        show(gameOver, sender: self)
+        present(gameOver, animated: true, completion: {
+            completion?(gameOver)
+        })
         
         (gameView.scene as? GameScene)?.showing = false
     }
@@ -256,15 +279,12 @@ extension GameViewController: GameSceneDelegate
     }
     
     func scoreUpdate(to score: Int) {
-        
-        print("Update!")
-        
         scoreLabel.text = "\(score)"
         
         if updating { return }
         updating = true
         
-        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: [.beginFromCurrentState], animations: {
+        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: [], animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5) {
                 self.scoreLabel.transform = .init(scaleX: 2.0, y: 2.0)
             }
@@ -368,11 +388,15 @@ extension GameViewController {
 
 extension GameViewController: GADFullScreenContentDelegate {
     
+    // MAKE SURE THIS DOESN"T VIOLATE POLICY
     func showAd() {
-        if let interstitial = interstitial {
-            interstitial.present(fromRootViewController: self)
+        
+        if let interstitial = self.interstitial {
+            loadingIndicator.startAnimating()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                interstitial.present(fromRootViewController: self)
+            }
         }
-        showGameOvewScreen()
     }
     
     func preloadAd() {
@@ -405,11 +429,13 @@ extension GameViewController: GADFullScreenContentDelegate {
     
     /// Tells the delegate that the ad failed to present full screen content.
     func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
-        print("Ad did fail to present full screen content.")
+        loadingIndicator.stopAnimating()
+        print("Ad did fail to present full screen content.: \(error.localizedDescription)")
     }
     
     /// Tells the delegate that the ad presented full screen content.
     func adDidPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+        loadingIndicator.stopAnimating()
         print("Ad did present full screen content.")
     }
 }

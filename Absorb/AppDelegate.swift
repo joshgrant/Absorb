@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
     {
         FirebaseApp.configure()
+        GADMobileAds.sharedInstance().requestConfiguration.testDeviceIdentifiers = ["18d2b257aecc483f0c335507b14fa727"]
         GADMobileAds.sharedInstance().start(completionHandler: nil)
         
         Purchases.logLevel = .error

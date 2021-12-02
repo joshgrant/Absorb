@@ -75,7 +75,7 @@
 		03AB37EA2715FC8200E1BD2C /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		03BC283127244B6300AD3F63 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		03BC2833272455E200AD3F63 /* Absorb.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Absorb.entitlements; sourceTree = "<group>"; };
-		03D0A538273B2BDD0008E8F3 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; };
+		03D0A538273B2BDD0008E8F3 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		57945FAF0A5CE8F8849BBB57 /* Pods-Absorb.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Absorb.release.xcconfig"; path = "Target Support Files/Pods-Absorb/Pods-Absorb.release.xcconfig"; sourceTree = "<group>"; };
 		92003542457FC5A09E593AC0 /* Pods-Absorb.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Absorb.debug.xcconfig"; path = "Target Support Files/Pods-Absorb/Pods-Absorb.debug.xcconfig"; sourceTree = "<group>"; };
 		96079DFBED6736473E045311 /* Pods_AbsorbTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AbsorbTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
