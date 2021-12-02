@@ -63,7 +63,7 @@ public class GameScene: SKScene
     
     private var configuration: Configuration
     
-    //    private var temporaryRadius: CGFloat = Constants.referenceRadius
+    private var temporaryRadius: CGFloat = Constants.referenceRadius
     private var playerRadius: CGFloat = Constants.referenceRadius
     
     internal var score: Int = 0
@@ -192,19 +192,42 @@ public class GameScene: SKScene
     
     public func handleOverlap(smaller: Ball, larger: Ball)
     {
-        let overlappingArea = Ball.overlappingArea(smaller, larger)
-        guard overlappingArea > 0 else { return }
-        
-        larger.updateArea(delta: overlappingArea)
-        smaller.updateArea(delta: -overlappingArea)
-        
-        if smaller.radius < 1 {
-            smaller.removeFromParent()
-        }
-        
-        if larger == player && smaller.addsPointsToScore
+        if Ball.overlapping(larger, smaller)
         {
-            score += Int(overlappingArea.areaToRadius)
+            let overlappingArea = Ball.overlappingArea(smaller, larger)
+            
+            if smaller == player
+            {
+                larger.updateArea(delta: overlappingArea)
+                modifyRadiusScale(
+                    deltaArea: -overlappingArea,
+                    radius: &temporaryRadius)
+            }
+            else if larger == player
+            {
+                if smaller.addsPointsToScore
+                {
+                    score += Int(overlappingArea.areaToRadius)
+                }
+                
+                smaller.updateArea(delta: -overlappingArea)
+                modifyRadiusScale(
+                    deltaArea: overlappingArea,
+                    radius: &temporaryRadius)
+                
+                if smaller.radius < 1 {
+                    smaller.removeFromParent()
+                }
+            }
+            else
+            {
+                larger.updateArea(delta: overlappingArea)
+                smaller.updateArea(delta: -overlappingArea)
+                
+                if smaller.radius < 1 {
+                    smaller.removeFromParent()
+                }
+            }
         }
     }
     
@@ -230,7 +253,7 @@ public class GameScene: SKScene
     {
         super.didFinishUpdate()
         
-        let npcScale = Constants.referenceRadius / player.radius
+        let npcScale = Constants.referenceRadius / temporaryRadius
         
         if npcScale.isInfinite || npcScale.isNaN {
             showGameOverScreen()
@@ -265,8 +288,8 @@ public class GameScene: SKScene
         
         player.physicsBody?.applyFriction(Constants.playerFrictionalCoefficient)
         
-        playerRadius += player.radius - Constants.referenceRadius
-        player.radius = Constants.referenceRadius
+        playerRadius += temporaryRadius - Constants.referenceRadius
+        temporaryRadius = Constants.referenceRadius
         
         if score != pScore {
             gameSceneDelegate?.scoreUpdate(to: score)
@@ -274,6 +297,15 @@ public class GameScene: SKScene
         }
         
         checkGameOver()
+    }
+    
+    /// Each overlap between the player and an npc causes the world to shrink
+    /// This function calculates how that ratio is modified for a single overlap
+    private func modifyRadiusScale(deltaArea: CGFloat, radius: inout CGFloat)
+    {
+        let currentArea = radius.radiusToArea
+        let newArea = currentArea + deltaArea
+        radius = newArea.areaToRadius
     }
     
     private func moveCameraToPlayer()
@@ -361,7 +393,8 @@ private extension GameScene
         
         insertChild(npc, at: 0)
         
-        player.updateArea(delta: -radius.radiusToArea)
+        // Side effect - modifies the temporary radius
+        modifyRadiusScale(deltaArea: -radius.radiusToArea, radius: &temporaryRadius)
         npc.run(.applyForce(force, duration: Constants.frameDuration))
     }
 }
