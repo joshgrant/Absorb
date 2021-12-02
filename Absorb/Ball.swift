@@ -48,9 +48,9 @@ public class Ball: SKShapeNode
         run(.move(by: CGVector(dx: newPosition.x - position.x, dy: newPosition.y - position.y), duration: 0.1))
         radius = radius * scale
         
-//        UIView.animate(withDuration: 0.1) { [unowned self] in
+        UIView.animate(withDuration: 0.1) { [unowned self] in
             radiusUpdated()
-//        }
+        }
     }
     
     public func updateArea(to newArea: CGFloat)
