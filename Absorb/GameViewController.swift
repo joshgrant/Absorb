@@ -221,7 +221,6 @@ extension GameViewController: GameSceneDelegate
         #endif
         
         if gameOverCount >= countLimit {
-            UserDefaults.standard.set(1, forKey: "gameOverCount")
             showAd()
         } else {
             UserDefaults.standard.set(gameOverCount + 1, forKey: "gameOverCount")
@@ -390,12 +389,13 @@ extension GameViewController: GADFullScreenContentDelegate {
     
     // MAKE SURE THIS DOESN"T VIOLATE POLICY
     func showAd() {
-        
         if let interstitial = self.interstitial {
             loadingIndicator.startAnimating()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 interstitial.present(fromRootViewController: self)
             }
+        } else {
+            showGameOvewScreen()
         }
     }
     
@@ -425,6 +425,8 @@ extension GameViewController: GADFullScreenContentDelegate {
         showGameOvewScreen()
         interstitial = nil
         preloadAd()
+        
+        UserDefaults.standard.set(1, forKey: "gameOverCount")
     }
     
     /// Tells the delegate that the ad failed to present full screen content.

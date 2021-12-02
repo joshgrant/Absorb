@@ -46,7 +46,7 @@ public class GameScene: SKScene
         static let playerFrictionalCoefficient: CGFloat = 0.958
         static let enemyFrictionalCoefficient: CGFloat = 0.97
         
-        static let minimumNPCSizeRatio: CGFloat = 0.2
+        static let minimumNPCSize: CGFloat = Constants.referenceRadius * 0.2
         static let maximumNPCSize: CGFloat = Constants.referenceRadius * 2.2
         
         /// The area in which npcs are not allowed to spawn
@@ -192,41 +192,39 @@ public class GameScene: SKScene
     
     public func handleOverlap(smaller: Ball, larger: Ball)
     {
-        if Ball.overlapping(larger, smaller)
+        let overlappingArea = Ball.overlappingArea(smaller, larger)
+        guard overlappingArea > 0 else { return }
+        
+        if smaller == player
         {
-            let overlappingArea = Ball.overlappingArea(smaller, larger)
+            larger.updateArea(delta: overlappingArea)
+            modifyRadiusScale(
+                deltaArea: -overlappingArea,
+                radius: &temporaryRadius)
+        }
+        else if larger == player
+        {
+            if smaller.addsPointsToScore
+            {
+                score += Int(overlappingArea.areaToRadius)
+            }
             
-            if smaller == player
-            {
-                larger.updateArea(delta: overlappingArea)
-                modifyRadiusScale(
-                    deltaArea: -overlappingArea,
-                    radius: &temporaryRadius)
+            smaller.updateArea(delta: -overlappingArea)
+            modifyRadiusScale(
+                deltaArea: overlappingArea,
+                radius: &temporaryRadius)
+            
+            if smaller.radius < 1 {
+                smaller.removeFromParent()
             }
-            else if larger == player
-            {
-                if smaller.addsPointsToScore
-                {
-                    score += Int(overlappingArea.areaToRadius)
-                }
-                
-                smaller.updateArea(delta: -overlappingArea)
-                modifyRadiusScale(
-                    deltaArea: overlappingArea,
-                    radius: &temporaryRadius)
-                
-                if smaller.radius < 1 {
-                    smaller.removeFromParent()
-                }
-            }
-            else
-            {
-                larger.updateArea(delta: overlappingArea)
-                smaller.updateArea(delta: -overlappingArea)
-                
-                if smaller.radius < 1 {
-                    smaller.removeFromParent()
-                }
+        }
+        else
+        {
+            larger.updateArea(delta: overlappingArea)
+            smaller.updateArea(delta: -overlappingArea)
+            
+            if smaller.radius < 1 {
+                smaller.removeFromParent()
             }
         }
     }
@@ -411,7 +409,7 @@ private extension GameScene
         }
         else
         {
-            return .random(in: Constants.minimumNPCSizeRatio * player.radius ... Constants.maximumNPCSize)
+            return .random(in: Constants.minimumNPCSize ... Constants.maximumNPCSize)
         }
     }
     
