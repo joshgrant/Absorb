@@ -47,10 +47,7 @@ public class Ball: SKShapeNode
         let newPosition = newPosition(relativeTo: cameraPosition, scaledBy: scale)
         run(.move(by: CGVector(dx: newPosition.x - position.x, dy: newPosition.y - position.y), duration: 0.1))
         radius = radius * scale
-        
-        UIView.animate(withDuration: 0.1) { [unowned self] in
-            radiusUpdated()
-        }
+        radiusUpdated()
     }
     
     public func updateArea(to newArea: CGFloat)

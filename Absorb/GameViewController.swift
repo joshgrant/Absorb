@@ -387,7 +387,6 @@ extension GameViewController {
 
 extension GameViewController: GADFullScreenContentDelegate {
     
-    // MAKE SURE THIS DOESN"T VIOLATE POLICY
     func showAd() {
         if let interstitial = self.interstitial {
             loadingIndicator.startAnimating()
